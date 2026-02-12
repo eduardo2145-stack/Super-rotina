@@ -25,7 +25,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* CARDS */
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); overflow: hidden; } /* Overflow hidden previne que imagens saiam do card */
         .card-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; color: #2c3e50; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
 
         /* FORMULÁRIOS */
@@ -35,7 +35,7 @@
         .btn-main { background: #3498db; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; }
         .btn-sec { background: #ecf0f1; color: #333; border: none; padding: 15px; border-radius: 10px; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; }
 
-        /* DETALHES AVANÇADOS (COLLAPSIBLE) */
+        /* DETALHES AVANÇADOS */
         details { background: #f9f9f9; border: 1px solid #eee; border-radius: 8px; padding: 10px; margin-bottom: 15px; }
         summary { font-weight: bold; color: #3498db; cursor: pointer; list-style: none; outline: none; }
         summary::-webkit-details-marker { display: none; }
@@ -52,7 +52,7 @@
         .device-check { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #eee; }
         .device-check input { width: 20px; height: 20px; margin: 0 10px 0 0; }
 
-        /* LISTA & TIMELINE */
+        /* LISTAS & TIMELINE */
         .atv-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
         .atv-img { width: 40px; height: 40px; border-radius: 8px; background: #eee; margin-right: 10px; object-fit: contain; }
 
@@ -68,9 +68,15 @@
         .tl-item.proximo .tl-card { border: 2px solid #f39c12; }
         .tl-item.proximo .tl-time { background: #f39c12; }
 
+        /* --- CORREÇÃO DO BUG DO MONSTRO GIGANTE --- */
         .actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .action-btn { background: white; border: 1px solid #eee; border-radius: 10px; padding: 15px 5px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80px; }
+        .action-btn { background: white; border: 1px solid #eee; border-radius: 10px; padding: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80px; overflow: hidden; }
         
+        /* AQUI ESTAVA FALTANDO: FORÇA A IMAGEM A FICAR PEQUENA */
+        .action-btn img { width: 35px; height: 35px; object-fit: contain; margin-bottom: 5px; }
+        .action-btn span { font-size: 11px; font-weight: bold; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+        /* LOGIN OVERLAY */
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; padding: 30px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; }
         .hidden { display: none !important; }
     </style>
@@ -257,13 +263,11 @@
 
             if(unsubscribeDispositivos) unsubscribeDispositivos();
             
-            // DISPOSITIVOS (STATUS E LISTA DE SELEÇÃO)
+            // DISPOSITIVOS
             unsubscribeDispositivos = onSnapshot(collection(db, `${base}/dispositivos`), (snap) => {
                 const badge = document.getElementById('statusPcBadge');
                 const lista = document.getElementById('listaDispositivos');
                 let onlineCount = 0;
-                
-                // Opção Todos
                 let html = `<label class="device-check"><input type="checkbox" id="dev_todos" value="todos" checked> <b>Todos</b></label>`;
                 
                 snap.forEach(d => {
@@ -279,6 +283,7 @@
                 else { badge.innerText = "PC Offline ⚫"; badge.classList.remove('online'); }
             });
 
+            // ATIVIDADES
             onSnapshot(collection(db, `${base}/atividades`), (snap) => {
                 const l = document.getElementById('listaAtividades');
                 const g = document.getElementById('gridAcoesRapidas');
@@ -293,6 +298,7 @@
                 renderizarTimeline();
             });
 
+            // ROTINAS
             onSnapshot(collection(db, `${base}/rotinas`), (snap) => {
                 const lf = document.getElementById('listaRotinasCompletas');
                 lf.innerHTML = ""; cacheRotinas = {};
@@ -331,18 +337,16 @@
             let idFinal = editId ? editId : idInput.value.toLowerCase().replace(/\s/g,'');
             if(!idFinal) return alert("ID Obrigatório");
 
-            // Coletar Dispositivos
             let alvos = [];
             if(document.getElementById('dev_todos').checked) alvos.push('todos');
             document.querySelectorAll('input[name="dev_item"]:checked').forEach(c => alvos.push(c.value));
-            if(alvos.length === 0) alvos.push('todos'); // fallback
+            if(alvos.length === 0) alvos.push('todos');
 
             await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, idFinal), {
                 texto: document.getElementById('txtAtividade').value,
                 imagem: document.getElementById('imgAtividade').value,
                 tempo_personalizado: document.getElementById('tempoAtividade').value,
                 falar_texto: document.getElementById('comboFalar').value === 'sim',
-                // CAMPOS NOVOS:
                 tamanho_avatar: document.getElementById('rangeTamanho').value,
                 texto_5min: document.getElementById('txt5min').value,
                 imagem_5min: document.getElementById('img5min').value,
@@ -361,14 +365,11 @@
             document.getElementById('idAtividade').value = id;
             document.getElementById('idAtividade').disabled = true; 
             document.getElementById('editIdAtividade').value = id;
-            
-            // Campos básicos
             document.getElementById('txtAtividade').value = d.texto || "";
             document.getElementById('imgAtividade').value = d.imagem || "";
             document.getElementById('tempoAtividade').value = d.tempo_personalizado || "";
             document.getElementById('comboFalar').value = (d.falar_texto === false) ? 'nao' : 'sim';
             
-            // Campos Avançados
             document.getElementById('rangeTamanho').value = d.tamanho_avatar || "150";
             document.getElementById('lblTam').innerText = (d.tamanho_avatar || "150") + "px";
             document.getElementById('txt5min').value = d.texto_5min || "";
@@ -378,7 +379,6 @@
             document.getElementById('posAtividade').value = d.posicao_especifica || "";
             document.getElementById('checkBlock').checked = (d.bloquear_tela === true);
 
-            // Dispositivos
             const alvos = d.dispositivos_alvo || ['todos'];
             if(document.getElementById('dev_todos')) document.getElementById('dev_todos').checked = alvos.includes('todos');
             document.querySelectorAll('input[name="dev_item"]').forEach(c => c.checked = alvos.includes(c.value));
@@ -408,7 +408,6 @@
             document.getElementById('editIdAtividade').value = "";
             document.getElementById('txtAtividade').value = "";
             document.getElementById('imgAtividade').value = "";
-            // Resetar avançados
             document.getElementById('rangeTamanho').value = "150";
             document.getElementById('lblTam').innerText = "150px";
             document.getElementById('txt5min').value = "";
