@@ -25,7 +25,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* CARDS */
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); overflow: hidden; } /* Overflow hidden previne que imagens saiam do card */
+        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); overflow: hidden; } 
         .card-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; color: #2c3e50; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
 
         /* FORMULÁRIOS */
@@ -48,6 +48,15 @@
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: #ddd; border-radius: 5px; }
         input[type=range]::-webkit-slider-thumb { height: 20px; width: 20px; border-radius: 50%; background: #3498db; cursor: pointer; -webkit-appearance: none; margin-top: -6px; }
 
+        /* PREVIEW BOX DO AVATAR */
+        .preview-box {
+            width: 100%; min-height: 120px;
+            border: 2px dashed #ddd; border-radius: 8px;
+            background-image: radial-gradient(#ccc 1px, transparent 1px); background-size: 10px 10px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; margin-bottom: 15px;
+        }
+
         /* CHECKBOX DISPOSITIVOS */
         .device-check { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #eee; }
         .device-check input { width: 20px; height: 20px; margin: 0 10px 0 0; }
@@ -68,15 +77,11 @@
         .tl-item.proximo .tl-card { border: 2px solid #f39c12; }
         .tl-item.proximo .tl-time { background: #f39c12; }
 
-        /* --- CORREÇÃO DO BUG DO MONSTRO GIGANTE --- */
         .actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .action-btn { background: white; border: 1px solid #eee; border-radius: 10px; padding: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80px; overflow: hidden; }
-        
-        /* AQUI ESTAVA FALTANDO: FORÇA A IMAGEM A FICAR PEQUENA */
         .action-btn img { width: 35px; height: 35px; object-fit: contain; margin-bottom: 5px; }
         .action-btn span { font-size: 11px; font-weight: bold; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
-        /* LOGIN OVERLAY */
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; padding: 30px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; }
         .hidden { display: none !important; }
     </style>
@@ -113,21 +118,22 @@
             <div class="card-title">🎨 Editor de Atividade</div>
             <input type="hidden" id="editIdAtividade">
             
-            <label>ID (Nome Curto)</label>
-            <input type="text" id="idAtividade" placeholder="Ex: banho">
-            
             <div style="display:flex; gap:10px">
+                <div style="flex:2"><label>ID (Nome)</label><input type="text" id="idAtividade" placeholder="Ex: banho"></div>
                 <div style="flex:1"><label>Tempo (s)</label><input type="number" id="tempoAtividade" placeholder="15"></div>
-                <div style="flex:1"><label>Falar?</label><select id="comboFalar"><option value="sim">Sim</option><option value="nao">Não</option></select></div>
             </div>
 
             <label>Texto Principal</label>
             <input type="text" id="txtAtividade">
             <label>Imagem Principal (URL)</label>
-            <input type="text" id="imgAtividade">
+            <input type="text" id="imgAtividade" oninput="atualizarPreview()">
 
             <label>Tamanho do Avatar: <span id="lblTam">150px</span></label>
-            <input type="range" id="rangeTamanho" min="50" max="500" value="150" oninput="document.getElementById('lblTam').innerText=this.value+'px'">
+            <input type="range" id="rangeTamanho" min="50" max="500" value="150" oninput="atualizarPreview()">
+            
+            <div class="preview-box">
+                <img id="previewAvatar" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" style="width: 150px; transition: width 0.1s;">
+            </div>
 
             <details>
                 <summary>Opções Avançadas</summary>
@@ -153,6 +159,11 @@
                         <option value="bottom-left">Baixo Esquerda</option>
                         <option value="top-right">Topo Direita</option>
                     </select>
+                </div>
+
+                <div style="margin-top:15px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid #eee; padding-top:10px">
+                    <label style="margin:0">Ler em Voz Alta?</label>
+                    <input type="checkbox" id="checkVoz" checked style="width:25px; height:25px;">
                 </div>
 
                 <div style="margin-top:10px; display:flex; align-items:center; justify-content:space-between">
@@ -228,6 +239,16 @@
         const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", storageBucket: "rotinaeduardo.firebasestorage.app", messagingSenderId: "210945268922", appId: "1:210945268922:web:ce9e585872090b378d7683", measurementId: "G-MDYWRH9RNP" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
         let usuarioAtual, filhoAtualId, cacheAtividades={}, cacheRotinas={}, unsubscribeDispositivos;
+
+        // Função de Preview Atualizada
+        window.atualizarPreview = () => {
+            const range = document.getElementById('rangeTamanho').value;
+            const url = document.getElementById('imgAtividade').value;
+            const img = document.getElementById('previewAvatar');
+            document.getElementById('lblTam').innerText = range + "px";
+            img.style.width = range + "px";
+            if(url && url.length > 5) img.src = url;
+        };
 
         window.mudarTab = (n, el) => {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -346,7 +367,8 @@
                 texto: document.getElementById('txtAtividade').value,
                 imagem: document.getElementById('imgAtividade').value,
                 tempo_personalizado: document.getElementById('tempoAtividade').value,
-                falar_texto: document.getElementById('comboFalar').value === 'sim',
+                // CAMPOS CORRIGIDOS E ADICIONADOS:
+                falar_texto: document.getElementById('checkVoz').checked, // Agora é checkbox
                 tamanho_avatar: document.getElementById('rangeTamanho').value,
                 texto_5min: document.getElementById('txt5min').value,
                 imagem_5min: document.getElementById('img5min').value,
@@ -365,13 +387,14 @@
             document.getElementById('idAtividade').value = id;
             document.getElementById('idAtividade').disabled = true; 
             document.getElementById('editIdAtividade').value = id;
+            
             document.getElementById('txtAtividade').value = d.texto || "";
             document.getElementById('imgAtividade').value = d.imagem || "";
             document.getElementById('tempoAtividade').value = d.tempo_personalizado || "";
-            document.getElementById('comboFalar').value = (d.falar_texto === false) ? 'nao' : 'sim';
             
+            // Campos Avançados
+            document.getElementById('checkVoz').checked = (d.falar_texto !== false); // Padrão true
             document.getElementById('rangeTamanho').value = d.tamanho_avatar || "150";
-            document.getElementById('lblTam').innerText = (d.tamanho_avatar || "150") + "px";
             document.getElementById('txt5min').value = d.texto_5min || "";
             document.getElementById('img5min').value = d.imagem_5min || "";
             document.getElementById('txt3min').value = d.texto_3min || "";
@@ -379,6 +402,10 @@
             document.getElementById('posAtividade').value = d.posicao_especifica || "";
             document.getElementById('checkBlock').checked = (d.bloquear_tela === true);
 
+            // Atualiza preview imediatamente
+            window.atualizarPreview();
+
+            // Dispositivos
             const alvos = d.dispositivos_alvo || ['todos'];
             if(document.getElementById('dev_todos')) document.getElementById('dev_todos').checked = alvos.includes('todos');
             document.querySelectorAll('input[name="dev_item"]').forEach(c => c.checked = alvos.includes(c.value));
@@ -408,12 +435,14 @@
             document.getElementById('editIdAtividade').value = "";
             document.getElementById('txtAtividade').value = "";
             document.getElementById('imgAtividade').value = "";
+            // Resetar avançados
             document.getElementById('rangeTamanho').value = "150";
-            document.getElementById('lblTam').innerText = "150px";
+            document.getElementById('checkVoz').checked = true;
             document.getElementById('txt5min').value = "";
             document.getElementById('img5min').value = "";
             document.getElementById('posAtividade').value = "";
             document.getElementById('checkBlock').checked = false;
+            window.atualizarPreview();
         };
 
         window.apagarAtv = async (id) => { if(confirm("Apagar?")) deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id)); };
