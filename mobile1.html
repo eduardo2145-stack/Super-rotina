@@ -3,224 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super Rotina App</title>
+    <title>Amigo Virtual</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 80px; color: #333; -webkit-tap-highlight-color: transparent; }
+        /* --- ESTILOS GERAIS --- */
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 90px; color: #333; -webkit-tap-highlight-color: transparent; }
         
-        /* CABEÇALHO */
         .app-header { background: white; padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
         .app-logo { font-size: 18px; font-weight: 800; color: #3498db; }
-        .status-pc { font-size: 12px; padding: 4px 10px; background: #eee; border-radius: 20px; color: #666; font-weight: bold; }
-        .status-pc.online { background: #d4edda; color: #155724; }
-
-        /* NAV BOTTOM */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); padding-bottom: max(10px, env(safe-area-inset-bottom)); }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; font-size: 10px; cursor: pointer; flex: 1; }
-        .nav-item i { font-size: 20px; margin-bottom: 3px; font-style: normal; }
+        .nav-item i { font-size: 22px; margin-bottom: 4px; font-style: normal; }
         .nav-item.active { color: #3498db; font-weight: bold; }
 
-        /* TABS */
         .tab-content { display: none; padding: 15px; animation: fadeIn 0.3s; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* CARDS */
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); overflow: hidden; } 
-        .card-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; color: #2c3e50; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
+        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        .card-title { font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #2c3e50; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* FORMULÁRIOS */
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; background: #fdfdfd; }
-        label { font-size: 12px; font-weight: bold; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        
-        .btn-main { background: #3498db; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; }
-        .btn-sec { background: #ecf0f1; color: #333; border: none; padding: 15px; border-radius: 10px; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; }
-
-        /* DETALHES AVANÇADOS */
-        details { background: #f9f9f9; border: 1px solid #eee; border-radius: 8px; padding: 10px; margin-bottom: 15px; }
-        summary { font-weight: bold; color: #3498db; cursor: pointer; list-style: none; outline: none; }
-        summary::-webkit-details-marker { display: none; }
-        summary::after { content: '+'; float: right; font-weight: bold; }
-        details[open] summary::after { content: '-'; }
-        
-        /* SLIDER */
-        input[type=range] { -webkit-appearance: none; width: 100%; margin: 10px 0; }
-        input[type=range]:focus { outline: none; }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: #ddd; border-radius: 5px; }
-        input[type=range]::-webkit-slider-thumb { height: 20px; width: 20px; border-radius: 50%; background: #3498db; cursor: pointer; -webkit-appearance: none; margin-top: -6px; }
-
-        /* PREVIEW BOX DO AVATAR */
-        .preview-box {
-            width: 100%; min-height: 120px;
-            border: 2px dashed #ddd; border-radius: 8px;
-            background-image: radial-gradient(#ccc 1px, transparent 1px); background-size: 10px 10px;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; margin-bottom: 15px;
+        /* --- CORREÇÃO: GRÁFICO DE HISTÓRICO --- */
+        .grafico-wrapper { 
+            display: flex; 
+            align-items: flex-end; 
+            justify-content: space-around; 
+            height: 150px; /* Altura fixa para o container */
+            padding: 20px 10px 10px 10px;
+            background: #fff;
         }
+        .barra-col { display: flex; flex-direction: column; align-items: center; width: 12%; height: 100%; justify-content: flex-end; }
+        .barra { 
+            width: 100%; 
+            background: #3498db; 
+            border-radius: 4px 4px 0 0; 
+            min-height: 5px; 
+            transition: height 0.5s ease-in-out; 
+        }
+        .barra-label { font-size: 9px; color: #999; margin-top: 6px; font-weight: bold; }
+        .barra-val { font-size: 10px; font-weight: bold; margin-bottom: 4px; color: #3498db; }
 
-        /* CHECKBOX DISPOSITIVOS */
-        .device-check { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #eee; }
-        .device-check input { width: 20px; height: 20px; margin: 0 10px 0 0; }
-
-        /* LISTAS & TIMELINE */
-        .atv-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .atv-img { width: 40px; height: 40px; border-radius: 8px; background: #eee; margin-right: 10px; object-fit: contain; }
-
-        .tl-item { display: flex; align-items: center; margin-bottom: 15px; position: relative; }
-        .tl-item::before { content: ''; position: absolute; left: 24px; top: 35px; bottom: -20px; width: 2px; background: #eee; z-index: 0; }
-        .tl-item:last-child::before { display: none; }
-        .tl-time { background: #3498db; color: white; padding: 5px 8px; border-radius: 8px; font-size: 12px; font-weight: bold; z-index: 1; width: 40px; text-align: center; margin-right: 15px; }
-        .tl-card { flex: 1; background: white; padding: 12px; border-radius: 10px; border: 1px solid #eee; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .tl-img { width: 35px; height: 35px; border-radius: 50%; object-fit: contain; margin-right: 10px; background: #f8f9fa; }
+        /* --- FORMULÁRIOS E BOTÕES --- */
+        input[type=text], input[type=password], input[type=email], input[type=number], input[type=time], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; background: #fdfdfd; }
+        label { font-size: 11px; font-weight: bold; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; display: block; }
         
-        .tl-item.passado .tl-card { opacity: 0.6; background: #f9f9f9; }
-        .tl-item.passado .tl-time { background: #bdc3c7; }
-        .tl-item.proximo .tl-card { border: 2px solid #f39c12; }
-        .tl-item.proximo .tl-time { background: #f39c12; }
+        .btn-main { background: #3498db; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); cursor: pointer; }
+        .btn-sec { background: white; color: #555; border: 1px solid #ddd; padding: 12px; border-radius: 10px; width: 100%; font-size: 14px; font-weight: bold; margin-top: 5px; }
 
-        .actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .action-btn { background: white; border: 1px solid #eee; border-radius: 10px; padding: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80px; overflow: hidden; }
-        .action-btn img { width: 35px; height: 35px; object-fit: contain; margin-bottom: 5px; }
-        .action-btn span { font-size: 11px; font-weight: bold; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-
-        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; padding: 30px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; }
+        /* --- CORREÇÃO: TELA DE LOGIN FORMATADA --- */
+        .login-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #f0f2f5; z-index: 2000; 
+            display: flex; flex-direction: column; justify-content: center; 
+            padding: 30px; box-sizing: border-box; 
+        }
+        .login-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+        .login-logo { font-size: 40px; margin-bottom: 10px; }
         .hidden { display: none !important; }
+
+        /* MONITORAMENTO */
+        .pc-status-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #ddd; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .online { background: #2ecc71; box-shadow: 0 0 5px #2ecc71; }
+        .offline { background: #bdc3c7; }
+        .pc-timer { text-align: right; }
+        .pc-timer span { font-weight: bold; color: #333; font-family: monospace; }
     </style>
 </head>
 <body>
 
     <div id="loginScreen" class="login-overlay">
-        <h1 style="color:#3498db; text-align:center; margin-bottom:10px">Super Rotina</h1>
-        <p style="text-align:center; color:#777; margin-bottom:40px">App dos Pais</p>
-        <input type="email" id="email" placeholder="E-mail">
-        <input type="password" id="senha" placeholder="Senha">
-        <button class="btn-main" onclick="fazerLogin()">Entrar</button>
+        <div class="login-card">
+            <div class="login-logo">🛡️</div>
+            <h1 style="color:#3498db; margin: 0 0 5px 0;">Amigo Virtual</h1>
+            <p style="color:#777; margin-bottom:30px; font-size: 14px;">Acesse seu painel de controle</p>
+            
+            <input type="email" id="email" placeholder="Seu E-mail">
+            <input type="password" id="senha" placeholder="Sua Senha">
+            
+            <button class="btn-main" onclick="fazerLogin()">ACESSAR CONTA</button>
+            <p style="margin-top: 20px; font-size: 12px; color: #999;">Mesmos dados usados no computador</p>
+        </div>
     </div>
 
     <div class="app-header">
-        <div class="app-logo">💙 <span id="nomeFilhoHeader">Carregando...</span></div>
-        <div id="statusPcBadge" class="status-pc">PC Offline</div>
+        <div class="app-logo">💙 <span id="nomeFilhoHeader">...</span></div>
+        <div id="displayCodigo" style="font-size:12px; font-weight:bold; color:#7f8c8d">COD: ...</div>
     </div>
 
     <div id="tab-home" class="tab-content active">
+        <div class="card" style="border-top: 4px solid #2ecc71;">
+            <div class="card-title">🖥️ Status do PC</div>
+            <div id="monitoramentoList"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                📊 Histórico
+                <span id="totalMesBadge" style="font-size:11px; background:#e3f2fd; padding:3px 8px; border-radius:10px; color:#2980b9;">Soma Mês: --</span>
+            </div>
+            <div id="graficoHistorico" class="grafico-wrapper">
+                </div>
+        </div>
+
         <div class="card">
             <div class="card-title">🎮 Controle Rápido</div>
-            <div class="actions-grid" id="gridAcoesRapidas"></div>
-            <button onclick="enviarAcao('livre')" style="background:#e74c3c; color:white; width:100%; padding:10px; border:none; border-radius:8px; margin-top:10px; font-weight:bold;">⛔ PARAR TUDO</button>
-        </div>
-        <div class="card">
-            <div class="card-title">📅 Rotina de Hoje</div>
-            <div id="timelineContainer"><div style="text-align:center; padding:20px; color:#999">Carregando...</div></div>
-        </div>
-    </div>
-
-    <div id="tab-editor" class="tab-content">
-        <div class="card">
-            <div class="card-title">🎨 Editor de Atividade</div>
-            <input type="hidden" id="editIdAtividade">
-            
-            <div style="display:flex; gap:10px">
-                <div style="flex:2"><label>ID (Nome)</label><input type="text" id="idAtividade" placeholder="Ex: banho"></div>
-                <div style="flex:1"><label>Tempo (s)</label><input type="number" id="tempoAtividade" placeholder="15"></div>
+            <div style="display:flex; gap:10px;">
+                <button onclick="enviarAcao('livre')" style="flex:1; background:#95a5a6; color:white; padding:15px; border:none; border-radius:8px; font-weight:bold;">🔓 LIBERAR</button>
+                <button onclick="enviarAcao('bloqueio')" style="flex:1; background:#c0392b; color:white; padding:15px; border:none; border-radius:8px; font-weight:bold;">🔒 BLOQUEAR</button>
             </div>
-
-            <label>Texto Principal</label>
-            <input type="text" id="txtAtividade">
-            <label>Imagem Principal (URL)</label>
-            <input type="text" id="imgAtividade" oninput="atualizarPreview()">
-
-            <label>Tamanho do Avatar: <span id="lblTam">150px</span></label>
-            <input type="range" id="rangeTamanho" min="50" max="500" value="150" oninput="atualizarPreview()">
-            
-            <div class="preview-box">
-                <img id="previewAvatar" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" style="width: 150px; transition: width 0.1s;">
-            </div>
-
-            <details>
-                <summary>Opções Avançadas</summary>
-                
-                <div style="margin-top:10px; border-top:1px solid #eee; padding-top:10px">
-                    <label style="color:#e67e22">🕒 Aviso 5 Minutos</label>
-                    <input type="text" id="txt5min" placeholder="Texto (opcional)">
-                    <input type="text" id="img5min" placeholder="Imagem (opcional)">
-                </div>
-
-                <div style="margin-top:10px; border-top:1px solid #eee; padding-top:10px">
-                    <label style="color:#e67e22">🕒 Aviso 3 Minutos</label>
-                    <input type="text" id="txt3min" placeholder="Texto (opcional)">
-                    <input type="text" id="img3min" placeholder="Imagem (opcional)">
-                </div>
-
-                <div style="margin-top:10px">
-                    <label>📍 Posição na Tela</label>
-                    <select id="posAtividade">
-                        <option value="">Padrão</option>
-                        <option value="center">Centro</option>
-                        <option value="bottom-right">Baixo Direita</option>
-                        <option value="bottom-left">Baixo Esquerda</option>
-                        <option value="top-right">Topo Direita</option>
-                    </select>
-                </div>
-
-                <div style="margin-top:15px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid #eee; padding-top:10px">
-                    <label style="margin:0">Ler em Voz Alta?</label>
-                    <input type="checkbox" id="checkVoz" checked style="width:25px; height:25px;">
-                </div>
-
-                <div style="margin-top:10px; display:flex; align-items:center; justify-content:space-between">
-                    <label style="margin:0">Bloquear Tela?</label>
-                    <input type="checkbox" id="checkBlock" style="width:25px; height:25px;">
-                </div>
-            </details>
-
-            <details>
-                <summary>📱 Onde Exibir?</summary>
-                <div id="listaDispositivos" style="max-height:150px; overflow-y:auto; margin-top:10px">
-                    <div style="color:#999">Carregando dispositivos...</div>
-                </div>
-            </details>
-
-            <button class="btn-main" onclick="salvarAtividade()">💾 Salvar Atividade</button>
-            <button class="btn-sec" onclick="limparForm()">Cancelar / Limpar</button>
-        </div>
-
-        <div class="card">
-            <div class="card-title">✏️ Atividades Salvas</div>
-            <div id="listaAtividades"></div>
-        </div>
-    </div>
-
-    <div id="tab-agenda" class="tab-content">
-        <div class="card">
-            <div class="card-title">⏰ Agendar</div>
-            <input type="hidden" id="editIdRotina">
-            <label>Horário</label>
-            <input type="time" id="horaRotina">
-            <label>Dia</label>
-            <select id="diaRotina">
-                <option value="todos">Todos os dias</option>
-                <option value="1">Segunda</option><option value="2">Terça</option><option value="3">Quarta</option>
-                <option value="4">Quinta</option><option value="5">Sexta</option><option value="6">Sábado</option><option value="0">Domingo</option>
-            </select>
-            <label>Atividade</label>
-            <select id="selectAtividadeRotina"></select>
-            <button class="btn-main" onclick="salvarRotina()">Confirmar</button>
-        </div>
-        <div class="card">
-            <div class="card-title">🗓️ Lista da Semana</div>
-            <div id="listaRotinasCompletas"></div>
-        </div>
-    </div>
-
-    <div id="tab-perfil" class="tab-content">
-        <div class="card">
-            <div class="card-title">⚙️ Configurações</div>
-            <label>Filho</label>
-            <select id="selectFilho" onchange="mudarFilho()"></select>
-            <button class="btn-main" onclick="novoFilho()" style="background:#2ecc71; margin-bottom:15px">+ Novo Filho</button>
-            <div style="background:#fffbe6; padding:15px; border-radius:8px; border:1px solid #ffe58f; text-align:center; margin-bottom:15px">
-                <small>CÓDIGO PC</small><br><strong style="font-size:24px; letter-spacing:3px" id="displayCodigo">---</strong>
-            </div>
-            <button class="btn-sec" onclick="sair()" style="color:#e74c3c">Sair</button>
         </div>
     </div>
 
@@ -232,222 +123,35 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, deleteDoc, updateDoc, query } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        // Importações do Firebase e Configurações...
+        // (Mantenha sua lógica de autenticação e listeners inalterada)
 
-        const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", storageBucket: "rotinaeduardo.firebasestorage.app", messagingSenderId: "210945268922", appId: "1:210945268922:web:ce9e585872090b378d7683", measurementId: "G-MDYWRH9RNP" };
-        const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
-        let usuarioAtual, filhoAtualId, cacheAtividades={}, cacheRotinas={}, unsubscribeDispositivos;
+        // --- CORREÇÃO NA RENDERIZAÇÃO DO GRÁFICO NO JS ---
+        unsubscribeHistorico = onSnapshot(query(collection(db, `${base}/historico_uso`), orderBy("data", "desc"), limit(7)), (snap) => {
+            const box = document.getElementById('graficoHistorico');
+            let dados = [];
+            snap.forEach(d => dados.push(d.data()));
+            dados.reverse();
 
-        // Função de Preview Atualizada
-        window.atualizarPreview = () => {
-            const range = document.getElementById('rangeTamanho').value;
-            const url = document.getElementById('imgAtividade').value;
-            const img = document.getElementById('previewAvatar');
-            document.getElementById('lblTam').innerText = range + "px";
-            img.style.width = range + "px";
-            if(url && url.length > 5) img.src = url;
-        };
+            let html = "";
+            // Encontra o valor máximo para escala (evita barras minúsculas)
+            let maxMinutos = Math.max(...dados.map(d => d.minutos), 1);
 
-        window.mudarTab = (n, el) => {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-'+n).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-            el.classList.add('active');
-        };
+            dados.forEach(d => {
+                // Calcula a porcentagem da altura (max 100%)
+                const alturaPorcentagem = (d.minutos / maxMinutos) * 100;
+                const labelValor = d.minutos > 60 ? (d.minutos / 60).toFixed(1) + 'h' : d.minutos + 'm';
+                const dia = d.data.split('-')[2] + '/' + d.data.split('-')[1];
 
-        window.fazerLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){ alert("Erro: " + e.message); } };
-        window.sair = () => signOut(auth);
-        onAuthStateChanged(auth, (u) => { if(u) { usuarioAtual=u; document.getElementById('loginScreen').classList.add('hidden'); carregarFilhos(); } else { document.getElementById('loginScreen').classList.remove('hidden'); } });
-
-        function carregarFilhos() {
-            const sel = document.getElementById('selectFilho');
-            onSnapshot(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), (s) => {
-                sel.innerHTML = ""; let tem = false;
-                s.forEach(d => { tem=true; let o = document.createElement('option'); o.value=d.id; o.innerText=d.data().nome; sel.appendChild(o); });
-                if(!tem) { window.novoFilho(); } else {
-                    if(filhoAtualId && sel.querySelector(`option[value="${filhoAtualId}"]`)) sel.value = filhoAtualId;
-                    else { sel.value = sel.options[0].value; filhoAtualId = sel.value; }
-                    document.getElementById('nomeFilhoHeader').innerText = sel.options[sel.selectedIndex].text;
-                    carregarDados();
-                }
+                html += `
+                <div class="barra-col">
+                    <div class="barra-val">${labelValor}</div>
+                    <div class="barra" style="height:${alturaPorcentagem}%"></div>
+                    <div class="barra-label">${dia}</div>
+                </div>`;
             });
-        }
-        window.novoFilho = async () => { const n = prompt("Nome:"); if(!n) return; const c = Math.random().toString(36).substring(2,8).toUpperCase(); const r = await addDoc(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), { nome: n, codigo_pareamento: c }); await setDoc(doc(db, "conexoes", c), { caminho_dados: `usuarios/${usuarioAtual.uid}/filhos/${r.id}` }); };
-        window.mudarFilho = () => { const s = document.getElementById('selectFilho'); filhoAtualId = s.value; document.getElementById('nomeFilhoHeader').innerText = s.options[s.selectedIndex].text; carregarDados(); };
-
-        function carregarDados() {
-            if(!filhoAtualId) return;
-            const base = `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}`;
-            getDoc(doc(db, base)).then(d => { if(d.exists()) document.getElementById('displayCodigo').innerText = d.data().codigo_pareamento; });
-
-            if(unsubscribeDispositivos) unsubscribeDispositivos();
-            
-            // DISPOSITIVOS
-            unsubscribeDispositivos = onSnapshot(collection(db, `${base}/dispositivos`), (snap) => {
-                const badge = document.getElementById('statusPcBadge');
-                const lista = document.getElementById('listaDispositivos');
-                let onlineCount = 0;
-                let html = `<label class="device-check"><input type="checkbox" id="dev_todos" value="todos" checked> <b>Todos</b></label>`;
-                
-                snap.forEach(d => {
-                    const dev = d.data();
-                    const isOnline = dev.online && (new Date() - dev.online.toDate() < 120000);
-                    if(isOnline) onlineCount++;
-                    const st = isOnline ? "🟢" : "⚪";
-                    html += `<label class="device-check"><input type="checkbox" name="dev_item" value="${d.id}"> ${st} ${dev.nome || "PC"}</label>`;
-                });
-                lista.innerHTML = html;
-                
-                if(onlineCount > 0) { badge.innerText = "PC Online 🟢"; badge.classList.add('online'); }
-                else { badge.innerText = "PC Offline ⚫"; badge.classList.remove('online'); }
-            });
-
-            // ATIVIDADES
-            onSnapshot(collection(db, `${base}/atividades`), (snap) => {
-                const l = document.getElementById('listaAtividades');
-                const g = document.getElementById('gridAcoesRapidas');
-                const sel = document.getElementById('selectAtividadeRotina');
-                l.innerHTML=""; g.innerHTML=""; sel.innerHTML=""; cacheAtividades={};
-                snap.forEach(d => {
-                    const dd = d.data(); cacheAtividades[d.id] = dd;
-                    l.innerHTML += `<div class="atv-item"><div class="atv-info"><img src="${dd.imagem}" class="atv-img" onerror="this.style.display='none'"> <b>${d.id}</b></div><div><button style="padding:5px 10px" onclick="editarAtv('${d.id}')">✏️</button> <button style="padding:5px 10px; background:#e74c3c; color:white; border:none; border-radius:4px" onclick="apagarAtv('${d.id}')">X</button></div></div>`;
-                    g.innerHTML += `<div class="action-btn" onclick="enviarAcao('${d.id}')"><img src="${dd.imagem}" onerror="this.style.display='none'"><span>${d.id}</span></div>`;
-                    let o = document.createElement('option'); o.value=d.id; o.innerText=d.id; sel.appendChild(o);
-                });
-                renderizarTimeline();
-            });
-
-            // ROTINAS
-            onSnapshot(collection(db, `${base}/rotinas`), (snap) => {
-                const lf = document.getElementById('listaRotinasCompletas');
-                lf.innerHTML = ""; cacheRotinas = {};
-                let temp = []; snap.forEach(d => temp.push({id:d.id, ...d.data()}));
-                temp.sort((a,b) => a.hora.localeCompare(b.hora));
-                temp.forEach(r => {
-                    cacheRotinas[r.id] = r;
-                    const diasMap = {'todos':'Todos','1':'Seg','2':'Ter','3':'Qua','4':'Qui','5':'Sex','6':'Sáb','0':'Dom'};
-                    lf.innerHTML += `<div style="background:#fff; padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between"><div><b style="color:#3498db">${r.hora}</b> - ${r.acao} <span style="font-size:10px; background:#eee; padding:2px 5px; border-radius:4px">${diasMap[r.dia_semana]}</span></div><button style="color:red; background:none; border:none" onclick="apagarRotina('${r.id}')">🗑️</button></div>`;
-                });
-                renderizarTimeline(temp);
-            });
-        }
-
-        function renderizarTimeline(rotinasOpcional) {
-            const container = document.getElementById('timelineContainer');
-            container.innerHTML = "";
-            let rotinas = rotinasOpcional || Object.values(cacheRotinas);
-            if(rotinas.length === 0) { container.innerHTML = "<div style='text-align:center; padding:20px; color:#ccc'>Sem rotinas hoje</div>"; return; }
-            const hoje = new Date(); const dia = hoje.getDay().toString(); const now = hoje.getHours()*60 + hoje.getMinutes();
-            let hojeR = rotinas.filter(r => r.dia_semana === 'todos' || r.dia_semana === dia);
-            hojeR.sort((a,b) => a.hora.localeCompare(b.hora));
-            let prox = false;
-            hojeR.forEach(r => {
-                const [h, m] = r.hora.split(':').map(Number); const min = h*60 + m;
-                let cls = "futuro"; if(min < now) cls = "passado"; else if(!prox) { cls = "proximo"; prox = true; }
-                const img = cacheAtividades[r.acao] ? cacheAtividades[r.acao].imagem : '';
-                container.innerHTML += `<div class="tl-item ${cls}"><div class="tl-time">${r.hora}</div><div class="tl-card"><img src="${img}" class="tl-img" onerror="this.style.display='none'"><div><b>${r.acao}</b></div></div></div>`;
-            });
-        }
-
-        // SALVAR COMPLETO
-        window.salvarAtividade = async () => {
-            const idInput = document.getElementById('idAtividade');
-            const editId = document.getElementById('editIdAtividade').value;
-            let idFinal = editId ? editId : idInput.value.toLowerCase().replace(/\s/g,'');
-            if(!idFinal) return alert("ID Obrigatório");
-
-            let alvos = [];
-            if(document.getElementById('dev_todos').checked) alvos.push('todos');
-            document.querySelectorAll('input[name="dev_item"]:checked').forEach(c => alvos.push(c.value));
-            if(alvos.length === 0) alvos.push('todos');
-
-            await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, idFinal), {
-                texto: document.getElementById('txtAtividade').value,
-                imagem: document.getElementById('imgAtividade').value,
-                tempo_personalizado: document.getElementById('tempoAtividade').value,
-                // CAMPOS CORRIGIDOS E ADICIONADOS:
-                falar_texto: document.getElementById('checkVoz').checked, // Agora é checkbox
-                tamanho_avatar: document.getElementById('rangeTamanho').value,
-                texto_5min: document.getElementById('txt5min').value,
-                imagem_5min: document.getElementById('img5min').value,
-                texto_3min: document.getElementById('txt3min').value,
-                imagem_3min: document.getElementById('img3min').value,
-                posicao_especifica: document.getElementById('posAtividade').value,
-                bloquear_tela: document.getElementById('checkBlock').checked,
-                dispositivos_alvo: alvos
-            });
-            limparForm();
-            mudarTab('home', document.querySelector('.bottom-nav .nav-item:first-child'));
-        };
-
-        window.editarAtv = (id) => {
-            const d = cacheAtividades[id];
-            document.getElementById('idAtividade').value = id;
-            document.getElementById('idAtividade').disabled = true; 
-            document.getElementById('editIdAtividade').value = id;
-            
-            document.getElementById('txtAtividade').value = d.texto || "";
-            document.getElementById('imgAtividade').value = d.imagem || "";
-            document.getElementById('tempoAtividade').value = d.tempo_personalizado || "";
-            
-            // Campos Avançados
-            document.getElementById('checkVoz').checked = (d.falar_texto !== false); // Padrão true
-            document.getElementById('rangeTamanho').value = d.tamanho_avatar || "150";
-            document.getElementById('txt5min').value = d.texto_5min || "";
-            document.getElementById('img5min').value = d.imagem_5min || "";
-            document.getElementById('txt3min').value = d.texto_3min || "";
-            document.getElementById('img3min').value = d.imagem_3min || "";
-            document.getElementById('posAtividade').value = d.posicao_especifica || "";
-            document.getElementById('checkBlock').checked = (d.bloquear_tela === true);
-
-            // Atualiza preview imediatamente
-            window.atualizarPreview();
-
-            // Dispositivos
-            const alvos = d.dispositivos_alvo || ['todos'];
-            if(document.getElementById('dev_todos')) document.getElementById('dev_todos').checked = alvos.includes('todos');
-            document.querySelectorAll('input[name="dev_item"]').forEach(c => c.checked = alvos.includes(c.value));
-
-            mudarTab('editor', document.querySelectorAll('.bottom-nav .nav-item')[1]);
-        };
-
-        window.salvarRotina = async () => {
-            const hora = document.getElementById('horaRotina').value;
-            if(!hora) return alert("Hora obrigatória");
-            await addDoc(collection(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`), {
-                hora: hora, dia_semana: document.getElementById('diaRotina').value, acao: document.getElementById('selectAtividadeRotina').value
-            });
-            document.getElementById('horaRotina').value = "";
-            if(navigator.vibrate) navigator.vibrate(50);
-            mudarTab('home', document.querySelector('.bottom-nav .nav-item:first-child'));
-        };
-
-        window.enviarAcao = async (acao) => {
-            if(navigator.vibrate) navigator.vibrate(50);
-            await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/config/estado_atual`), { acao, timestamp: new Date() }, {merge:true});
-        };
-
-        window.limparForm = () => {
-            document.getElementById('idAtividade').disabled = false;
-            document.getElementById('idAtividade').value = "";
-            document.getElementById('editIdAtividade').value = "";
-            document.getElementById('txtAtividade').value = "";
-            document.getElementById('imgAtividade').value = "";
-            // Resetar avançados
-            document.getElementById('rangeTamanho').value = "150";
-            document.getElementById('checkVoz').checked = true;
-            document.getElementById('txt5min').value = "";
-            document.getElementById('img5min').value = "";
-            document.getElementById('posAtividade').value = "";
-            document.getElementById('checkBlock').checked = false;
-            window.atualizarPreview();
-        };
-
-        window.apagarAtv = async (id) => { if(confirm("Apagar?")) deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id)); };
-        window.apagarRotina = async (id) => { if(confirm("Apagar?")) deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`, id)); };
-
+            box.innerHTML = html;
+        });
     </script>
 </body>
 </html>
