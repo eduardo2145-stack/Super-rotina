@@ -11,7 +11,7 @@
         .app-header { background: white; padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
         .app-logo { font-size: 18px; font-weight: 800; color: #3498db; }
         
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); padding-bottom: max(10px, env(safe-area-inset-bottom)); }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; font-size: 10px; cursor: pointer; flex: 1; }
         .nav-item i { font-size: 22px; margin-bottom: 4px; font-style: normal; }
         .nav-item.active { color: #3498db; font-weight: bold; }
@@ -23,65 +23,41 @@
         .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
         .card-title { font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #2c3e50; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* --- CORREÇÃO: GRÁFICO DE HISTÓRICO --- */
-        .grafico-wrapper { 
-            display: flex; 
-            align-items: flex-end; 
-            justify-content: space-around; 
-            height: 150px; /* Altura fixa para o container */
-            padding: 20px 10px 10px 10px;
-            background: #fff;
-        }
+        /* GRÁFICO */
+        .grafico-wrapper { display: flex; align-items: flex-end; justify-content: space-around; height: 150px; padding: 20px 10px 10px 10px; background: #fff; }
         .barra-col { display: flex; flex-direction: column; align-items: center; width: 12%; height: 100%; justify-content: flex-end; }
-        .barra { 
-            width: 100%; 
-            background: #3498db; 
-            border-radius: 4px 4px 0 0; 
-            min-height: 5px; 
-            transition: height 0.5s ease-in-out; 
-        }
+        .barra { width: 100%; background: #3498db; border-radius: 4px 4px 0 0; min-height: 5px; transition: height 0.5s ease-in-out; }
         .barra-label { font-size: 9px; color: #999; margin-top: 6px; font-weight: bold; }
         .barra-val { font-size: 10px; font-weight: bold; margin-bottom: 4px; color: #3498db; }
 
-        /* --- FORMULÁRIOS E BOTÕES --- */
+        /* INPUTS */
         input[type=text], input[type=password], input[type=email], input[type=number], input[type=time], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; background: #fdfdfd; }
-        label { font-size: 11px; font-weight: bold; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; display: block; }
         
         .btn-main { background: #3498db; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); cursor: pointer; }
-        .btn-sec { background: white; color: #555; border: 1px solid #ddd; padding: 12px; border-radius: 10px; width: 100%; font-size: 14px; font-weight: bold; margin-top: 5px; }
 
-        /* --- CORREÇÃO: TELA DE LOGIN FORMATADA --- */
-        .login-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #f0f2f5; z-index: 2000; 
-            display: flex; flex-direction: column; justify-content: center; 
-            padding: 30px; box-sizing: border-box; 
-        }
+        /* LOGIN */
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 30px; box-sizing: border-box; }
         .login-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-        .login-logo { font-size: 40px; margin-bottom: 10px; }
         .hidden { display: none !important; }
 
         /* MONITORAMENTO */
         .pc-status-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #ddd; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
-        .online { background: #2ecc71; box-shadow: 0 0 5px #2ecc71; }
-        .offline { background: #bdc3c7; }
-        .pc-timer { text-align: right; }
-        .pc-timer span { font-weight: bold; color: #333; font-family: monospace; }
+        .badge-online { background: #d4edda; color: #155724; padding: 2px 6px; border-radius: 10px; font-size: 10px; font-weight: bold; }
+        .badge-offline { background: #f8d7da; color: #721c24; padding: 2px 6px; border-radius: 10px; font-size: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="loginScreen" class="login-overlay">
         <div class="login-card">
-            <div class="login-logo">🛡️</div>
+            <div style="font-size:40px; margin-bottom:10px;">🛡️</div>
             <h1 style="color:#3498db; margin: 0 0 5px 0;">Amigo Virtual</h1>
-            <p style="color:#777; margin-bottom:30px; font-size: 14px;">Acesse seu painel de controle</p>
+            <p style="color:#777; margin-bottom:30px; font-size: 14px;">Controle dos Pais</p>
             
-            <input type="email" id="email" placeholder="Seu E-mail">
-            <input type="password" id="senha" placeholder="Sua Senha">
+            <input type="email" id="emailLogin" placeholder="Seu E-mail">
+            <input type="password" id="senhaLogin" placeholder="Sua Senha">
             
-            <button class="btn-main" onclick="fazerLogin()">ACESSAR CONTA</button>
+            <button class="btn-main" onclick="window.fazerLogin()">ACESSAR CONTA</button>
             <p style="margin-top: 20px; font-size: 12px; color: #999;">Mesmos dados usados no computador</p>
         </div>
     </div>
@@ -102,8 +78,7 @@
                 📊 Histórico
                 <span id="totalMesBadge" style="font-size:11px; background:#e3f2fd; padding:3px 8px; border-radius:10px; color:#2980b9;">Soma Mês: --</span>
             </div>
-            <div id="graficoHistorico" class="grafico-wrapper">
-                </div>
+            <div id="graficoHistorico" class="grafico-wrapper"></div>
         </div>
 
         <div class="card">
@@ -123,35 +98,44 @@
     </div>
 
     <script type="module">
-        // Importações do Firebase e Configurações...
-        // (Mantenha sua lógica de autenticação e listeners inalterada)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-        // --- CORREÇÃO NA RENDERIZAÇÃO DO GRÁFICO NO JS ---
-        unsubscribeHistorico = onSnapshot(query(collection(db, `${base}/historico_uso`), orderBy("data", "desc"), limit(7)), (snap) => {
-            const box = document.getElementById('graficoHistorico');
-            let dados = [];
-            snap.forEach(d => dados.push(d.data()));
-            dados.reverse();
+        const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", storageBucket: "rotinaeduardo.firebasestorage.app", messagingSenderId: "210945268922", appId: "1:210945268922:web:ce9e585872090b378d7683" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
 
-            let html = "";
-            // Encontra o valor máximo para escala (evita barras minúsculas)
-            let maxMinutos = Math.max(...dados.map(d => d.minutos), 1);
+        let usuarioAtual, filhoAtualId;
 
-            dados.forEach(d => {
-                // Calcula a porcentagem da altura (max 100%)
-                const alturaPorcentagem = (d.minutos / maxMinutos) * 100;
-                const labelValor = d.minutos > 60 ? (d.minutos / 60).toFixed(1) + 'h' : d.minutos + 'm';
-                const dia = d.data.split('-')[2] + '/' + d.data.split('-')[1];
+        // --- FUNÇÃO DE LOGIN REVISADA ---
+        window.fazerLogin = async () => {
+            const email = document.getElementById('emailLogin').value;
+            const senha = document.getElementById('senhaLogin').value;
+            
+            if(!email || !senha) return alert("Preencha todos os campos");
 
-                html += `
-                <div class="barra-col">
-                    <div class="barra-val">${labelValor}</div>
-                    <div class="barra" style="height:${alturaPorcentagem}%"></div>
-                    <div class="barra-label">${dia}</div>
-                </div>`;
-            });
-            box.innerHTML = html;
+            try {
+                await signInWithEmailAndPassword(auth, email, senha);
+            } catch (error) {
+                alert("Erro ao entrar: Verifique e-mail e senha.");
+                console.error(error);
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                usuarioAtual = user;
+                document.getElementById('loginScreen').classList.add('hidden');
+                carregarFilhos();
+            } else {
+                document.getElementById('loginScreen').classList.remove('hidden');
+            }
         });
+
+        // (Aqui seguem suas funções carregarFilhos, carregarDados, mudarTab, etc.)
+        // Lembre-se de usar os IDs corretos para o gráfico conforme a correção visual
     </script>
 </body>
 </html>
