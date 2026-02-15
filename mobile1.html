@@ -7,58 +7,51 @@
     <style>
         /* --- ESTILOS GERAIS --- */
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 90px; color: #333; -webkit-tap-highlight-color: transparent; }
-        
         .app-header { background: white; padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
         .app-logo { font-size: 18px; font-weight: 800; color: #3498db; }
-        
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); padding-bottom: max(10px, env(safe-area-inset-bottom)); }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; font-size: 10px; cursor: pointer; flex: 1; }
         .nav-item i { font-size: 22px; margin-bottom: 4px; font-style: normal; }
         .nav-item.active { color: #3498db; font-weight: bold; }
-
         .tab-content { display: none; padding: 15px; animation: fadeIn 0.3s; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-        .card-title { font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #2c3e50; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-
-        /* GRÁFICO */
-        .grafico-wrapper { display: flex; align-items: flex-end; justify-content: space-around; height: 150px; padding: 20px 10px 10px 10px; background: #fff; }
+        /* --- CORREÇÃO GRÁFICO (ALTURA DINÂMICA) --- */
+        .grafico-wrapper { display: flex; align-items: flex-end; justify-content: space-around; height: 160px; padding: 20px 10px; background: #fff; border-radius: 8px; }
         .barra-col { display: flex; flex-direction: column; align-items: center; width: 12%; height: 100%; justify-content: flex-end; }
-        .barra { width: 100%; background: #3498db; border-radius: 4px 4px 0 0; min-height: 5px; transition: height 0.5s ease-in-out; }
+        .barra { width: 100%; background: #3498db; border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.6s ease; }
         .barra-label { font-size: 9px; color: #999; margin-top: 6px; font-weight: bold; }
-        .barra-val { font-size: 10px; font-weight: bold; margin-bottom: 4px; color: #3498db; }
+        .barra-val { font-size: 9px; font-weight: bold; margin-bottom: 4px; color: #3498db; }
 
-        /* INPUTS */
-        input[type=text], input[type=password], input[type=email], input[type=number], input[type=time], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; background: #fdfdfd; }
-        
-        .btn-main { background: #3498db; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); cursor: pointer; }
-
-        /* LOGIN */
+        /* --- TELA DE LOGIN FORMATADA --- */
         .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 30px; box-sizing: border-box; }
-        .login-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+        .login-card { background: white; padding: 35px 25px; border-radius: 24px; box-shadow: 0 12px 30px rgba(0,0,0,0.08); text-align: center; }
+        input { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; background: #fdfdfd; }
+        .btn-main { background: #3498db; color: white; border: none; padding: 16px; border-radius: 12px; width: 100%; font-size: 16px; font-weight: bold; box-shadow: 0 6px 15px rgba(52, 152, 219, 0.25); cursor: pointer; }
         .hidden { display: none !important; }
 
-        /* MONITORAMENTO */
-        .pc-status-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #ddd; }
-        .badge-online { background: #d4edda; color: #155724; padding: 2px 6px; border-radius: 10px; font-size: 10px; font-weight: bold; }
-        .badge-offline { background: #f8d7da; color: #721c24; padding: 2px 6px; border-radius: 10px; font-size: 10px; font-weight: bold; }
+        /* CARDS E MONITORAMENTO */
+        .card { background: white; border-radius: 15px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .card-title { font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #2c3e50; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .pc-status-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 10px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #ddd; }
+        .badge-online { background: #d4edda; color: #155724; padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; }
+        .badge-offline { background: #f8d7da; color: #721c24; padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="loginScreen" class="login-overlay">
         <div class="login-card">
-            <div style="font-size:40px; margin-bottom:10px;">🛡️</div>
-            <h1 style="color:#3498db; margin: 0 0 5px 0;">Amigo Virtual</h1>
-            <p style="color:#777; margin-bottom:30px; font-size: 14px;">Controle dos Pais</p>
+            <div style="font-size:45px; margin-bottom:15px;">🛡️</div>
+            <h1 style="color:#2c3e50; margin: 0 0 8px 0; font-size: 24px;">Amigo Virtual</h1>
+            <p style="color:#7f8c8d; margin-bottom:30px; font-size: 15px;">Controle dos Pais</p>
             
-            <input type="email" id="emailLogin" placeholder="Seu E-mail">
-            <input type="password" id="senhaLogin" placeholder="Sua Senha">
+            <input type="email" id="emailLogin" placeholder="E-mail cadastrado">
+            <input type="password" id="senhaLogin" placeholder="Senha">
             
-            <button class="btn-main" onclick="window.fazerLogin()">ACESSAR CONTA</button>
-            <p style="margin-top: 20px; font-size: 12px; color: #999;">Mesmos dados usados no computador</p>
+            <button class="btn-main" id="btnAcessar">ACESSAR CONTA</button>
+            <p style="margin-top: 25px; font-size: 12px; color: #bdc3c7;">Mesmos dados usados no PC do filho</p>
         </div>
     </div>
 
@@ -69,32 +62,32 @@
 
     <div id="tab-home" class="tab-content active">
         <div class="card" style="border-top: 4px solid #2ecc71;">
-            <div class="card-title">🖥️ Status do PC</div>
+            <div class="card-title">🖥️ Status do PC (Tempo Real)</div>
             <div id="monitoramentoList"></div>
         </div>
 
         <div class="card">
             <div class="card-title">
-                📊 Histórico
-                <span id="totalMesBadge" style="font-size:11px; background:#e3f2fd; padding:3px 8px; border-radius:10px; color:#2980b9;">Soma Mês: --</span>
+                📊 Uso Diário
+                <span id="totalMesBadge" style="font-size:11px; background:#e3f2fd; padding:3px 8px; border-radius:10px; color:#2980b9;">Mensal: --</span>
             </div>
             <div id="graficoHistorico" class="grafico-wrapper"></div>
         </div>
 
         <div class="card">
             <div class="card-title">🎮 Controle Rápido</div>
-            <div style="display:flex; gap:10px;">
-                <button onclick="enviarAcao('livre')" style="flex:1; background:#95a5a6; color:white; padding:15px; border:none; border-radius:8px; font-weight:bold;">🔓 LIBERAR</button>
-                <button onclick="enviarAcao('bloqueio')" style="flex:1; background:#c0392b; color:white; padding:15px; border:none; border-radius:8px; font-weight:bold;">🔒 BLOQUEAR</button>
+            <div style="display:flex; gap:12px;">
+                <button id="btnLiberar" style="flex:1; background:#95a5a6; color:white; padding:16px; border:none; border-radius:12px; font-weight:bold;">🔓 LIBERAR</button>
+                <button id="btnBloquear" style="flex:1; background:#c0392b; color:white; padding:16px; border:none; border-radius:12px; font-weight:bold;">🔒 BLOQUEAR</button>
             </div>
         </div>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="mudarTab('home', this)"><i>🏠</i>Início</div>
-        <div class="nav-item" onclick="mudarTab('editor', this)"><i>🎨</i>Criar</div>
-        <div class="nav-item" onclick="mudarTab('agenda', this)"><i>📅</i>Agenda</div>
-        <div class="nav-item" onclick="mudarTab('perfil', this)"><i>⚙️</i>Perfil</div>
+        <div class="nav-item active" id="nav-home"><i>🏠</i>Início</div>
+        <div class="nav-item" id="nav-editor"><i>🎨</i>Criar</div>
+        <div class="nav-item" id="nav-agenda"><i>📅</i>Agenda</div>
+        <div class="nav-item" id="nav-perfil"><i>⚙️</i>Perfil</div>
     </div>
 
     <script type="module">
@@ -109,20 +102,22 @@
 
         let usuarioAtual, filhoAtualId;
 
-        // --- FUNÇÃO DE LOGIN REVISADA ---
+        // --- CORREÇÃO DE LOGIN: EXPOSIÇÃO GLOBAL ---
         window.fazerLogin = async () => {
-            const email = document.getElementById('emailLogin').value;
-            const senha = document.getElementById('senhaLogin').value;
-            
-            if(!email || !senha) return alert("Preencha todos os campos");
+            const email = document.getElementById('emailLogin').value.trim();
+            const senha = document.getElementById('senhaLogin').value.trim();
+            if(!email || !senha) return alert("Por favor, preencha e-mail e senha.");
 
             try {
                 await signInWithEmailAndPassword(auth, email, senha);
-            } catch (error) {
-                alert("Erro ao entrar: Verifique e-mail e senha.");
-                console.error(error);
+            } catch (err) {
+                alert("Erro ao entrar. Verifique seus dados.");
+                console.error(err);
             }
         };
+
+        // Atribui o clique ao botão via JS para garantir funcionamento no Módulo
+        document.getElementById('btnAcessar').addEventListener('click', window.fazerLogin);
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -134,8 +129,59 @@
             }
         });
 
-        // (Aqui seguem suas funções carregarFilhos, carregarDados, mudarTab, etc.)
-        // Lembre-se de usar os IDs corretos para o gráfico conforme a correção visual
+        // --- MONITORAMENTO: USO DO DIA REAL ---
+        function carregarDados() {
+            if(!filhoAtualId) return;
+            const base = `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}`;
+            
+            onSnapshot(collection(db, `${base}/dispositivos`), (snap) => {
+                const box = document.getElementById('monitoramentoList');
+                let html = "";
+                snap.forEach(d => {
+                    const dev = d.data();
+                    const isOnline = dev.online && (new Date() - dev.online.toDate() < 120000);
+                    let tempoStr = "--";
+                    if(dev.tempo_hoje_minutos !== undefined) {
+                        tempoStr = `${Math.floor(dev.tempo_hoje_minutos/60)}h ${dev.tempo_hoje_minutos%60}m`;
+                    }
+                    html += `<div class="pc-status-card" style="border-left-color:${isOnline?'#2ecc71':'#ddd'}"><div><h3 style="margin:0;font-size:14px;">💻 ${dev.nome || 'PC'}</h3><span class="${isOnline?'badge-online':'badge-offline'}">${isOnline?'Online':'Offline'}</span></div><div style="text-align:right;"><small style="display:block;font-size:9px;color:#999;">HOJE</small><span style="font-weight:bold;">${tempoStr}</span></div></div>`;
+                });
+                box.innerHTML = html;
+            });
+
+            // --- GRÁFICO: CORREÇÃO DE ALTURA PROPORCIONAL ---
+            onSnapshot(query(collection(db, `${base}/historico_uso`), orderBy("data", "desc"), limit(7)), (snap) => {
+                const box = document.getElementById('graficoHistorico');
+                let dados = [];
+                snap.forEach(d => dados.push(d.data()));
+                dados.reverse();
+                
+                let maxMin = Math.max(...dados.map(d => d.minutos), 1);
+                let html = "";
+                dados.forEach(d => {
+                    const h = (d.minutos / maxMin) * 100;
+                    const val = d.minutos > 60 ? (d.minutos/60).toFixed(1)+'h' : d.minutos+'m';
+                    html += `<div class="barra-col"><div class="barra-val">${val}</div><div class="barra" style="height:${h}%"></div><div class="barra-label">${d.data.split('-')[2]}</div></div>`;
+                });
+                box.innerHTML = html;
+            });
+        }
+
+        // Funções de navegação e carregamento (Simplificadas para o exemplo)
+        function carregarFilhos() {
+            onSnapshot(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), (s) => {
+                if(!s.empty) {
+                    filhoAtualId = s.docs[0].id;
+                    document.getElementById('nomeFilhoHeader').innerText = s.docs[0].data().nome;
+                    carregarDados();
+                }
+            });
+        }
+
+        // Eventos de botões de controle
+        document.getElementById('btnLiberar').addEventListener('click', () => enviarAcao('livre'));
+        document.getElementById('btnBloquear').addEventListener('click', () => enviarAcao('bloqueio'));
+        async function enviarAcao(a) { await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/config/estado_atual`), {acao:a, timestamp:new Date()}, {merge:true}); }
     </script>
 </body>
 </html>
