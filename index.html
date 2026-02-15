@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Super Rotina Pro</title>
     <style>
+        /* --- ESTILOS GERAIS --- */
         body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; margin: 0; color: #333; }
         .tela { display: none; padding: 20px; max-width: 1400px; margin: auto; }
         .tela.ativa { display: block; }
@@ -20,13 +21,41 @@
         label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; color: #7f8c8d; }
         input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
         
-        /* LISTA DE DISPOSITIVOS (CORRIGIDA) */
+        /* CHECKBOXES DISPOSITIVOS */
         .devices-box { border: 1px solid #ddd; padding: 5px; border-radius: 6px; max-height: 150px; overflow-y: auto; background: #fff; }
-        /* O label agora ocupa tudo, facilitando o clique sem conflito */
         .device-label { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.2s; width: 100%; box-sizing: border-box; }
         .device-label:hover { background: #f9f9f9; }
         .device-label input { width: 18px; height: 18px; margin: 0 10px 0 0; cursor: pointer; }
         
+        /* MONITORAMENTO */
+        .pc-status-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .pc-info h3 { margin: 0; font-size: 16px; color: #2c3e50; }
+        .pc-badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-top: 5px; }
+        .badge-online { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .badge-offline { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .pc-timer { text-align: right; margin-right: 15px; }
+        .pc-timer small { display: block; font-size: 10px; color: #6c757d; text-transform: uppercase; }
+        .pc-timer span { font-size: 18px; font-weight: bold; color: #333; font-family: monospace; }
+        .btn-del-device { background: transparent; color: #ccc; border: none; font-size: 16px; cursor: pointer; padding: 5px; transition: 0.2s; }
+        .btn-del-device:hover { color: #e74c3c; transform: scale(1.2); }
+
+        /* --- GRÁFICO (CORRIGIDO AQUI) --- */
+        .grafico-container { 
+            display: flex; 
+            align-items: flex-end; 
+            gap: 15px; 
+            height: 160px; /* Aumentei a altura */
+            padding-top: 40px; /* Aumentei o espaço no topo para o texto não cortar */
+            overflow-x: auto; 
+            padding-bottom: 10px;
+        }
+        .barra-wrapper { display: flex; flex-direction: column; align-items: center; width: 40px; }
+        .barra { width: 25px; background: #3498db; border-radius: 4px 4px 0 0; transition: height 0.5s; position: relative; }
+        .barra:hover { background: #2980b9; }
+        .barra-valor { font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #555; }
+        .barra-dia { font-size: 11px; color: #888; margin-top: 5px; }
+
+        /* BOTOES */
         button { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; color: white; transition: 0.2s; }
         .btn-blue { background: #3498db; } .btn-green { background: #2ecc71; } 
         .btn-red { background: #e74c3c; width: auto; padding: 4px 10px; font-size: 12px; }
@@ -52,7 +81,7 @@
         .dia-coluna { display: inline-block; width: 130px; vertical-align: top; background: #fff; margin-right: 8px; padding: 5px; border-radius: 8px; min-height: 150px; white-space: normal; border: 1px solid #eee; }
         .card-rotina { background: #f0f8ff; border-left: 3px solid #3498db; padding: 6px; margin-bottom: 5px; border-radius: 4px; font-size: 12px; position: relative; }
 
-        /* TIMELINE (Mapa do Dia) */
+        /* TIMELINE */
         .timeline-box { margin-top: 20px; padding: 10px; background: #fff; border-radius: 10px; border: 1px solid #e0e0e0; max-height: 500px; overflow-y: auto; }
         .tl-item { display: flex; align-items: center; margin-bottom: 15px; position: relative; transition: all 0.3s; padding: 10px; border-radius: 8px; background: white; border: 1px solid #eee; }
         .tl-item::before { content: ''; position: absolute; left: 35px; top: -15px; bottom: -15px; width: 2px; background: #ddd; z-index: 0; }
@@ -62,8 +91,6 @@
         .tl-img { width: 40px; height: 40px; border-radius: 50%; object-fit: contain; margin-right: 10px; background: #f9f9f9; border: 1px solid #eee; }
         .tl-text b { display: block; color: #444; font-size: 14px; }
         .tl-text span { font-size: 12px; color: #888; }
-        
-        /* Estados da Timeline */
         .tl-item.passado { opacity: 0.5; filter: grayscale(100%); }
         .tl-item.passado .tl-time { background: #95a5a6; }
         .tl-item.proximo { border: 2px solid #e67e22; box-shadow: 0 4px 15px rgba(230, 126, 34, 0.2); animation: pulse 2s infinite; transform: scale(1.02); }
@@ -71,55 +98,27 @@
         .tl-item.proximo b { color: #e67e22; font-size: 16px; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(230, 126, 34, 0); } 100% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0); } }
 
-        /* MODAL DICAS */
+        /* MODAL */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: none; justify-content: center; align-items: center; }
         .modal-overlay.aberta { display: flex; }
         .modal-content { background: white; width: 90%; max-width: 600px; max-height: 80vh; border-radius: 12px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow-y: auto; border-top: 5px solid #f1c40f; }
         .dica-item { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
         .dica-titulo { color: #2c3e50; font-size: 16px; font-weight: bold; display: flex; align-items: center; margin-bottom: 5px; }
         .btn-fechar-modal { background: #eee; color: #333; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; float: right; }
-    /* --- BLOCO MOBILE (ADICIONE ISSO NO FINAL DO SEU CSS) --- */
+    
         @media (max-width: 768px) {
-            /* Ajusta o painel principal para coluna única */
             .main-grid { grid-template-columns: 1fr !important; gap: 15px; }
-            
-            /* Remove margens excessivas do login */
             .box-login { margin: 20px auto; padding: 25px; width: 90%; }
-
-            /* Cabeçalho: empilha os itens (Filho em cima, Sair embaixo) */
-            #telaDashboard > div:first-child {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            #telaDashboard > div:first-child > div {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            /* Inputs maiores para não dar zoom automático no iPhone */
+            #telaDashboard > div:first-child { flex-direction: column; align-items: flex-start; gap: 15px; }
+            #telaDashboard > div:first-child > div { width: 100%; justify-content: space-between; }
             input, select, button { font-size: 16px !important; min-height: 45px; }
-
-            /* Botões mais fáceis de tocar */
             .btn-edit, .btn-red, .btn-trash { padding: 10px 15px; }
-            
-            /* Ajuste da lista de dispositivos */
             .device-label { padding: 12px; }
-            
-            /* Ajuste do Calendário para rolar lateralmente suave */
-            .calendario-wrapper { 
-                padding-bottom: 20px; 
-                -webkit-overflow-scrolling: touch; 
-            }
-            .dia-coluna { min-width: 160px; } /* Colunas mais largas no dedo */
-
-            /* Ajuste da Timeline */
+            .calendario-wrapper { padding-bottom: 20px; -webkit-overflow-scrolling: touch; }
+            .dia-coluna { min-width: 160px; } 
             .timeline-box { max-height: none; overflow: visible; }
-            
-            /* Modal de Dicas ocupa a tela toda */
             .modal-content { width: 95%; max-height: 90vh; padding: 20px; }
         }
-    
     </style>
 </head>
 <body>
@@ -172,7 +171,7 @@
 
                     <div class="form-group">
                         <label>📱 Onde exibir? (Online = 🟢)</label>
-                        <div class="devices-box" id="listaDispositivos"><div style="padding:10px; color:#999">Aguardando PC conectar...</div></div>
+                        <div class="devices-box" id="listaDispositivos"><div style="padding:10px; color:#999">Aguardando PC...</div></div>
                     </div>
 
                     <div class="aviso-container"><span class="aviso-titulo">🕒 Aviso de 5 Minutos</span><input type="text" id="txt5min" placeholder="Texto" style="margin-bottom:5px"><input type="text" id="img5min" placeholder="Imagem"></div>
@@ -194,6 +193,15 @@
             </div>
 
             <div>
+                <div class="card" style="border-top: 5px solid #e74c3c;">
+                    <h2>🎮 Controle em Tempo Real</h2>
+                    <div id="gridAcoes" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:10px"></div>
+                    <div style="display:flex; gap:10px; margin-top:15px;">
+                        <button onclick="enviarAcao('bloqueio')" style="background:#e74c3c; flex:1; font-size:16px;">🔒 Bloquear Tela</button>
+                        <button onclick="enviarAcao('livre')" style="background:#7f8c8d; flex:1; font-size:16px;">⛔ Parar Tudo / Liberar</button>
+                    </div>
+                </div>
+
                 <div class="card">
                     <h2>📅 Agendar Rotina</h2>
                     <input type="hidden" id="editIdRotina">
@@ -213,251 +221,216 @@
                     </div>
                 </div>
 
-                <div class="card">
-                    <h2>🎮 Ações Manuais</h2>
-                    <div id="gridAcoes" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:10px"></div>
-                    <div style="display:flex; gap:10px; margin-top:15px;">
-                        <button onclick="enviarAcao('livre')" style="background:#7f8c8d;">⛔ Parar Tudo</button>
+                <div class="card" style="border-top: 5px solid #27ae60;">
+                    <h2>🖥️ Status dos PCs</h2>
+                    <div id="painelMonitoramento">
+                        <p style="text-align:center; color:#999; font-size:13px;">Carregando...</p>
+                    </div>
+                </div>
+
+                <div class="card" style="border-top: 5px solid #3498db;">
+                    <h2>📊 Histórico de Uso</h2>
+                    <div id="graficoHistorico" class="grafico-container">
+                        <small style="color:#999">Aguardando dados...</small>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <<div id="modalDicas" class="modal-overlay">
-    <div class="modal-content">
-        <h2 style="margin-top:0">💡 5 Pilares da Rotina no Autismo</h2>
-        <p style="color:#666; font-size:13px; margin-bottom:20px">Dicas para criar um ambiente seguro e previsível para seu filho.</p>
-
-        <div class="dica-item">
-            <div class="dica-titulo"><span class="dica-icone">🔮</span> 1. Antecipação é o Segredo</div>
-            <div class="dica-texto">
-                A ansiedade muitas vezes vem do desconhecido. Use os avisos de <strong>5 minutos</strong> e <strong>3 minutos</strong> deste sistema. Isso permite que o cérebro da criança se prepare para a transição, evitando crises na hora de desligar o tablet ou ir para o banho.
-            </div>
+    <div id="modalDicas" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="margin-top:0">💡 5 Pilares da Rotina</h2>
+            <div class="dica-item"><div class="dica-titulo"><span class="dica-icone">🔮</span> 1. Antecipação</div><div class="dica-texto">Use os avisos de 5 e 3 minutos.</div></div>
+            <button class="btn-fechar-modal" onclick="fecharDicas()">Fechar</button>
         </div>
-
-        <div class="dica-item">
-            <div class="dica-titulo"><span class="dica-icone">👁️</span> 2. Apoio Visual</div>
-            <div class="dica-texto">
-                Crianças no espectro processam imagens melhor que palavras. Use sempre uma <strong>imagem clara</strong> para cada atividade (ex: foto do chuveiro real dele). O "Boneco Virtual" serve como um parceiro neutro que dá a ordem, tirando o peso dos pais.
-            </div>
-        </div>
-
-        <div class="dica-item">
-            <div class="dica-titulo"><span class="dica-icone">⚖️</span> 3. Atividades "Sanduíche"</div>
-            <div class="dica-texto">
-                Intercale atividades prazerosas com obrigações. Exemplo: 
-                <br><em>Café (Neutro) ➔ Tablet (Bom) ➔ Banho (Difícil) ➔ Brinquedo (Bom)</em>. 
-                <br>Isso mantém a motivação ao longo do dia.
-            </div>
-        </div>
-
-        <div class="dica-item">
-            <div class="dica-titulo"><span class="dica-icone">🔁</span> 4. Consistência</div>
-            <div class="dica-texto">
-                Tente manter os horários fixos, inclusive nos finais de semana. A previsibilidade traz segurança emocional. Se for mudar algo, use o botão de <strong>"Ações Manuais"</strong> para avisar com antecedência que a rotina mudou.
-            </div>
-        </div>
-
-        <div class="dica-item" style="border:none">
-            <div class="dica-titulo"><span class="dica-icone">🎉</span> 5. Reforço Positivo</div>
-            <div class="dica-texto">
-                Quando ele cumprir uma rotina (clicar em "Já vou"), elogie imediatamente! O sistema pode falar "Parabéns", mas o seu sorriso e elogio físico valem muito mais.
-            </div>
-        </div>
-
-        <button class="btn-fechar-modal" onclick="fecharDicas()">Entendi, fechar</button>
     </div>
-</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, deleteDoc, updateDoc, query } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, deleteDoc, query, orderBy, limit, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", storageBucket: "rotinaeduardo.firebasestorage.app", messagingSenderId: "210945268922", appId: "1:210945268922:web:ce9e585872090b378d7683", measurementId: "G-MDYWRH9RNP" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
-        let usuarioAtual, filhoAtualId, cacheAtividades={}, cacheRotinas={}, unsubscribeAtividades, unsubscribeRotinas, unsubscribeDispositivos;
+        
+        let usuarioAtual, filhoAtualId;
+        let unsubscribeDispositivos, unsubscribeHistorico, unsubscribeAtividades, unsubscribeRotinas;
+        let cacheAtividades = {}, cacheRotinas = {};
 
         window.fazerLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert(e.message)} };
         window.criarConta = async () => { try { await createUserWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert(e.message)} };
         window.sair = () => signOut(auth);
         
         onAuthStateChanged(auth, (u) => { 
-            if(u) { usuarioAtual=u; document.getElementById('telaLogin').classList.remove('ativa'); document.getElementById('telaDashboard').classList.add('ativa'); carregarFilhos(); } 
-            else { document.getElementById('telaLogin').classList.add('ativa'); document.getElementById('telaDashboard').classList.remove('ativa'); } 
+            if(u) { 
+                usuarioAtual=u; 
+                document.getElementById('telaLogin').classList.remove('ativa'); 
+                document.getElementById('telaDashboard').classList.add('ativa'); 
+                iniciarSistema(); 
+            } else {
+                document.getElementById('telaLogin').classList.add('ativa'); 
+                document.getElementById('telaDashboard').classList.remove('ativa'); 
+            }
         });
-        
-        window.atualizarPreview = () => { const range = document.getElementById('rangeTamanho').value; const url = document.getElementById('imgAtividade').value; const img = document.getElementById('previewAvatar'); document.getElementById('labelTamanho').innerText = range + "px"; img.style.width = range + "px"; if(url && url.length > 5) img.src = url; };
-        
-        function carregarFilhos() { const sel = document.getElementById('selectFilho'); onSnapshot(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), (s) => { sel.innerHTML=""; let tem=false; s.forEach(d=>{ tem=true; let o=document.createElement('option'); o.value=d.id; o.innerText=d.data().nome; sel.appendChild(o); }); if(!tem) novoFilho(); else { if(!filhoAtualId) filhoAtualId=sel.value; if(sel.querySelector(`option[value="${filhoAtualId}"]`)) sel.value=filhoAtualId; else { sel.value = sel.options[0].value; filhoAtualId = sel.value; } carregarDadosFilho(); } }); }
-        
-        window.novoFilho = async () => { const n = prompt("Nome do Filho:"); if(!n) return; const c = Math.random().toString(36).substring(2,8).toUpperCase(); const r = await addDoc(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), { nome: n, codigo_pareamento: c }); await setDoc(doc(db, "conexoes", c), { caminho_dados: `usuarios/${usuarioAtual.uid}/filhos/${r.id}` }); mudarFilho(); };
-        window.excluirFilho = async () => { if(!filhoAtualId) return; if(confirm("Excluir perfil?")) { await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos`, filhoAtualId)); location.reload(); } };
-        window.mudarFilho = () => { filhoAtualId=document.getElementById('selectFilho').value; carregarDadosFilho(); };
-        
+
+        function iniciarSistema() {
+            const sel = document.getElementById('selectFilho'); 
+            onSnapshot(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), (s) => { 
+                sel.innerHTML=""; let temFilho = false;
+                s.forEach(d=>{ temFilho = true; let o = document.createElement('option'); o.value = d.id; o.innerText = d.data().nome; sel.appendChild(o); }); 
+                if(!temFilho) novoFilho(); 
+                else {
+                    if (!filhoAtualId || !sel.querySelector(`option[value="${filhoAtualId}"]`)) { sel.value = sel.options[0].value; filhoAtualId = sel.value; } 
+                    else { sel.value = filhoAtualId; }
+                    carregarDadosFilho(); 
+                }
+            }); 
+        }
+
+        window.novoFilho = async () => { const n = prompt("Nome do Filho:"); if(!n) return; const c = Math.random().toString(36).substring(2,8).toUpperCase(); const r = await addDoc(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), { nome: n, codigo_pareamento: c }); await setDoc(doc(db, "conexoes", c), { caminho_dados: `usuarios/${usuarioAtual.uid}/filhos/${r.id}` }); };
+        window.excluirFilho = async () => { if(!filhoAtualId) return; if(confirm("Apagar perfil?")) { await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos`, filhoAtualId)); filhoAtualId = null; } };
+        window.mudarFilho = () => { filhoAtualId = document.getElementById('selectFilho').value; carregarDadosFilho(); };
+
         function carregarDadosFilho() {
             if(!filhoAtualId) return;
             const base = `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}`;
             getDoc(doc(db, base)).then(d => { if(d.exists()) document.getElementById('displayCodigo').innerText=d.data().codigo_pareamento; });
             
             if(unsubscribeDispositivos) unsubscribeDispositivos();
+            if(unsubscribeHistorico) unsubscribeHistorico();
             if(unsubscribeAtividades) unsubscribeAtividades();
             if(unsubscribeRotinas) unsubscribeRotinas();
 
-            // 1. DISPOSITIVOS (CORRIGIDO COM LABELS)
+            // 1. MONITORAMENTO
             unsubscribeDispositivos = onSnapshot(collection(db, `${base}/dispositivos`), (snap) => {
-                const box = document.getElementById('listaDispositivos');
-                let html = `<label class="device-label"><input type="checkbox" id="dev_todos" value="todos" checked> <b>Todos os Dispositivos</b></label>`;
-                if(snap.empty) html += `<div style="padding:10px; font-size:11px; color:#999; text-align:center">Nenhum PC conectado.</div>`;
+                const boxSelect = document.getElementById('listaDispositivos');
+                const boxMonitor = document.getElementById('painelMonitoramento');
+                let htmlSelect = `<label class="device-label"><input type="checkbox" id="dev_todos" value="todos" checked> <b>Todos</b></label>`;
+                let htmlMonitor = "";
+
+                if(snap.empty) { htmlMonitor = "<div style='text-align:center; padding:10px; color:#999'>Nenhum PC.</div>"; } 
                 else {
-                    snap.forEach(d => {
-                        const dev = d.data();
+                    let devices = [];
+                    snap.forEach(d => { let obj = d.data(); obj.id = d.id; devices.push(obj); });
+                    devices.sort((a,b) => (b.online?.toDate() || 0) - (a.online?.toDate() || 0));
+
+                    devices.forEach(dev => {
                         const isOnline = dev.online && (new Date() - dev.online.toDate() < 120000);
-                        const status = isOnline ? "🟢" : "⚪";
-                        html += `<label class="device-label"><input type="checkbox" name="dev_item" value="${d.id}"> ${status} ${dev.nome || "PC"}</label>`;
+                        const statusDot = isOnline ? "🟢" : "⚪";
+                        const badgeClass = isOnline ? 'badge-online' : 'badge-offline';
+                        const badgeText = isOnline ? 'ONLINE AGORA' : 'OFFLINE';
+                        const tempoUso = dev.tempo_uso || "--";
+
+                        htmlSelect += `<label class="device-label"><input type="checkbox" name="dev_item" value="${dev.id}"> ${statusDot} ${dev.nome || "PC"}</label>`;
+                        htmlMonitor += `<div class="pc-status-card" style="border-left: ${isOnline ? '3px solid #2ecc71' : '1px solid #ccc'}"><div class="pc-info"><h3>💻 ${dev.nome || "PC"}</h3><span class="pc-badge ${badgeClass}">${badgeText}</span></div><div style="display:flex;align-items:center"><div class="pc-timer" style="margin-right:15px;text-align:right"><small>TEMPO LIGADO</small><span>${tempoUso}</span></div><button class="btn-del-device" onclick="apagarDispositivo('${dev.id}')">🗑️</button></div></div>`;
                     });
                 }
+                if(boxSelect) boxSelect.innerHTML = htmlSelect;
+                if(boxMonitor) boxMonitor.innerHTML = htmlMonitor;
+            });
+
+            // 2. HISTÓRICO
+            const histRef = query(collection(db, `${base}/historico_uso`), orderBy("data", "desc"), limit(7));
+            unsubscribeHistorico = onSnapshot(histRef, (snap) => {
+                const box = document.getElementById('graficoHistorico');
+                if(!box) return;
+                if(snap.empty) { box.innerHTML = "<small style='padding:10px; color:#999'>Sem dados.</small>"; return; }
+                let dados = []; snap.forEach(d => dados.push(d.data())); dados.reverse();
+                let html = ""; let maxMin = 1; dados.forEach(d => { if(d.minutos > maxMin) maxMin = d.minutos; });
+                dados.forEach(d => {
+                    const h = Math.max(5, (d.minutos/maxMin)*100);
+                    const label = d.minutos > 60 ? (d.minutos/60).toFixed(1)+'h' : d.minutos+'m';
+                    const dia = d.data.split('-').slice(1).reverse().join('/');
+                    html += `<div class="barra-wrapper"><div class="barra-valor">${label}</div><div class="barra" style="height:${h}px" title="${d.minutos} min"></div><div class="barra-dia">${dia}</div></div>`;
+                });
                 box.innerHTML = html;
             });
 
-            // 2. ATIVIDADES
+            // 3. ATIVIDADES
             unsubscribeAtividades = onSnapshot(collection(db, `${base}/atividades`), (snap) => { 
                 const l=document.getElementById('listaAtividades'); const s=document.getElementById('selectAtividadeRotina'); const g=document.getElementById('gridAcoes'); 
-                l.innerHTML=""; s.innerHTML=""; g.innerHTML=""; cacheAtividades={}; 
+                if(l) l.innerHTML=""; if(s) s.innerHTML=""; if(g) g.innerHTML=""; cacheAtividades={}; 
                 snap.forEach(d => { 
                     const dd=d.data(); cacheAtividades[d.id]=dd; 
-                    l.innerHTML+=`<li><div style="display:flex; align-items:center"><img src="${dd.imagem}" class="img-mini" onerror="this.style.display='none'"> <b>${d.id}</b></div><div><button class="btn-edit" onclick="carregarEdicaoAtividade('${d.id}')">✏️</button><button class="btn-red" onclick="apagarAtividade('${d.id}')">X</button></div></li>`; 
-                    let o=document.createElement('option'); o.value=d.id; o.innerText=d.id; s.appendChild(o); 
-                    g.innerHTML+=`<div style="text-align:center; border:1px solid #eee; padding:5px; border-radius:8px; cursor:pointer; background:#fdfdfd" onclick="enviarAcao('${d.id}')"><img src="${dd.imagem}" style="width:30px; height:30px; object-fit:contain; margin:0 auto"><br><small style="font-weight:bold">${d.id}</small></div>`; 
+                    if(l) l.innerHTML+=`<li><div style="display:flex; align-items:center"><img src="${dd.imagem}" class="img-mini" onerror="this.style.display='none'"> <b>${d.id}</b></div><div><button class="btn-edit" onclick="carregarEdicaoAtividade('${d.id}')">✏️</button><button class="btn-red" onclick="apagarAtividade('${d.id}')">X</button></div></li>`; 
+                    if(s) { let o=document.createElement('option'); o.value=d.id; o.innerText=d.id; s.appendChild(o); }
+                    if(g) g.innerHTML+=`<div style="text-align:center; border:1px solid #eee; padding:5px; border-radius:8px; cursor:pointer; background:#fdfdfd" onclick="enviarAcao('${d.id}')"><img src="${dd.imagem}" style="width:30px; height:30px; object-fit:contain; margin:0 auto"><br><small style="font-weight:bold">${d.id}</small></div>`; 
                 });
                 renderizarTimeline();
             });
 
-            // 3. ROTINAS
+            // 4. ROTINAS
             unsubscribeRotinas = onSnapshot(collection(db, `${base}/rotinas`), (snap) => { 
-                const c=document.getElementById('calendarioContainer'); c.innerHTML=""; 
-                const dias=["DOM","SEG","TER","QUA","QUI","SEX","SÁB"]; 
-                for(let i=0; i<7; i++) c.innerHTML+=`<div class="dia-coluna" id="col-${i}"><div style="text-align:center; font-weight:bold; color:#3498db; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:5px">${dias[i]}</div></div>`; 
+                const c=document.getElementById('calendarioContainer'); 
+                if(c) { c.innerHTML=""; const dias=["DOM","SEG","TER","QUA","QUI","SEX","SÁB"]; for(let i=0; i<7; i++) c.innerHTML+=`<div class="dia-coluna" id="col-${i}"><div style="text-align:center; font-weight:bold; color:#3498db; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:5px">${dias[i]}</div></div>`; }
                 cacheRotinas = {}; 
                 snap.forEach(d => { 
                     const r=d.data(); cacheRotinas[d.id]=r; 
                     const h=`<div class="card-rotina"><b>${r.hora}</b> ${r.acao}<div style="text-align:right; margin-top:4px"><button class="btn-edit" onclick="carregarEdicaoRotina('${d.id}')">✏️</button><button class="btn-red" onclick="apagarRotina('${d.id}')">X</button></div></div>`; 
-                    if(r.dia_semana==='todos') { for(let i=0;i<7;i++) document.getElementById(`col-${i}`).innerHTML+=h; } 
-                    else { try{document.getElementById(`col-${r.dia_semana}`).innerHTML+=h}catch(e){} } 
+                    if(c) { if(r.dia_semana==='todos') { for(let i=0;i<7;i++) try{document.getElementById(`col-${i}`).innerHTML+=h}catch(e){}; } else { try{document.getElementById(`col-${r.dia_semana}`).innerHTML+=h}catch(e){} } }
                 });
                 renderizarTimeline(); 
             });
         }
 
-        // --- TIMELINE ---
+        // --- FUNÇÕES ---
         function renderizarTimeline() {
             const container = document.getElementById('timelineInteligente');
-            container.innerHTML = "";
-            const hoje = new Date();
-            const diaSemana = hoje.getDay().toString();
-            const horaAtual = hoje.getHours() * 60 + hoje.getMinutes();
-
+            if(!container) return; container.innerHTML = "";
+            const hoje = new Date(); const diaSemana = hoje.getDay().toString(); const horaAtual = hoje.getHours() * 60 + hoje.getMinutes();
             let rotinasHoje = [];
-            for (let id in cacheRotinas) {
-                const r = cacheRotinas[id];
-                if (r.dia_semana === 'todos' || r.dia_semana === diaSemana) rotinasHoje.push(r);
-            }
+            for (let id in cacheRotinas) { const r = cacheRotinas[id]; if (r.dia_semana === 'todos' || r.dia_semana === diaSemana) rotinasHoje.push(r); }
             rotinasHoje.sort((a,b) => a.hora.localeCompare(b.hora));
-
-            if(rotinasHoje.length === 0) { container.innerHTML = "<p style='color:#999; text-align:center'>Sem rotinas hoje.</p>"; return; }
-
+            if(rotinasHoje.length === 0) { container.innerHTML = "<p style='color:#999; text-align:center'>Sem rotinas.</p>"; return; }
             let proximoEncontrado = false;
             rotinasHoje.forEach(r => {
-                const [h, m] = r.hora.split(':').map(Number);
-                const horaMinutos = h * 60 + m;
-                let classe = "futuro";
-                let aviso = "";
-
-                if (horaMinutos < horaAtual) { classe = "passado"; }
-                else if (!proximoEncontrado) { classe = "proximo"; proximoEncontrado = true; aviso="⏳"; }
-
+                const [h, m] = r.hora.split(':').map(Number); const horaMinutos = h * 60 + m;
+                let classe = "futuro"; let aviso = "";
+                if (horaMinutos < horaAtual) { classe = "passado"; } else if (!proximoEncontrado) { classe = "proximo"; proximoEncontrado = true; aviso="⏳"; }
                 const atv = cacheAtividades[r.acao] || { imagem: "", texto: "" };
-                
-                container.innerHTML += `
-                    <div class="tl-item ${classe}">
-                        <div class="tl-time">${r.hora}</div>
-                        <div class="tl-content">
-                            <img src="${atv.imagem}" class="tl-img" onerror="this.style.display='none'">
-                            <div class="tl-text">
-                                <b style="display:flex; justify-content:space-between">
-                                    ${r.acao} <small>${aviso}</small>
-                                </b>
-                                <span>${atv.texto || ''}</span>
-                            </div>
-                        </div>
-                    </div>`;
+                container.innerHTML += `<div class="tl-item ${classe}"><div class="tl-time">${r.hora}</div><div class="tl-content"><img src="${atv.imagem}" class="tl-img" onerror="this.style.display='none'"><div class="tl-text"><b style="display:flex; justify-content:space-between">${r.acao} <small>${aviso}</small></b><span>${atv.texto || ''}</span></div></div></div>`;
             });
         }
 
-        // --- SALVAR ATIVIDADE ---
         window.salvarAtividade = async () => { 
-            const idInput = document.getElementById('idAtividade');
-            const editId = document.getElementById('editIdAtividade').value;
+            const idInput = document.getElementById('idAtividade'); const editId = document.getElementById('editIdAtividade').value;
             let idFinal = editId ? editId : idInput.value.toLowerCase().replace(/\s/g, ''); 
             if(!idFinal) return alert("ID Obrigatório"); 
-
             let alvos = []; 
-            try { 
-                if(document.getElementById('dev_todos')?.checked) alvos.push('todos'); 
-                document.querySelectorAll('input[name="dev_item"]:checked').forEach(c => alvos.push(c.value)); 
-            } catch(e){}
-
+            try { if(document.getElementById('dev_todos')?.checked) alvos.push('todos'); document.querySelectorAll('input[name="dev_item"]:checked').forEach(c => alvos.push(c.value)); } catch(e){}
             await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, idFinal), { 
-                texto: document.getElementById('txtAtividade').value, 
-                imagem: document.getElementById('imgAtividade').value, 
-                tempo_personalizado: document.getElementById('tempoAtividade').value, 
-                tamanho_avatar: document.getElementById('rangeTamanho').value, 
-                texto_5min: document.getElementById('txt5min').value, 
-                imagem_5min: document.getElementById('img5min').value, 
-                texto_3min: document.getElementById('txt3min').value, 
-                imagem_3min: document.getElementById('img3min').value, 
-                posicao_especifica: document.getElementById('posAtividade').value, 
-                falar_texto: document.getElementById('checkVoz').checked, 
-                bloquear_tela: document.getElementById('checkBlock').checked, 
-                dispositivos_alvo: alvos 
+                texto: document.getElementById('txtAtividade').value, imagem: document.getElementById('imgAtividade').value, 
+                tempo_personalizado: document.getElementById('tempoAtividade').value, tamanho_avatar: document.getElementById('rangeTamanho').value, 
+                texto_5min: document.getElementById('txt5min').value, imagem_5min: document.getElementById('img5min').value, 
+                texto_3min: document.getElementById('txt3min').value, imagem_3min: document.getElementById('img3min').value, 
+                posicao_especifica: document.getElementById('posAtividade').value, falar_texto: document.getElementById('checkVoz').checked, 
+                bloquear_tela: document.getElementById('checkBlock').checked, dispositivos_alvo: alvos 
             }); 
-            alert("Atividade Salva!");
-            limparFormAtividade(); 
+            alert("Atividade Salva!"); limparFormAtividade(); 
         };
 
         window.carregarEdicaoAtividade = (id) => { 
             const d = cacheAtividades[id]; if(!d) return; 
-            document.getElementById('idAtividade').value = id; 
-            document.getElementById('idAtividade').disabled = true; 
-            document.getElementById('editIdAtividade').value = id; 
-            document.getElementById('txtAtividade').value = d.texto||""; 
-            document.getElementById('imgAtividade').value = d.imagem||""; 
-            document.getElementById('tempoAtividade').value = d.tempo_personalizado||""; 
-            document.getElementById('rangeTamanho').value = d.tamanho_avatar||"150"; 
-            atualizarPreview(); 
-            document.getElementById('txt5min').value = d.texto_5min||""; 
-            document.getElementById('img5min').value = d.imagem_5min||""; 
-            document.getElementById('txt3min').value = d.texto_3min||""; 
-            document.getElementById('img3min').value = d.imagem_3min||""; 
-            document.getElementById('posAtividade').value = d.posicao_especifica||""; 
-            document.getElementById('checkVoz').checked = (d.falar_texto!==false); 
-            document.getElementById('checkBlock').checked = (d.bloquear_tela===true); 
-            try { 
-                const alvos = d.dispositivos_alvo || ['todos']; 
-                if(document.getElementById('dev_todos')) document.getElementById('dev_todos').checked = alvos.includes('todos'); 
-                document.querySelectorAll('input[name="dev_item"]').forEach(c => c.checked = alvos.includes(c.value)); 
-            } catch(e){} 
+            document.getElementById('idAtividade').value = id; document.getElementById('idAtividade').disabled = true; document.getElementById('editIdAtividade').value = id; 
+            document.getElementById('txtAtividade').value = d.texto||""; document.getElementById('imgAtividade').value = d.imagem||""; 
+            document.getElementById('tempoAtividade').value = d.tempo_personalizado||""; document.getElementById('rangeTamanho').value = d.tamanho_avatar||"150"; 
+            window.atualizarPreview(); 
+            document.getElementById('txt5min').value = d.texto_5min||""; document.getElementById('img5min').value = d.imagem_5min||""; 
+            document.getElementById('txt3min').value = d.texto_3min||""; document.getElementById('img3min').value = d.imagem_3min||""; 
+            document.getElementById('posAtividade').value = d.posicao_especifica||""; document.getElementById('checkVoz').checked = (d.falar_texto!==false); document.getElementById('checkBlock').checked = (d.bloquear_tela===true); 
+            try { const alvos = d.dispositivos_alvo || ['todos']; if(document.getElementById('dev_todos')) document.getElementById('dev_todos').checked = alvos.includes('todos'); document.querySelectorAll('input[name="dev_item"]').forEach(c => c.checked = alvos.includes(c.value)); } catch(e){} 
         };
 
-        window.limparFormAtividade = () => { document.getElementById('idAtividade').disabled = false; document.getElementById('idAtividade').value = ""; document.getElementById('editIdAtividade').value = ""; document.querySelectorAll('#telaDashboard input[type=text], #telaDashboard input[type=number]').forEach(i=>i.value=""); document.getElementById('rangeTamanho').value="150"; atualizarPreview(); document.getElementById('checkVoz').checked=true; document.getElementById('checkBlock').checked=false; };
+        window.limparFormAtividade = () => { document.getElementById('idAtividade').disabled = false; document.getElementById('idAtividade').value = ""; document.getElementById('editIdAtividade').value = ""; document.querySelectorAll('#telaDashboard input[type=text], #telaDashboard input[type=number]').forEach(i=>i.value=""); document.getElementById('rangeTamanho').value="150"; window.atualizarPreview(); document.getElementById('checkVoz').checked=true; document.getElementById('checkBlock').checked=false; };
         window.salvarRotina = async () => { const h=document.getElementById('horaRotina').value; const id=document.getElementById('editIdRotina').value; if(!h)return; const d={hora:h, dia_semana:document.getElementById('diaRotina').value, acao:document.getElementById('selectAtividadeRotina').value}; const path=`usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`; if(id) await updateDoc(doc(db,path,id),d); else await addDoc(collection(db,path),d); document.getElementById('editIdRotina').value=""; document.getElementById('horaRotina').value=""; };
         window.carregarEdicaoRotina = (id) => { const r=cacheRotinas[id]; if(!r)return; document.getElementById('editIdRotina').value=id; document.getElementById('horaRotina').value=r.hora; document.getElementById('diaRotina').value=r.dia_semana; document.getElementById('selectAtividadeRotina').value=r.acao; };
-        window.apagarAtividade = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id)); };
         window.apagarRotina = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`, id)); };
+        window.apagarAtividade = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id)); };
+        window.apagarDispositivo = async(id) => { if(confirm("Remover este computador?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/dispositivos`, id)); };
         window.enviarAcao = async(a) => { if(!filhoAtualId) return alert("Selecione um filho"); await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/config/estado_atual`), {acao:a, timestamp:new Date()}, {merge:true}); };
         
-        // MODAL DICAS
+        window.atualizarPreview = () => { const range = document.getElementById('rangeTamanho').value; const url = document.getElementById('imgAtividade').value; const img = document.getElementById('previewAvatar'); document.getElementById('labelTamanho').innerText = range + "px"; img.style.width = range + "px"; if(url && url.length > 5) img.src = url; };
         window.abrirDicas = () => document.getElementById('modalDicas').classList.add('aberta');
         window.fecharDicas = () => document.getElementById('modalDicas').classList.remove('aberta');
         document.getElementById('modalDicas').addEventListener('click', (e) => { if(e.target === document.getElementById('modalDicas')) window.fecharDicas(); });
