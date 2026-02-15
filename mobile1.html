@@ -5,57 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Amigo Virtual</title>
     <style>
-        /* MANTENDO SEU CSS ORIGINAL */
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 90px; color: #333; }
-        .app-header { background: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        /* --- MANTENDO SEU CSS ORIGINAL DOS CARDS --- */
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 90px; color: #333; -webkit-tap-highlight-color: transparent; }
+        .app-header { background: white; padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
         .app-logo { font-size: 18px; font-weight: 800; color: #3498db; }
-        .card { background: white; border-radius: 12px; padding: 15px; margin: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-        .card-title { font-weight: bold; font-size: 16px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; font-size: 10px; flex: 1; }
+        .nav-item i { font-size: 22px; margin-bottom: 4px; font-style: normal; }
+        .nav-item.active { color: #3498db; font-weight: bold; }
 
-        /* CORREÇÃO DA BARRA: Agora ela tem altura real */
+        .card { background: white; border-radius: 12px; padding: 15px; margin: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        .card-title { font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #2c3e50; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+
+        /* --- CORREÇÃO DA BARRA: AGORA ELA CRESCE ATÉ O TOPO --- */
         .grafico-wrapper { 
             display: flex; 
             align-items: flex-end; 
             justify-content: space-around; 
-            height: 120px; /* Altura fixa para as barras crescerem dentro */
-            padding-top: 20px;
+            height: 140px; /* Altura fixa para o gráfico */
+            padding: 20px 10px 10px 10px;
         }
         .barra-col { display: flex; flex-direction: column; align-items: center; width: 12%; height: 100%; justify-content: flex-end; }
         .barra { 
-            width: 80%; 
+            width: 100%; 
             background: #3498db; 
-            border-radius: 4px 4px 0 0; 
-            min-height: 2px; 
-            transition: height 0.5s; 
+            border-radius: 6px 6px 0 0; 
+            min-height: 4px; 
+            transition: height 0.5s ease; 
         }
-        .barra-label { font-size: 9px; color: #999; margin-top: 4px; }
-        .barra-val { font-size: 9px; font-weight: bold; margin-bottom: 2px; }
+        .barra-label { font-size: 10px; color: #999; margin-top: 6px; font-weight: bold; }
+        .barra-val { font-size: 10px; font-weight: bold; margin-bottom: 4px; color: #3498db; }
 
-        /* TELA DE LOGIN FORMATADA */
-        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 30px; box-sizing: border-box; }
+        /* --- TELA DE LOGIN MOBILE --- */
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 25px; box-sizing: border-box; }
         .login-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
         .hidden { display: none !important; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
-        .btn-main { background: #3498db; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-size: 16px; font-weight: bold; }
+        input { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; background: #fdfdfd; }
+        .btn-main { background: #3498db; color: white; border: none; padding: 16px; border-radius: 12px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; }
+
+        /* MONITORAMENTO */
+        .pc-status-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #2ecc71; }
+        .pc-timer { text-align: right; }
+        .pc-timer span { font-weight: bold; color: #333; font-size: 16px; }
     </style>
 </head>
 <body>
 
     <div id="loginScreen" class="login-overlay">
         <div class="login-card">
-            <h1 style="color:#3498db;">🛡️ Amigo Virtual</h1>
-            <input type="email" id="email" placeholder="E-mail">
-            <input type="password" id="senha" placeholder="Senha">
-            <button class="btn-main" onclick="fazerLogin()">ENTRAR</button>
+            <h1 style="color:#3498db; margin-bottom: 5px;">🛡️ Amigo Virtual</h1>
+            <p style="color:#777; margin-bottom: 25px;">Acesse o painel do seu filho</p>
+            <input type="email" id="email" placeholder="Seu E-mail">
+            <input type="password" id="senha" placeholder="Sua Senha">
+            <button class="btn-main" onclick="fazerLogin()">ENTRAR NO PAINEL</button>
         </div>
     </div>
 
     <div class="app-header">
         <div class="app-logo">💙 <span id="nomeFilhoHeader">...</span></div>
-        <div id="displayCodigo" style="font-size:12px; color:#7f8c8d">COD: ...</div>
+        <div id="displayCodigo" style="font-size:12px; color:#7f8c8d; font-weight: bold;">COD: ---</div>
     </div>
 
-    <div class="card">
+    <div class="card" style="border-top: 4px solid #2ecc71;">
         <div class="card-title">🖥️ Status do PC</div>
         <div id="monitoramentoList"></div>
     </div>
@@ -63,40 +74,45 @@
     <div class="card">
         <div class="card-title">
             📊 Histórico
-            <span id="totalMesBadge" style="font-size:10px; color:#3498db;">Soma: --</span>
+            <span id="totalMesBadge" style="font-size:11px; background:#e3f2fd; padding:3px 8px; border-radius:10px; color:#2980b9;">Total: --</span>
         </div>
         <div id="graficoHistorico" class="grafico-wrapper"></div>
     </div>
 
+    <div class="bottom-nav">
+        <div class="nav-item active"><i>🏠</i>Início</div>
+        <div class="nav-item"><i>🎨</i>Criar</div>
+        <div class="nav-item"><i>📅</i>Agenda</div>
+        <div class="nav-item"><i>⚙️</i>Perfil</div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, doc, collection, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-        // SUA CONFIGURAÇÃO (Mantida igual)
         const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", storageBucket: "rotinaeduardo.firebasestorage.app", messagingSenderId: "210945268922", appId: "1:210945268922:web:ce9e585872090b378d7683" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        let usuarioAtual, filhoAtualId;
+        let filhoAtualId;
 
-        // LOGIN (Mantido o seu funcional)
         window.fazerLogin = async () => {
-            try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } 
-            catch(e) { alert("Erro: " + e.message); }
+            const e = document.getElementById('email').value;
+            const s = document.getElementById('senha').value;
+            try { await signInWithEmailAndPassword(auth, e, s); } catch(err) { alert("Erro: " + err.message); }
         };
 
-        onAuthStateChanged(auth, (u) => {
-            if(u) {
-                usuarioAtual = u;
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
                 document.getElementById('loginScreen').classList.add('hidden');
-                // BUSCA O FILHO EXATAMENTE COMO NO SEU ANTIGO FUNCIONAL
-                onSnapshot(collection(db, `usuarios/${u.uid}/filhos`), (s) => {
-                    if(!s.empty) {
+                onSnapshot(collection(db, `usuarios/${user.uid}/filhos`), (s) => {
+                    if (!s.empty) {
                         filhoAtualId = s.docs[0].id;
-                        document.getElementById('nomeFilhoHeader').innerText = s.docs[0].data().nome;
-                        document.getElementById('displayCodigo').innerText = "COD: " + s.docs[0].data().codigo_pareamento;
+                        const dados = s.docs[0].data();
+                        document.getElementById('nomeFilhoHeader').innerText = dados.nome;
+                        document.getElementById('displayCodigo').innerText = "COD: " + dados.codigo_pareamento;
                         carregarDados();
                     }
                 });
@@ -104,46 +120,45 @@
         });
 
         function carregarDados() {
-            const base = `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}`;
+            const base = `usuarios/${auth.currentUser.uid}/filhos/${filhoAtualId}`;
 
-            // MONITORAMENTO: Mostra apenas o uso do dia
             onSnapshot(collection(db, `${base}/dispositivos`), (snap) => {
-                const box = document.getElementById('monitoramentoList');
-                box.innerHTML = "";
+                const list = document.getElementById('monitoramentoList');
+                list.innerHTML = "";
                 snap.forEach(d => {
                     const dev = d.data();
                     const min = dev.tempo_hoje_minutos || 0;
-                    const tempo = min > 60 ? Math.floor(min/60)+"h "+(min%60)+"m" : min+"m";
-                    box.innerHTML += `<div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between"><b>${dev.nome||'PC'}</b> <span>${tempo}</span></div>`;
+                    const tempo = min >= 60 ? Math.floor(min/60)+"h "+(min%60)+"m" : min+"m";
+                    list.innerHTML += `
+                        <div class="pc-status-card">
+                            <div><strong>${dev.nome || 'PC'}</strong><br><small style="color:#2ecc71">Online Agora</small></div>
+                            <div class="pc-timer"><span>${tempo} (Hoje)</span></div>
+                        </div>`;
                 });
             });
 
-            // GRÁFICO: Agora com escala correta
             onSnapshot(query(collection(db, `${base}/historico_uso`), orderBy("data", "desc"), limit(7)), (snap) => {
                 const box = document.getElementById('graficoHistorico');
                 let dados = []; snap.forEach(d => dados.push(d.data())); dados.reverse();
-                
                 if(dados.length === 0) return;
 
-                // A MÁGICA DA ESCALA: Encontra o maior dia para ser o 100% da altura
-                const maxVal = Math.max(...dados.map(d => d.minutos || 0), 1);
-                let html = "";
-                let soma = 0;
+                const maxMinutos = Math.max(...dados.map(d => d.minutos || 0), 1);
+                let html = ""; let somaTotal = 0;
 
                 dados.forEach(d => {
-                    soma += (d.minutos || 0);
-                    const alturaPercent = ((d.minutos || 0) / maxVal) * 100;
-                    const label = d.minutos > 60 ? (d.minutos/60).toFixed(1)+'h' : d.minutos+'m';
-                    
+                    const min = d.minutos || 0;
+                    somaTotal += min;
+                    const altura = (min / maxMinutos) * 100;
+                    const valStr = min >= 60 ? (min/60).toFixed(1)+'h' : min+'m';
                     html += `
-                    <div class="barra-col">
-                        <div class="barra-val">${label}</div>
-                        <div class="barra" style="height:${Math.max(alturaPercent, 5)}%"></div>
-                        <div class="barra-label">${d.data.split('-')[2]}</div>
-                    </div>`;
+                        <div class="barra-col">
+                            <div class="barra-val">${valStr}</div>
+                            <div class="barra" style="height:${Math.max(altura, 5)}%"></div>
+                            <div class="barra-label">${d.data.split('-')[2]}</div>
+                        </div>`;
                 });
                 box.innerHTML = html;
-                document.getElementById('totalMesBadge').innerText = "Total: " + (soma > 60 ? (soma/60).toFixed(1)+'h' : soma+'m');
+                document.getElementById('totalMesBadge').innerText = "Total: " + (somaTotal >= 60 ? (somaTotal/60).toFixed(1)+'h' : somaTotal+'m');
             });
         }
     </script>
