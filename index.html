@@ -93,7 +93,13 @@
         .dica-item { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
         .dica-titulo { color: #2c3e50; font-size: 16px; font-weight: bold; display: flex; align-items: center; margin-bottom: 5px; }
         .btn-fechar-modal { background: #eee; color: #333; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; float: right; }
-    
+
+        /* --- ESTILO DA GALERIA ADICIONADO --- */
+        .galeria-v { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 10px; background: #fff; border: 1px solid #ddd; padding: 12px; border-radius: 8px; max-height: 200px; overflow-y: auto; margin-bottom: 10px; }
+        .img-sel { width: 100%; aspect-ratio: 1; object-fit: contain; border: 2px solid #eee; border-radius: 8px; cursor: pointer; transition: 0.2s; background: #fdfdfd; }
+        .img-sel:hover { border-color: #3498db; transform: scale(1.05); }
+        .img-sel.ativa { border-color: #2ecc71; background: #eafaf1; box-shadow: 0 0 8px rgba(46, 204, 113, 0.3); }
+
         @media (max-width: 768px) {
             .main-grid { grid-template-columns: 1fr !important; gap: 15px; }
             .box-login { margin: 20px auto; padding: 25px; width: 90%; }
@@ -147,13 +153,18 @@
                         <div class="form-group" style="flex:1"><label>Tempo (s)</label><input type="number" id="tempoAtividade" placeholder="15"></div>
                     </div>
                     <div class="form-group"><label>Texto Principal</label><input type="text" id="txtAtividade"></div>
-                    <div class="form-group"><label>Imagem Principal (URL)</label><input type="text" id="imgAtividade" oninput="atualizarPreview()"></div>
+                    
+                    <div class="form-group">
+                        <label>🖼️ Escolha a Imagem (Pasta IMG)</label>
+                        <div id="galVisual" class="galeria-v"></div>
+                        <input type="text" id="imgAtividade" oninput="atualizarPreview()" placeholder="Caminho do arquivo">
+                    </div>
 
                     <div class="form-group" style="background:#fff; padding:15px; border:1px solid #ddd; border-radius:6px; text-align:center;">
                         <label style="margin-bottom:10px; display:block; text-align:left">📐 Tamanho: <span id="labelTamanho" style="color:#2980b9; font-weight:bold">150px</span></label>
                         <input type="range" id="rangeTamanho" min="50" max="500" value="150" oninput="atualizarPreview()" style="width:100%; cursor:pointer; margin-bottom:10px;">
                         <div style="min-height: 100px; border: 1px dashed #ccc; background-image: radial-gradient(#eee 1px, transparent 1px); background-size: 10px 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 4px;">
-                            <img id="previewAvatar" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" style="width: 150px; transition: width 0.1s;">
+                            <img id="previewAvatar" src="" style="width: 150px; transition: width 0.1s;">
                         </div>
                     </div>
 
@@ -243,12 +254,32 @@
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
         let usuarioAtual, filhoAtualId, cacheAtividades={}, cacheRotinas={}, unsubscribeAtividades, unsubscribeRotinas, unsubscribeDispositivos, unsubscribeHistorico;
 
+        // --- LÓGICA DA GALERIA ---
+        const listaGifs = ["ARRUMANDO_CAMA.gif", "BANHO.gif", "BOCEJANDO.gif", "COMER.gif", "DESLIGAR-PC.gif", "ESCOVANDO_DENTES.gif", "LIGAR-PC.gif"];
+
+        function montarGaleria() {
+            const container = document.getElementById('galVisual');
+            container.innerHTML = "";
+            listaGifs.forEach(nome => {
+                const img = document.createElement('img');
+                img.src = `IMG/${nome}`;
+                img.className = 'img-sel';
+                img.onclick = () => {
+                    document.querySelectorAll('.img-sel').forEach(i => i.classList.remove('ativa'));
+                    img.classList.add('ativa');
+                    document.getElementById('imgAtividade').value = `IMG/${nome}`;
+                    window.atualizarPreview();
+                };
+                container.appendChild(img);
+            });
+        }
+
         window.fazerLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert(e.message)} };
         window.criarConta = async () => { try { await createUserWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert(e.message)} };
         window.sair = () => signOut(auth);
         
         onAuthStateChanged(auth, (u) => { 
-            if(u) { usuarioAtual=u; document.getElementById('telaLogin').classList.remove('ativa'); document.getElementById('telaDashboard').classList.add('ativa'); carregarFilhos(); } 
+            if(u) { usuarioAtual=u; document.getElementById('telaLogin').classList.remove('ativa'); document.getElementById('telaDashboard').classList.add('ativa'); carregarFilhos(); montarGaleria(); } 
             else { document.getElementById('telaLogin').classList.add('ativa'); document.getElementById('telaDashboard').classList.remove('ativa'); } 
         });
         
@@ -276,7 +307,6 @@
                 const boxMonitor = document.getElementById('painelMonitoramento');
                 let htmlSelect = `<label class="device-label"><input type="checkbox" id="dev_todos" value="todos" checked> <b>Todos</b></label>`;
                 let htmlMonitor = "";
-
                 if(snap.empty) {
                     htmlSelect += `<div style="padding:10px; color:#999; font-size:11px">Aguardando PC...</div>`;
                     htmlMonitor = `<div style="padding:20px; text-align:center; color:#999">Nenhum computador conectado.</div>`;
@@ -284,34 +314,17 @@
                     let devices = [];
                     snap.forEach(d => { let obj = d.data(); obj.id = d.id; devices.push(obj); });
                     devices.sort((a,b) => (b.online?.toDate() || 0) - (a.online?.toDate() || 0));
-
                     devices.forEach(dev => {
                         const isOnline = dev.online && (new Date() - dev.online.toDate() < 120000);
                         const statusDot = isOnline ? "🟢" : "⚪";
-                        
-                        // Tempo Real do Dia
                         let tempoDiario = "--";
                         if(dev.tempo_hoje_minutos !== undefined) {
                             const h = Math.floor(dev.tempo_hoje_minutos / 60);
                             const m = dev.tempo_hoje_minutos % 60;
                             tempoDiario = `${h}h ${m}m`;
                         }
-                        
                         htmlSelect += `<label class="device-label"><input type="checkbox" name="dev_item" value="${dev.id}"> ${statusDot} ${dev.nome || "PC"}</label>`;
-
-                        htmlMonitor += `
-                            <div class="pc-status-card" style="border-left: ${isOnline ? '3px solid #2ecc71' : '1px solid #ccc'}">
-                                <div class="pc-info">
-                                    <h3>💻 ${dev.nome || "Computador"}</h3>
-                                    <span class="pc-badge ${isOnline ? 'badge-online' : 'badge-offline'}">${isOnline ? 'ONLINE' : 'OFFLINE'}</span>
-                                </div>
-                                <div style="display:flex; align-items:center;">
-                                    <div class="pc-timer" style="margin-right:15px; text-align:right;">
-                                        <small>USO NO DIA</small><span>${tempoDiario}</span>
-                                    </div>
-                                    <button class="btn-del-device" onclick="apagarDispositivo('${dev.id}')" title="Remover">🗑️</button>
-                                </div>
-                            </div>`;
+                        htmlMonitor += `<div class="pc-status-card" style="border-left: ${isOnline ? '3px solid #2ecc71' : '1px solid #ccc'}"><div class="pc-info"><h3>💻 ${dev.nome || "Computador"}</h3><span class="pc-badge ${isOnline ? 'badge-online' : 'badge-offline'}">${isOnline ? 'ONLINE' : 'OFFLINE'}</span></div><div style="display:flex; align-items:center;"><div class="pc-timer" style="margin-right:15px; text-align:right;"><small>USO NO DIA</small><span>${tempoDiario}</span></div><button class="btn-del-device" onclick="apagarDispositivo('${dev.id}')" title="Remover">🗑️</button></div></div>`;
                     });
                 }
                 boxSelect.innerHTML = htmlSelect;
@@ -323,41 +336,26 @@
             unsubscribeHistorico = onSnapshot(histRef, (snap) => {
                 const box = document.getElementById('graficoHistorico');
                 if(snap.empty) { box.innerHTML = "<small>Sem histórico.</small>"; return; }
-                
                 let dados = [];
                 let totalMinutosMes = 0;
-                const mesAtual = new Date().toISOString().slice(0, 7); // Ex: "2026-02"
-
+                const mesAtual = new Date().toISOString().slice(0, 7);
                 snap.forEach(d => {
                     const dia = d.data();
-                    if(dia.data.startsWith(mesAtual)) {
-                        totalMinutosMes += (dia.minutos || 0);
-                    }
+                    if(dia.data.startsWith(mesAtual)) totalMinutosMes += (dia.minutos || 0);
                     dados.push(dia);
                 });
-
                 const hTotal = Math.floor(totalMinutosMes / 60);
                 const mTotal = totalMinutosMes % 60;
                 const metaInfo = `| Acumulado no Mês: ${hTotal}h ${mTotal}m`;
-                
-                // Renderiza Gráfico (Últimos 7 dias)
                 let html = "";
                 let dadosGrafico = dados.slice(0, 7).reverse();
                 let max = Math.max(...dadosGrafico.map(d => d.minutos), 1);
-
                 dadosGrafico.forEach(d => {
                     const altura = Math.max(5, (d.minutos / max) * 100);
                     const diaFormat = d.data.split('-')[2] + '/' + d.data.split('-')[1];
                     const valorLabel = d.minutos > 60 ? (d.minutos / 60).toFixed(1) + 'h' : d.minutos + 'm';
-
-                    html += `
-                        <div class="barra-wrapper">
-                            <div class="barra-valor">${valorLabel}</div>
-                            <div class="barra" style="height:${altura}px"></div>
-                            <div class="barra-dia">${diaFormat}</div>
-                        </div>`;
+                    html += `<div class="barra-wrapper"><div class="barra-valor">${valorLabel}</div><div class="barra" style="height:${altura}px"></div><div class="barra-dia">${diaFormat}</div></div>`;
                 });
-                
                 box.innerHTML = html;
                 const tituloHist = document.getElementById('tituloHistorico');
                 if(tituloHist) tituloHist.innerHTML = `📊 Histórico de Uso <small style="float:right; color:#3498db;">${metaInfo}</small>`;
