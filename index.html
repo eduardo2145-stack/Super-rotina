@@ -19,7 +19,7 @@
         
         .form-group { margin-bottom: 12px; }
         label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; color: #7f8c8d; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; margin-bottom: 15px; }
         
         /* LISTA DE SELEÇÃO (CHECKBOXES) */
         .devices-box { border: 1px solid #ddd; padding: 5px; border-radius: 6px; max-height: 150px; overflow-y: auto; background: #fff; }
@@ -33,25 +33,36 @@
         .pc-badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-top: 5px; }
         .badge-online { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .badge-offline { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .pc-timer { text-align: right; margin-right: 15px; }
+        .pc-timer { text-align: right;
+    margin-right: 15px;
+    min-width: 80px; /* Garante uma largura mínima para o texto não encavalar */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; }
         .pc-timer small { display: block; font-size: 10px; color: #6c757d; text-transform: uppercase; }
-        .pc-timer span { font-size: 18px; font-weight: bold; color: #333; font-family: monospace; }
+        .pc-timer span { font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    font-family: monospace;
+    white-space: nowrap; /* Impede que o 'h' e 'm' fiquem em linhas diferentes */ }
         .btn-del-device { background: transparent; color: #ccc; border: none; font-size: 16px; cursor: pointer; padding: 5px; transition: 0.2s; }
         .btn-del-device:hover { color: #e74c3c; transform: scale(1.2); }
 
-        .grafico-container { display: flex; align-items: flex-end; gap: 10px; height: 120px; padding-top: 10px; overflow-x: auto; }
+        .grafico-container { display: flex; align-items: flex-end; gap: 10px; height: 120px; padding-top: 25px; overflow-x: auto; }
         .barra-wrapper { display: flex; flex-direction: column; align-items: center; width: 40px; }
         .barra { width: 20px; background: #3498db; border-radius: 4px 4px 0 0; transition: height 0.5s; }
         .barra:hover { background: #2980b9; }
         .barra-valor { font-size: 10px; font-weight: bold; margin-bottom: 2px; }
         .barra-dia { font-size: 10px; color: #888; margin-top: 5px; }
 
-        button { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; color: white; transition: 0.2s; }
+        button { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; color: white; transition: 0.2s; margin-bottom: 10px;}
         .btn-blue { background: #3498db; } .btn-green { background: #2ecc71; } 
         .btn-red { background: #e74c3c; width: auto; padding: 4px 10px; font-size: 12px; }
         .btn-trash { background: #c0392b; width: auto; padding: 8px 12px; margin-left: 5px; border-radius: 6px; }
         .btn-edit { background: #f1c40f; width: auto; padding: 4px 10px; font-size: 12px; color: #333; margin-right: 5px; }
-        
+        button:last-child {
+    margin-bottom: 0;
+}
         .aviso-container { background: #f9fbfd; border: 1px solid #e1e8ed; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
         .aviso-titulo { font-size: 12px; font-weight: bold; color: #3498db; margin-bottom: 5px; display: block; }
         
@@ -94,12 +105,36 @@
         .dica-titulo { color: #2c3e50; font-size: 16px; font-weight: bold; display: flex; align-items: center; margin-bottom: 5px; }
         .btn-fechar-modal { background: #eee; color: #333; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; float: right; }
 
-        /* --- ESTILO DA GALERIA ADICIONADO --- */
-        .galeria-v { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 10px; background: #fff; border: 1px solid #ddd; padding: 12px; border-radius: 8px; max-height: 200px; overflow-y: auto; margin-bottom: 10px; }
-        .img-sel { width: 100%; aspect-ratio: 1; object-fit: contain; border: 2px solid #eee; border-radius: 8px; cursor: pointer; transition: 0.2s; background: #fdfdfd; }
-        .img-sel:hover { border-color: #3498db; transform: scale(1.05); }
-        .img-sel.ativa { border-color: #2ecc71; background: #eafaf1; box-shadow: 0 0 8px rgba(46, 204, 113, 0.3); }
+     /* Container da Galeria */
+.galeria-v { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); 
+    gap: 10px; 
+    background: #fff; 
+    border: 1px solid #ddd; 
+    padding: 12px; 
+    border-radius: 8px; 
+    max-height: 200px; 
+    overflow-y: auto; 
+}
 
+/* Estilo de cada ícone */
+.img-sel { 
+    width: 100%; 
+    aspect-ratio: 1; 
+    object-fit: contain; 
+    border: 2px solid #eee; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: 0.2s; 
+    display: none; /* Começa escondida para não mostrar erro */
+}
+
+/* Quando a imagem for encontrada, ela se torna visível */
+.img-sel.visivel { display: block; }
+
+/* Destaque ao clicar */
+.img-sel.ativa { border-color: #2ecc71; background: #eafaf1; box-shadow: 0 0 8px rgba(46, 204, 113, 0.3); }
         @media (max-width: 768px) {
             .main-grid { grid-template-columns: 1fr !important; gap: 15px; }
             .box-login { margin: 20px auto; padding: 25px; width: 90%; }
@@ -113,6 +148,32 @@
             .timeline-box { max-height: none; overflow: visible; }
             .modal-content { width: 95%; max-height: 90vh; padding: 20px; }
         }
+
+        /* Container dos controles do Filho */
+.grupo-filho {
+    display: flex;
+    align-items: center; /* Alinha verticalmente ao centro */
+    gap: 5px; /* Espaço entre os botões */
+}
+
+/* Força a altura e remove margens que atrapalham o alinhamento */
+.grupo-filho select,
+.grupo-filho button {
+    height: 38px !important; /* Altura fixa igual para todos */
+    margin: 0 !important;    /* Remove margens externas */
+    padding: 0 10px;         /* Espaçamento interno */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+/* Ajuste específico para o texto "Filho:" */
+.grupo-filho span {
+    margin-right: 5px;
+    font-weight: bold;
+    color: #555;
+}
     </style>
 </head>
 <body>
@@ -129,12 +190,12 @@
 
     <div id="telaDashboard" class="tela">
         <div style="display:flex; justify-content:space-between; margin-bottom:20px; background:white; padding:15px; border-radius:12px; align-items:center;">
-            <div style="display:flex; align-items:center">
-                <span style="font-weight:bold; color:#555">Filho:</span> 
-                <select id="selectFilho" onchange="mudarFilho()" style="width:auto; padding:8px; margin-left:5px; border:2px solid #3498db"></select> 
-                <button onclick="novoFilho()" style="width:auto; padding:8px 12px; background:#2ecc71; margin-left:5px">+</button>
-                <button onclick="excluirFilho()" class="btn-trash" title="Excluir Perfil">🗑️</button>
-            </div>
+            <div class="grupo-filho">
+    <span>Filho:</span> 
+    <select id="selectFilho" onchange="mudarFilho()" style="width: 200px;"></select> 
+    <button onclick="novoFilho()" class="btn-green" title="Adicionar"style="width: 50px;">+</button>
+    <button onclick="excluirFilho()" class="btn-trash" title="Excluir"style="width: 50px;">🗑️</button>
+</div>
             <div>
                 <button onclick="abrirDicas()" style="width:auto; background:#f1c40f; color:#333; padding:6px 15px; font-size:12px; margin-right:5px; font-weight:bold;">💡 Dicas para Pais</button>
                 <span style="background:#fffbe6; padding:6px 12px; border:1px solid #ffe58f; border-radius:20px; font-weight:bold; margin-right:10px; color:#d4ac0d">CÓDIGO: <span id="displayCodigo">...</span></span>
@@ -154,11 +215,10 @@
                     </div>
                     <div class="form-group"><label>Texto Principal</label><input type="text" id="txtAtividade"></div>
                     
-                    <div class="form-group">
-                        <label>🖼️ Escolha a Imagem (Pasta IMG)</label>
-                        <div id="galVisual" class="galeria-v"></div>
-                        <input type="text" id="imgAtividade" oninput="atualizarPreview()" placeholder="Caminho do arquivo">
-                    </div>
+               <div class="form-group">
+    <label>🖼️ Escolha a Imagem </label>
+    <div id="galVisual" class="galeria-v"></div> <input type="text" id="imgAtividade" oninput="atualizarPreview()" placeholder="Caminho do arquivo">
+</div>
 
                     <div class="form-group" style="background:#fff; padding:15px; border:1px solid #ddd; border-radius:6px; text-align:center;">
                         <label style="margin-bottom:10px; display:block; text-align:left">📐 Tamanho: <span id="labelTamanho" style="color:#2980b9; font-weight:bold">150px</span></label>
@@ -246,6 +306,7 @@
     </div>
 
     <script type="module">
+        
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, deleteDoc, updateDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
@@ -279,8 +340,9 @@
         window.sair = () => signOut(auth);
         
         onAuthStateChanged(auth, (u) => { 
-            if(u) { usuarioAtual=u; document.getElementById('telaLogin').classList.remove('ativa'); document.getElementById('telaDashboard').classList.add('ativa'); carregarFilhos(); montarGaleria(); } 
+            if(u) { usuarioAtual=u; document.getElementById('telaLogin').classList.remove('ativa'); document.getElementById('telaDashboard').classList.add('ativa'); carregarFilhos(); montarGaleriaInfinita(); } 
             else { document.getElementById('telaLogin').classList.add('ativa'); document.getElementById('telaDashboard').classList.remove('ativa'); } 
+        
         });
         
         window.atualizarPreview = () => { const range = document.getElementById('rangeTamanho').value; const url = document.getElementById('imgAtividade').value; const img = document.getElementById('previewAvatar'); document.getElementById('labelTamanho').innerText = range + "px"; img.style.width = range + "px"; if(url && url.length > 5) img.src = url; };
@@ -409,16 +471,11 @@
             });
         }
 
-        window.salvarAtividade = async () => { 
-            const idInput = document.getElementById('idAtividade');
-            const editId = document.getElementById('editIdAtividade').value;
-            let idFinal = editId ? editId : idInput.value.toLowerCase().replace(/\s/g, ''); 
-            if(!idFinal) return alert("ID Obrigatório"); 
-            let alvos = []; try { if(document.getElementById('dev_todos')?.checked) alvos.push('todos'); document.querySelectorAll('input[name="dev_item"]:checked').forEach(c => alvos.push(c.value)); } catch(e){}
-            await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, idFinal), { texto: document.getElementById('txtAtividade').value, imagem: document.getElementById('imgAtividade').value, tempo_personalizado: document.getElementById('tempoAtividade').value, tamanho_avatar: document.getElementById('rangeTamanho').value, texto_5min: document.getElementById('txt5min').value, imagem_5min: document.getElementById('img5min').value, texto_3min: document.getElementById('txt3min').value, imagem_3min: document.getElementById('img3min').value, posicao_especifica: document.getElementById('posAtividade').value, falar_texto: document.getElementById('checkVoz').checked, bloquear_tela: document.getElementById('checkBlock').checked, dispositivos_alvo: alvos }); 
-            alert("Atividade Salva!"); limparFormAtividade(); 
-        };
+      
 
+// Chama automaticamente ao abrir o painel
+// No seu onAuthStateChanged, adicione: varrerPastaServidor();      };
+  
         window.carregarEdicaoAtividade = (id) => { const d = cacheAtividades[id]; if(!d) return; document.getElementById('idAtividade').value = id; document.getElementById('idAtividade').disabled = true; document.getElementById('editIdAtividade').value = id; document.getElementById('txtAtividade').value = d.texto||""; document.getElementById('imgAtividade').value = d.imagem||""; document.getElementById('tempoAtividade').value = d.tempo_personalizado||""; document.getElementById('rangeTamanho').value = d.tamanho_avatar||"150"; atualizarPreview(); document.getElementById('txt5min').value = d.texto_5min||""; document.getElementById('txt3min').value = d.texto_3min||""; document.getElementById('posAtividade').value = d.posicao_especifica||""; document.getElementById('checkVoz').checked = (d.falar_texto!==false); document.getElementById('checkBlock').checked = (d.bloquear_tela===true); };
         window.limparFormAtividade = () => { document.getElementById('idAtividade').disabled = false; document.getElementById('idAtividade').value = ""; document.getElementById('editIdAtividade').value = ""; document.querySelectorAll('input[type=text], input[type=number]').forEach(i=>i.value=""); document.getElementById('rangeTamanho').value="150"; atualizarPreview(); };
         window.salvarRotina = async () => { const h=document.getElementById('horaRotina').value; const id=document.getElementById('editIdRotina').value; if(!h)return; const d={hora:h, dia_semana:document.getElementById('diaRotina').value, acao:document.getElementById('selectAtividadeRotina').value}; if(id) await updateDoc(doc(db,`usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`,id),d); else await addDoc(collection(db,`usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`),d); document.getElementById('editIdRotina').value=""; document.getElementById('horaRotina').value=""; };
@@ -429,6 +486,30 @@
         window.apagarDispositivo = async(id) => { if(confirm("Remover este computador?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/dispositivos`, id)); };
         window.abrirDicas = () => document.getElementById('modalDicas').classList.add('aberta');
         window.fecharDicas = () => document.getElementById('modalDicas').classList.remove('aberta');
-    </script>
+function montarGaleriaInfinita() {
+    const container = document.getElementById('galVisual');
+    container.innerHTML = ""; 
+
+    // Ele vai tentar testar do arquivo 1 até o 50 automaticamente
+    for (let i = 1; i <= 50; i++) {
+        const img = new Image();
+        const nomeArquivo = `${i}.gif`; // Exige que você nomeie como 1.gif, 2.gif...
+        img.src = `IMG/${nomeArquivo}`;
+        img.className = 'img-sel';
+        
+        img.onload = () => {
+            img.classList.add('visivel');
+            container.appendChild(img);
+        };
+
+        img.onclick = () => {
+            document.querySelectorAll('.img-sel').forEach(el => el.classList.remove('ativa'));
+            img.classList.add('ativa');
+            document.getElementById('imgAtividade').value = `IMG/${nomeArquivo}`;
+            window.atualizarPreview();
+        };
+    }
+}
+ </script>
 </body>
 </html>
