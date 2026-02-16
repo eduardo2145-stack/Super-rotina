@@ -1,167 +1,259 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Amigo Virtual</title>
-    <style>
-        /* --- SEU CSS ORIGINAL (PRESERVADO) --- */
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 90px; color: #333; -webkit-tap-highlight-color: transparent; }
-        .app-header { background: white; padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .app-logo { font-size: 18px; font-weight: 800; color: #3498db; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); padding-bottom: max(10px, env(safe-area-inset-bottom)); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; font-size: 10px; flex: 1; }
-        .nav-item i { font-size: 22px; margin-bottom: 4px; font-style: normal; }
-        .nav-item.active { color: #3498db; font-weight: bold; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Rotina</title>
 
-        .card { background: white; border-radius: 12px; padding: 15px; margin: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-        .card-title { font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #2c3e50; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f1f3f6;
+}
 
-        /* --- CORREÇÃO DA BARRA PARA CRESCER NO CARD --- */
-        .grafico-wrapper { 
-            display: flex; 
-            align-items: flex-end; 
-            justify-content: space-around; 
-            height: 140px; 
-            padding: 20px 10px 10px 10px;
-        }
-        .barra-col { display: flex; flex-direction: column; align-items: center; width: 12%; height: 100%; justify-content: flex-end; }
-        .barra { 
-            width: 100%; 
-            background: #3498db; 
-            border-radius: 6px 6px 0 0; 
-            min-height: 4px; 
-            transition: height 0.5s ease; 
-        }
-        .barra-label { font-size: 10px; color: #999; margin-top: 6px; font-weight: bold; }
-        .barra-val { font-size: 10px; font-weight: bold; margin-bottom: 4px; color: #3498db; }
+.app-container {
+    max-width: 480px;
+    margin: auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f1f3f6;
+}
 
-        /* TELA DE LOGIN */
-        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 2000; display: flex; flex-direction: column; justify-content: center; padding: 25px; box-sizing: border-box; }
-        .login-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-        .hidden { display: none !important; }
-        input { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; background: #fdfdfd; }
-        .btn-main { background: #3498db; color: white; border: none; padding: 16px; border-radius: 12px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; }
+.app-header {
+    background: #3498db;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-size: 18px;
+    position: sticky;
+    top: 0;
+}
 
-        /* STATUS DO PC - ESTILO DA IMAGEM 2 */
-        .pc-status-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 15px; padding: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #2ecc71; }
-        .pc-timer { text-align: right; }
-        .pc-timer span { font-weight: bold; color: #333; font-size: 18px; }
-        .status-badge { background: #d4edda; color: #155724; padding: 4px 10px; border-radius: 10px; font-size: 12px; font-weight: bold; }
-    </style>
+.btn-logout {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background: transparent;
+    border: none;
+    color: white;
+}
+
+main {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+.bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    background: white;
+    padding: 10px 0;
+    border-top: 1px solid #ddd;
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #888;
+}
+
+.nav-item.active { color: #3498db; }
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    background: #3498db;
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+
+ul { padding-left: 15px; }
+</style>
 </head>
+
 <body>
 
-    <div id="loginScreen" class="login-overlay">
-        <div class="login-card">
-            <h1 style="color:#3498db; margin-bottom: 5px;">🛡️ Amigo Virtual</h1>
-            <p style="color:#777; margin-bottom: 25px;">Acesse o painel do seu filho</p>
-            <input type="email" id="email" placeholder="E-mail">
-            <input type="password" id="senha" placeholder="Senha">
-            <button class="btn-main" onclick="fazerLogin()">ENTRAR NO PAINEL</button>
-        </div>
-    </div>
+<div class="app-container">
 
-    <div class="app-header">
-        <div class="app-logo">💙 <span id="nomeFilhoHeader">...</span></div>
-        <div id="displayCodigo" style="font-size:12px; color:#7f8c8d; font-weight: bold;">COD: ---</div>
-    </div>
+<header class="app-header">
+    Super Rotina
+    <button onclick="logout()" class="btn-logout">Sair</button>
+</header>
 
-    <div class="card" style="border-top: 4px solid #2ecc71;">
-        <div class="card-title">🖥️ Status do PC</div>
-        <div id="monitoramentoList"></div>
+<main>
+
+<section id="screen-dashboard" class="screen active">
+    <div class="card">
+        <h3>🖥️ Monitoramento</h3>
+        <div id="painelMonitoramento">Bem-vindo!</div>
+    </div>
+</section>
+
+<section id="screen-atividades" class="screen">
+    <div class="card">
+        <h3>🎨 Nova Atividade</h3>
+
+        <input type="text" id="txtAtividade" placeholder="Texto da atividade">
+        <button class="btn-primary" onclick="salvarAtividade()">Salvar</button>
     </div>
 
     <div class="card">
-        <div class="card-title">
-            📊 Histórico
-            <span id="totalMesBadge" style="font-size:11px; background:#e3f2fd; padding:3px 8px; border-radius:10px; color:#2980b9;">Total: --</span>
-        </div>
-        <div id="graficoHistorico" class="grafico-wrapper"></div>
+        <h3>Lista</h3>
+        <ul id="listaAtividades"></ul>
+    </div>
+</section>
+
+<section id="screen-rotinas" class="screen">
+    <div class="card">
+        <h3>📅 Nova Rotina</h3>
+
+        <input type="time" id="horaRotina">
+        <button class="btn-primary" onclick="salvarRotina()">Salvar</button>
     </div>
 
-    <div class="bottom-nav">
-        <div class="nav-item active"><i>🏠</i>Início</div>
-        <div class="nav-item"><i>🎨</i>Criar</div>
-        <div class="nav-item"><i>📅</i>Agenda</div>
-        <div class="nav-item"><i>⚙️</i>Perfil</div>
+    <div class="card">
+        <h3>Rotinas</h3>
+        <div id="listaRotinas"></div>
     </div>
+</section>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, doc, collection, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+</main>
 
-        const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", storageBucket: "rotinaeduardo.firebasestorage.app", messagingSenderId: "210945268922", appId: "1:210945268922:web:ce9e585872090b378d7683" };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+<nav class="bottom-nav">
+    <button onclick="trocarTela('dashboard', this)" class="nav-item active">🏠</button>
+    <button onclick="trocarTela('atividades', this)" class="nav-item">🎯</button>
+    <button onclick="trocarTela('rotinas', this)" class="nav-item">📅</button>
+</nav>
 
-        let filhoAtualId;
+</div>
 
-        window.fazerLogin = async () => {
-            const e = document.getElementById('email').value;
-            const s = document.getElementById('senha').value;
-            try { await signInWithEmailAndPassword(auth, e, s); } catch(err) { alert("Erro: " + err.message); }
-        };
+<script type="module">
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('loginScreen').classList.add('hidden');
-                onSnapshot(collection(db, `usuarios/${user.uid}/filhos`), (s) => {
-                    if (!s.empty) {
-                        filhoAtualId = s.docs[0].id;
-                        const dados = s.docs[0].data();
-                        document.getElementById('nomeFilhoHeader').innerText = dados.nome;
-                        document.getElementById('displayCodigo').innerText = "COD: " + dados.codigo_pareamento;
-                        carregarDados();
-                    }
-                });
-            }
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI",
+    authDomain: "rotinaeduardo.firebaseapp.com",
+    projectId: "rotinaeduardo",
+    storageBucket: "rotinaeduardo.firebasestorage.app",
+    messagingSenderId: "210945268922",
+    appId: "1:210945268922:web:ce9e585872090b378d7683"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let userId = null;
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        userId = user.uid;
+        carregarAtividades();
+        carregarRotinas();
+    } else {
+        alert("Usuário não autenticado");
+    }
+});
+
+window.salvarAtividade = async function() {
+    const texto = document.getElementById("txtAtividade").value;
+    if (!texto) return alert("Digite a atividade");
+
+    await addDoc(collection(db, "usuarios", userId, "atividades"), {
+        texto: texto,
+        criadoEm: new Date()
+    });
+
+    document.getElementById("txtAtividade").value = "";
+}
+
+function carregarAtividades() {
+    const q = query(collection(db, "usuarios", userId, "atividades"), orderBy("criadoEm", "desc"));
+
+    onSnapshot(q, (snapshot) => {
+        const lista = document.getElementById("listaAtividades");
+        lista.innerHTML = "";
+
+        snapshot.forEach((doc) => {
+            const li = document.createElement("li");
+            li.innerHTML = doc.data().texto + " ❌";
+            li.onclick = () => deleteDoc(doc.ref);
+            lista.appendChild(li);
         });
+    });
+}
 
-        function carregarDados() {
-            const base = `usuarios/${auth.currentUser.uid}/filhos/${filhoAtualId}`;
+window.salvarRotina = async function() {
+    const hora = document.getElementById("horaRotina").value;
+    if (!hora) return alert("Escolha um horário");
 
-            onSnapshot(collection(db, `${base}/dispositivos`), (snap) => {
-                const list = document.getElementById('monitoramentoList');
-                list.innerHTML = "";
-                snap.forEach(d => {
-                    const dev = d.data();
-                    const min = dev.tempo_hoje_minutos || 0;
-                    const tempo = min >= 60 ? Math.floor(min/60)+"h "+(min%60)+"m" : min+"m";
-                    list.innerHTML += `
-                        <div class="pc-status-card">
-                            <div><strong style="font-size:18px">${dev.nome || 'PC'}</strong><br><span class="status-badge">Online Agora</span></div>
-                            <div class="pc-timer"><span>${tempo} (Hoje)</span></div>
-                        </div>`;
-                });
-            });
+    await addDoc(collection(db, "usuarios", userId, "rotinas"), {
+        hora: hora,
+        criadoEm: new Date()
+    });
 
-            onSnapshot(query(collection(db, `${base}/historico_uso`), orderBy("data", "desc"), limit(7)), (snap) => {
-                const box = document.getElementById('graficoHistorico');
-                let dados = []; snap.forEach(d => dados.push(d.data())); dados.reverse();
-                if(dados.length === 0) return;
+    document.getElementById("horaRotina").value = "";
+}
 
-                const maxMinutos = Math.max(...dados.map(d => d.minutos || 0), 1);
-                let html = ""; let somaTotal = 0;
+function carregarRotinas() {
+    const q = query(collection(db, "usuarios", userId, "rotinas"), orderBy("hora"));
 
-                dados.forEach(d => {
-                    const min = d.minutos || 0;
-                    somaTotal += min;
-                    const altura = (min / maxMinutos) * 100;
-                    const valStr = min >= 60 ? (min/60).toFixed(1)+'h' : min+'m';
-                    html += `
-                        <div class="barra-col">
-                            <div class="barra-val">${valStr}</div>
-                            <div class="barra" style="height:${Math.max(altura, 5)}%"></div>
-                            <div class="barra-label">${d.data.split('-')[2]}</div>
-                        </div>`;
-                });
-                box.innerHTML = html;
-                document.getElementById('totalMesBadge').innerText = "Total: " + (somaTotal >= 60 ? (somaTotal/60).toFixed(1)+'h' : somaTotal+'m');
-            });
-        }
-    </script>
+    onSnapshot(q, (snapshot) => {
+        const lista = document.getElementById("listaRotinas");
+        lista.innerHTML = "";
+
+        snapshot.forEach((doc) => {
+            const div = document.createElement("div");
+            div.innerHTML = "⏰ " + doc.data().hora + " ❌";
+            div.onclick = () => deleteDoc(doc.ref);
+            lista.appendChild(div);
+        });
+    });
+}
+
+window.logout = function() {
+    signOut(auth).then(() => {
+        alert("Logout realizado");
+        location.reload();
+    });
+}
+
+window.trocarTela = function(nome, botao) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('screen-' + nome).classList.add('active');
+    botao.classList.add('active');
+}
+
+</script>
+
 </body>
 </html>
