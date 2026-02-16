@@ -1,223 +1,880 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rotina Eduardo - Mobile</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Super Rotina Pro</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --green:   #2ecc71;
+            --red:     #e74c3c;
+            --yellow:  #f1c40f;
+            --dark:    #2c3e50;
+            --gray:    #7f8c8d;
+            --light:   #f4f6f8;
+            --card:    white;
+        }
 
-<style>
-body{
-    margin:0;
-    font-family: Arial, sans-serif;
-    background:#eef2f7;
-}
+        * { box-sizing: border-box; }
 
-/* Telas */
-.tela{
-    display:none;
-    padding:20px;
-}
-.tela.active{
-    display:block;
-}
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--light);
+            margin: 0;
+            color: #222;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
 
-/* Card */
-.card{
-    background:white;
-    padding:20px;
-    border-radius:16px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.08);
-    margin-bottom:20px;
-}
+        header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 12px 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            z-index: 100;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-/* Inputs */
-input, button{
-    width:100%;
-    padding:12px;
-    margin-top:10px;
-    border-radius:12px;
-    border:1px solid #ccc;
-    font-size:16px;
-}
+        header .grupo-filho {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
 
-button{
-    background:#3498db;
-    color:white;
-    border:none;
-}
+        header select, header button {
+            min-height: 42px;
+            font-size: 15px;
+            padding: 0 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
 
-/* Menu inferior */
-.menu{
-    position:fixed;
-    bottom:0;
-    left:0;
-    width:100%;
-    background:white;
-    display:flex;
-    justify-content:space-around;
-    padding:10px 0;
-    border-top:1px solid #ddd;
-}
-.menu button{
-    background:none;
-    border:none;
-    font-size:14px;
-    color:#555;
-}
-.menu button.active{
-    color:#3498db;
-    font-weight:bold;
-}
+        .tela { display: none; padding: 16px; padding-bottom: 100px; }
+        .tela.ativa { display: block; }
 
-#dashboard{
-    padding-bottom:80px;
-}
-</style>
+        /* Login */
+        #telaLogin {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .box-login {
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            padding: 32px 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            text-align: center;
+        }
+
+        .box-login h1 { margin: 0 0 28px; font-size: 28px; }
+
+        /* Cards e formulários */
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        h2 {
+            margin: 0 0 16px;
+            font-size: 19px;
+            color: var(--dark);
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-group { margin-bottom: 18px; }
+
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray);
+            margin-bottom: 6px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #d1d9e0;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #fafbfc;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.15);
+        }
+
+        button {
+            min-height: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+        }
+
+        .btn-blue  { background: var(--primary); }
+        .btn-green { background: var(--green); }
+        .btn-red   { background: var(--red); }
+        .btn-yellow{ background: var(--yellow); color: #333; }
+
+        button:active { transform: scale(0.98); }
+
+        /* Devices (checkboxes) */
+        .devices-box {
+            border: 1px solid #e0e7ff;
+            border-radius: 10px;
+            max-height: 220px;
+            overflow-y: auto;
+            background: white;
+        }
+
+        .device-label {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+
+        .device-label:hover { background: #f8fbff; }
+        .device-label input { width: 20px; height: 20px; margin-right: 12px; }
+
+        /* Avisos 5/3 min */
+        .aviso-container {
+            background: #f8fbff;
+            border: 1px solid #e0e7ff;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .aviso-titulo {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        /* Switch */
+        .switch-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid #eee;
+            margin-bottom: 14px;
+            font-size: 15px;
+        }
+
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #ccc;
+            border-radius: 34px;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+
+        input:checked + .slider { background: var(--green); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* Lista atividades */
+        .lista-container ul {
+            list-style: none;
+            padding: 0;
+            margin: 16px 0 0;
+        }
+
+        .lista-container li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #eee;
+        }
+
+        .img-mini {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            margin-right: 12px;
+            border-radius: 8px;
+        }
+
+        /* Gráfico */
+        .grafico-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            height: 160px;
+            overflow-x: auto;
+            padding: 12px 0;
+            background: #f9f9f9;
+            border-radius: 12px;
+        }
+
+        .barra-wrapper {
+            flex: 0 0 55px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .barra {
+            width: 26px;
+            background: var(--primary);
+            border-radius: 6px 6px 0 0;
+            transition: height 0.6s ease;
+        }
+
+        .barra-valor { font-size: 12px; font-weight: bold; margin-bottom: 4px; }
+        .barra-dia   { font-size: 11px; color: #777; margin-top: 6px; }
+
+        /* Timeline */
+        .timeline-box {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            padding: 16px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .tl-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 12px;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid #f0f0f0;
+        }
+
+        .tl-time {
+            min-width: 64px;
+            text-align: center;
+            background: var(--primary);
+            color: white;
+            padding: 8px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin-right: 14px;
+        }
+
+        .tl-content { flex: 1; display: flex; align-items: center; }
+
+        .tl-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: contain;
+            margin-right: 12px;
+            background: #f9f9f9;
+            border: 1px solid #eee;
+        }
+
+        .tl-item.passado { opacity: 0.55; }
+        .tl-item.proximo {
+            border: 2px solid #e67e22;
+            background: #fff8f2;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-overlay.aberta { display: flex; }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 560px;
+            max-height: 90vh;
+            border-radius: 16px;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .btn-fechar-modal {
+            min-width: 110px;
+            margin-top: 20px;
+        }
+
+        /* Ajustes mobile */
+        @media (max-width: 768px) {
+            header { flex-direction: column; align-items: stretch; gap: 14px; }
+            header .grupo-filho { justify-content: space-between; width: 100%; }
+            .card { padding: 18px; }
+            button, input, select { font-size: 16px !important; min-height: 54px; }
+            .grafico-container { height: 170px; }
+            .barra-wrapper { flex: 0 0 65px; }
+        }
+    </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login" class="tela active">
-    <div class="card">
-        <h2>Entrar</h2>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="senha" placeholder="Senha">
-        <button onclick="login()">Entrar</button>
-        <button onclick="mostrarCadastro()">Criar Conta</button>
-    </div>
-</div>
-
-<!-- CADASTRO -->
-<div id="cadastro" class="tela">
-    <div class="card">
-        <h2>Criar Conta</h2>
-        <input type="email" id="emailCad" placeholder="Email">
-        <input type="password" id="senhaCad" placeholder="Senha">
-        <button onclick="criarConta()">Cadastrar</button>
-        <button onclick="voltarLogin()">Voltar</button>
-    </div>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboard" class="tela">
-
-    <div id="sec-atividades" class="secao active">
-        <div class="card">
-            <h3>Nova Atividade</h3>
-            <input type="text" id="atividade" placeholder="Digite atividade">
-            <button onclick="salvarAtividade()">Salvar</button>
-        </div>
-
-        <div class="card">
-            <h3>Minhas Atividades</h3>
-            <div id="lista"></div>
+    <div id="telaLogin" class="tela ativa">
+        <div class="box-login">
+            <h1>🔐 Super Rotina</h1>
+            <div class="form-group"><label>E-mail</label><input type="email" id="email" placeholder="seu@email.com"></div>
+            <div class="form-group"><label>Senha</label><input type="password" id="senha" placeholder="••••••••"></div>
+            <button class="btn-blue" onclick="fazerLogin()" style="width:100%; margin:14px 0 10px">Entrar</button>
+            <button class="btn-green" onclick="criarConta()" style="width:100%">Criar Nova Conta</button>
         </div>
     </div>
 
-    <div id="sec-monitor" class="secao" style="display:none;">
+    <div id="telaDashboard" class="tela">
+
+        <header>
+            <div class="grupo-filho">
+                <span style="font-weight:600; color:#555; white-space:nowrap">Filho:</span>
+                <select id="selectFilho" onchange="mudarFilho()" style="flex:1"></select>
+                <button onclick="novoFilho()" style="background:var(--green)">+ Novo</button>
+                <button onclick="excluirFilho()" class="btn-red" title="Excluir Perfil">🗑️</button>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center;">
+                <button onclick="abrirDicas()" class="btn-yellow" style="font-size:14px; padding:8px 14px;">💡 Dicas</button>
+                <span style="background:#fffbe6; padding:8px 14px; border-radius:20px; font-weight:600; color:#d4ac0d; white-space:nowrap; font-size:14px;">
+                    CÓDIGO: <span id="displayCodigo">...</span>
+                </span>
+                <button onclick="sair()" class="btn-red" style="font-size:14px; padding:8px 14px;">Sair</button>
+            </div>
+        </header>
+
         <div class="card">
-            <h3>Monitor</h3>
-            <p>Em desenvolvimento</p>
+            <h2>🎨 Criar / Editar Atividade</h2>
+            <input type="hidden" id="editIdAtividade">
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+                <div class="form-group" style="flex:2 1 160px;"><label>ID (Nome Curto)</label><input type="text" id="idAtividade" placeholder="ex: banho"></div>
+                <div class="form-group" style="flex:1 1 120px;"><label>Tempo (s)</label><input type="number" id="tempoAtividade" placeholder="15"></div>
+            </div>
+            <div class="form-group"><label>Texto Principal</label><input type="text" id="txtAtividade"></div>
+            <div class="form-group"><label>Imagem Principal (URL)</label><input type="text" id="imgAtividade" oninput="atualizarPreview()"></div>
+
+            <div class="form-group" style="background:#fff; padding:16px; border:1px solid #ddd; border-radius:10px; text-align:center;">
+                <label style="margin-bottom:12px; display:block; text-align:left">📐 Tamanho: <span id="labelTamanho" style="color:var(--primary); font-weight:bold">150px</span></label>
+                <input type="range" id="rangeTamanho" min="50" max="500" value="150" oninput="atualizarPreview()" style="width:100%; margin-bottom:12px;">
+                <div style="min-height:120px; border:1px dashed #ccc; background-image:radial-gradient(#eee 1px, transparent 1px); background-size:10px 10px; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:8px;">
+                    <img id="previewAvatar" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" style="width:150px; transition:width 0.15s;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>📱 Onde exibir? (Online = 🟢)</label>
+                <div class="devices-box" id="listaDispositivos"><div style="padding:12px; color:#999">Aguardando PC...</div></div>
+            </div>
+
+            <div class="aviso-container"><span class="aviso-titulo">🕒 Aviso de 5 Minutos</span><input type="text" id="txt5min" placeholder="Texto" style="margin:8px 0 6px;"><input type="text" id="img5min" placeholder="Imagem"></div>
+            <div class="aviso-container"><span class="aviso-titulo">🕒 Aviso de 3 Minutos</span><input type="text" id="txt3min" placeholder="Texto" style="margin:8px 0 6px;"><input type="text" id="img3min" placeholder="Imagem"></div>
+
+            <div class="form-group"><label>📍 Posição</label>
+                <select id="posAtividade">
+                    <option value="">Padrão Geral</option>
+                    <option value="top-left">↖ Topo Esquerda</option>
+                    <option value="top-center">⬆ Topo Centro</option>
+                    <option value="top-right">↗ Topo Direita</option>
+                    <option value="center">⏺ Centro</option>
+                    <option value="bottom-left">↙ Baixo Esquerda</option>
+                    <option value="bottom-center">⬇ Baixo Centro</option>
+                    <option value="bottom-right">↘ Baixo Direita</option>
+                </select>
+            </div>
+
+            <div class="switch-row"><span>Ler em voz alta?</span><label class="switch"><input type="checkbox" id="checkVoz" checked><span class="slider"></span></label></div>
+            <div class="switch-row"><span>Bloquear a Tela?</span><label class="switch"><input type="checkbox" id="checkBlock"><span class="slider"></span></label></div>
+
+            <div style="display:flex; gap:12px; margin:20px 0 16px;">
+                <button class="btn-blue" onclick="salvarAtividade()" style="flex:1">💾 Salvar Atividade</button>
+                <button style="background:#95a5a6; color:white; flex:1" onclick="limparFormAtividade()">Limpar</button>
+            </div>
+
+            <div class="lista-container"><ul id="listaAtividades"></ul></div>
+        </div>
+
+        <div class="card">
+            <h2>🖥️ Computadores (Monitoramento)</h2>
+            <div id="painelMonitoramento"><p style="text-align:center; color:#999; padding:20px;">Carregando status...</p></div>
+        </div>
+
+        <div class="card">
+            <h2 id="tituloHistorico">📊 Histórico de Uso</h2>
+            <div id="graficoHistorico" class="grafico-container"><small style="color:#999; padding:20px;">Aguardando dados...</small></div>
+        </div>
+
+        <div class="card">
+            <h2>📅 Agendar Rotina</h2>
+            <input type="hidden" id="editIdRotina">
+            <div style="background:#f0f4f8; padding:16px; border-radius:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+                <div style="flex:1 1 140px;"><label>Hora</label><input type="time" id="horaRotina"></div>
+                <div style="flex:1 1 140px;"><label>Dia</label><select id="diaRotina">
+                    <option value="todos">Todos</option>
+                    <option value="1">Seg</option><option value="2">Ter</option><option value="3">Qua</option>
+                    <option value="4">Qui</option><option value="5">Sex</option><option value="6">Sáb</option><option value="0">Dom</option>
+                </select></div>
+                <div style="flex:2 1 200px;"><label>Atividade</label><select id="selectAtividadeRotina"></select></div>
+                <div><button class="btn-green" style="padding:14px 24px;" onclick="salvarRotina()">OK</button></div>
+            </div>
+            <div class="calendario-wrapper" style="overflow-x:auto; white-space:nowrap; margin-top:16px; padding-bottom:12px;">
+                <div id="calendarioContainer" style="display:inline-flex; gap:10px;"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🗺️ Mapa do Dia (Hoje)</h2>
+            <div id="timelineInteligente" class="timeline-box">
+                <div style="text-align:center; color:#888; padding:30px 0;">Carregando roteiro...</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎮 Ações Manuais</h2>
+            <div id="gridAcoes" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(90px, 1fr)); gap:12px; margin-bottom:20px;"></div>
+            <div style="display:flex; gap:12px;">
+                <button onclick="enviarAcao('livre')" style="flex:1; background:#95a5a6;">🔓 LIBERAR</button>
+                <button onclick="enviarAcao('bloqueio')" style="flex:1; background:var(--red);">🔒 BLOQUEAR</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="modalDicas" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="margin-top:0">💡 5 Pilares da Rotina no Autismo</h2>
+            <div class="dica-item" style="margin-bottom:20px; border-bottom:1px solid #eee; padding-bottom:16px;">
+                <div class="dica-titulo" style="font-weight:bold; color:var(--dark); margin-bottom:8px;">1. Antecipação</div>
+                <div>Use os avisos de 5 e 3 minutos para preparar a criança com antecedência.</div>
+            </div>
+            <!-- Você pode adicionar mais pilares aqui se quiser -->
+            <button class="btn-fechar-modal btn-blue" onclick="fecharDicas()">Fechar</button>
         </div>
     </div>
 
-    <div class="menu">
-        <button class="active" onclick="abrirSecao('atividades', this)">Atividades</button>
-        <button onclick="abrirSecao('monitor', this)">Monitor</button>
-        <button onclick="logout()">Sair</button>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, deleteDoc, updateDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-</div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI",
+            authDomain: "rotinaeduardo.firebaseapp.com",
+            projectId: "rotinaeduardo",
+            storageBucket: "rotinaeduardo.firebasestorage.app",
+            messagingSenderId: "210945268922",
+            appId: "1:210945268922:web:ce9e585872090b378d7683",
+            measurementId: "G-MDYWRH9RNP"
+        };
 
-<script type="module">
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        let usuarioAtual, filhoAtualId, cacheAtividades={}, cacheRotinas={}, unsubscribeAtividades, unsubscribeRotinas, unsubscribeDispositivos, unsubscribeHistorico;
 
-const firebaseConfig = {
-apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI",
-authDomain: "rotinaeduardo.firebaseapp.com",
-projectId: "rotinaeduardo",
-storageBucket: "rotinaeduardo.firebasestorage.app",
-messagingSenderId: "210945268922",
-appId: "1:210945268922:web:ce9e585872090b378d7683"
-};
+        window.fazerLogin = async () => {
+            try {
+                await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value);
+            } catch(e){ alert(e.message); }
+        };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+        window.criarConta = async () => {
+            try {
+                await createUserWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value);
+            } catch(e){ alert(e.message); }
+        };
 
-/* Telas */
-function mostrar(id){
-    document.querySelectorAll('.tela').forEach(t=>t.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-}
+        window.sair = () => signOut(auth);
 
-window.mostrarCadastro = ()=> mostrar("cadastro");
-window.voltarLogin = ()=> mostrar("login");
-
-/* Auth */
-window.criarConta = async ()=>{
-    const email = document.getElementById("emailCad").value;
-    const senha = document.getElementById("senhaCad").value;
-    await createUserWithEmailAndPassword(auth,email,senha);
-};
-
-window.login = async ()=>{
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
-    await signInWithEmailAndPassword(auth,email,senha);
-};
-
-window.logout = ()=> signOut(auth);
-
-onAuthStateChanged(auth,user=>{
-    if(user){
-        mostrar("dashboard");
-        carregarAtividades();
-    }else{
-        mostrar("login");
-    }
-});
-
-/* Firestore */
-async function salvarAtividade(){
-    const texto = document.getElementById("atividade").value;
-    if(!texto) return;
-    await addDoc(collection(db,"atividades"),{
-        texto:texto,
-        uid:auth.currentUser.uid,
-        criado:Date.now()
-    });
-    document.getElementById("atividade").value="";
-}
-window.salvarAtividade = salvarAtividade;
-
-function carregarAtividades(){
-    const lista = document.getElementById("lista");
-    onSnapshot(collection(db,"atividades"),snapshot=>{
-        lista.innerHTML="";
-        snapshot.forEach(doc=>{
-            const d = doc.data();
-            if(d.uid===auth.currentUser.uid){
-                lista.innerHTML+=`<p>• ${d.texto}</p>`;
+        onAuthStateChanged(auth, (u) => {
+            if(u) {
+                usuarioAtual = u;
+                document.getElementById('telaLogin').classList.remove('ativa');
+                document.getElementById('telaDashboard').classList.add('ativa');
+                carregarFilhos();
+            } else {
+                document.getElementById('telaLogin').classList.add('ativa');
+                document.getElementById('telaDashboard').classList.remove('ativa');
             }
         });
-    });
-}
 
-/* Menu */
-window.abrirSecao = (sec,btn)=>{
-    document.getElementById("sec-atividades").style.display="none";
-    document.getElementById("sec-monitor").style.display="none";
-    document.getElementById("sec-"+sec).style.display="block";
+        window.atualizarPreview = () => {
+            const range = document.getElementById('rangeTamanho').value;
+            const url = document.getElementById('imgAtividade').value;
+            const img = document.getElementById('previewAvatar');
+            document.getElementById('labelTamanho').innerText = range + "px";
+            img.style.width = range + "px";
+            if(url && url.length > 5) img.src = url;
+        };
 
-    document.querySelectorAll(".menu button").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-};
+        function carregarFilhos() {
+            const sel = document.getElementById('selectFilho');
+            onSnapshot(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), (s) => {
+                sel.innerHTML = "";
+                let tem = false;
+                s.forEach(d => {
+                    tem = true;
+                    let o = document.createElement('option');
+                    o.value = d.id;
+                    o.innerText = d.data().nome;
+                    sel.appendChild(o);
+                });
+                if(!tem) novoFilho();
+                else {
+                    if(!filhoAtualId) filhoAtualId = sel.value;
+                    if(sel.querySelector(`option[value="${filhoAtualId}"]`)) sel.value = filhoAtualId;
+                    else { sel.value = sel.options[0].value; filhoAtualId = sel.value; }
+                    carregarDadosFilho();
+                }
+            });
+        }
 
-</script>
+        window.novoFilho = async () => {
+            const n = prompt("Nome do Filho:");
+            if(!n) return;
+            const c = Math.random().toString(36).substring(2,8).toUpperCase();
+            const r = await addDoc(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), { nome: n, codigo_pareamento: c });
+            await setDoc(doc(db, "conexoes", c), { caminho_dados: `usuarios/\( {usuarioAtual.uid}/filhos/ \){r.id}` });
+            mudarFilho();
+        };
 
+        window.excluirFilho = async () => {
+            if(!filhoAtualId) return;
+            if(confirm("Excluir perfil?")) {
+                await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos`, filhoAtualId));
+                location.reload();
+            }
+        };
+
+        window.mudarFilho = () => {
+            filhoAtualId = document.getElementById('selectFilho').value;
+            carregarDadosFilho();
+        };
+
+        function carregarDadosFilho() {
+            if(!filhoAtualId) return;
+            const base = `usuarios/\( {usuarioAtual.uid}/filhos/ \){filhoAtualId}`;
+            getDoc(doc(db, base)).then(d => {
+                if(d.exists()) document.getElementById('displayCodigo').innerText = d.data().codigo_pareamento;
+            });
+
+            if(unsubscribeDispositivos) unsubscribeDispositivos();
+            if(unsubscribeAtividades) unsubscribeAtividades();
+            if(unsubscribeRotinas) unsubscribeRotinas();
+            if(unsubscribeHistorico) unsubscribeHistorico();
+
+            // MONITORAMENTO
+            unsubscribeDispositivos = onSnapshot(collection(db, `${base}/dispositivos`), (snap) => {
+                const boxSelect = document.getElementById('listaDispositivos');
+                const boxMonitor = document.getElementById('painelMonitoramento');
+                let htmlSelect = `<label class="device-label"><input type="checkbox" id="dev_todos" value="todos" checked> <b>Todos</b></label>`;
+                let htmlMonitor = "";
+
+                if(snap.empty) {
+                    htmlSelect += `<div style="padding:12px; color:#999; font-size:13px">Aguardando PC...</div>`;
+                    htmlMonitor = `<div style="padding:30px; text-align:center; color:#999">Nenhum computador conectado.</div>`;
+                } else {
+                    let devices = [];
+                    snap.forEach(d => { let obj = d.data(); obj.id = d.id; devices.push(obj); });
+                    devices.sort((a,b) => (b.online?.toDate() || 0) - (a.online?.toDate() || 0));
+
+                    devices.forEach(dev => {
+                        const isOnline = dev.online && (new Date() - dev.online.toDate() < 120000);
+                        const statusDot = isOnline ? "🟢" : "⚪";
+
+                        let tempoDiario = "--";
+                        if(dev.tempo_hoje_minutos !== undefined) {
+                            const h = Math.floor(dev.tempo_hoje_minutos / 60);
+                            const m = dev.tempo_hoje_minutos % 60;
+                            tempoDiario = `${h}h ${m}m`;
+                        }
+
+                        htmlSelect += `<label class="device-label"><input type="checkbox" name="dev_item" value="${dev.id}"> ${statusDot} ${dev.nome || "PC"}</label>`;
+
+                        htmlMonitor += `
+                            <div class="pc-status-card" style="background:#f8f9fa; border:1px solid #e9ecef; border-radius:10px; padding:16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; border-left: ${isOnline ? '4px solid #2ecc71' : '1px solid #ccc'};">
+                                <div>
+                                    <h3 style="margin:0; font-size:17px;">💻 ${dev.nome || "Computador"}</h3>
+                                    <span style="display:inline-block; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:bold; margin-top:6px; background:\( {isOnline?'#d4edda':'#f8d7da'}; color: \){isOnline?'#155724':'#721c24'}; border:1px solid ${isOnline?'#c3e6cb':'#f5c6cb'};">
+                                        ${isOnline ? 'ONLINE' : 'OFFLINE'}
+                                    </span>
+                                </div>
+                                <div style="text-align:right;">
+                                    <div style="margin-bottom:4px;">
+                                        <small style="display:block; font-size:11px; color:#6c757d; text-transform:uppercase;">USO NO DIA</small>
+                                        <span style="font-size:20px; font-weight:bold; font-family:monospace;">${tempoDiario}</span>
+                                    </div>
+                                    <button class="btn-del-device" onclick="apagarDispositivo('${dev.id}')" style="background:transparent; border:none; color:#ccc; font-size:18px; cursor:pointer;">🗑️</button>
+                                </div>
+                            </div>`;
+                    });
+                }
+                boxSelect.innerHTML = htmlSelect;
+                boxMonitor.innerHTML = htmlMonitor;
+            });
+
+            // HISTÓRICO
+            const histRef = query(collection(db, `${base}/historico_uso`), orderBy("data", "desc"), limit(31));
+            unsubscribeHistorico = onSnapshot(histRef, (snap) => {
+                const box = document.getElementById('graficoHistorico');
+                if(snap.empty) { box.innerHTML = "<small style='padding:30px; display:block; text-align:center;'>Sem histórico.</small>"; return; }
+
+                let dados = [];
+                let totalMinutosMes = 0;
+                const mesAtual = new Date().toISOString().slice(0, 7);
+
+                snap.forEach(d => {
+                    const dia = d.data();
+                    if(dia.data.startsWith(mesAtual)) totalMinutosMes += (dia.minutos || 0);
+                    dados.push(dia);
+                });
+
+                const hTotal = Math.floor(totalMinutosMes / 60);
+                const mTotal = totalMinutosMes % 60;
+                const metaInfo = `Acumulado no Mês: ${hTotal}h ${mTotal}m`;
+
+                let html = "";
+                let dadosGrafico = dados.slice(0,7).reverse();
+                let max = Math.max(...dadosGrafico.map(d => d.minutos || 0), 1);
+
+                dadosGrafico.forEach(d => {
+                    const altura = Math.max(8, (d.minutos / max) * 100);
+                    const diaFormat = d.data.split('-')[2] + '/' + d.data.split('-')[1];
+                    const valorLabel = d.minutos > 60 ? (d.minutos / 60).toFixed(1) + 'h' : d.minutos + 'm';
+
+                    html += `
+                        <div class="barra-wrapper">
+                            <div class="barra-valor">${valorLabel}</div>
+                            <div class="barra" style="height:${altura}px"></div>
+                            <div class="barra-dia">${diaFormat}</div>
+                        </div>`;
+                });
+
+                box.innerHTML = html;
+                document.getElementById('tituloHistorico').innerHTML = `📊 Histórico de Uso <small style="float:right; color:var(--primary); font-size:13px;">${metaInfo}</small>`;
+            });
+
+            // ATIVIDADES
+            unsubscribeAtividades = onSnapshot(collection(db, `${base}/atividades`), (snap) => {
+                const l = document.getElementById('listaAtividades');
+                const s = document.getElementById('selectAtividadeRotina');
+                const g = document.getElementById('gridAcoes');
+                l.innerHTML = ""; s.innerHTML = ""; g.innerHTML = ""; cacheAtividades = {};
+
+                snap.forEach(d => {
+                    const dd = d.data(); cacheAtividades[d.id] = dd;
+                    l.innerHTML += `<li><div style="display:flex; align-items:center"><img src="\( {dd.imagem}" class="img-mini" onerror="this.style.display='none'"><b> \){d.id}</b></div><div><button class="btn-edit" style="background:#f1c40f; color:#333; border:none; padding:8px 12px; border-radius:6px; margin-right:6px; cursor:pointer;" onclick="carregarEdicaoAtividade('\( {d.id}')">✏️</button><button class="btn-red" style="background:var(--red); border:none; padding:8px 12px; border-radius:6px; cursor:pointer;" onclick="apagarAtividade(' \){d.id}')">X</button></div></li>`;
+                    let o = document.createElement('option'); o.value = d.id; o.innerText = d.id; s.appendChild(o);
+                    g.innerHTML += `<div style="text-align:center; border:1px solid #eee; padding:10px; border-radius:10px; cursor:pointer; background:#fdfdfd" onclick="enviarAcao('\( {d.id}')"><img src=" \){dd.imagem}" style="width:36px; height:36px; object-fit:contain; margin-bottom:6px"><br><small style="font-weight:bold">${d.id}</small></div>`;
+                });
+                renderizarTimeline();
+            });
+
+            // ROTINAS
+            unsubscribeRotinas = onSnapshot(collection(db, `${base}/rotinas`), (snap) => {
+                const c = document.getElementById('calendarioContainer'); c.innerHTML = "";
+                const dias = ["DOM","SEG","TER","QUA","QUI","SEX","SÁB"];
+                for(let i=0; i<7; i++) {
+                    c.innerHTML += `<div class="dia-coluna" id="col-\( {i}" style="display:inline-block; width:140px; vertical-align:top; background:white; margin-right:8px; padding:10px; border-radius:10px; border:1px solid #eee; min-height:140px;"><div style="text-align:center; font-weight:bold; color:var(--primary); border-bottom:1px solid #eee; padding-bottom:8px; margin-bottom:8px"> \){dias[i]}</div></div>`;
+                }
+                cacheRotinas = {};
+                snap.forEach(d => {
+                    const r = d.data(); cacheRotinas[d.id] = r;
+                    const h = `<div class="card-rotina" style="background:#f0f8ff; border-left:4px solid var(--primary); padding:8px; margin-bottom:6px; border-radius:6px; font-size:13px;"><b>${r.hora}</b> \( {r.acao}<div style="text-align:right; margin-top:6px"><button style="background:#f1c40f; color:#333; border:none; padding:6px 10px; border-radius:6px; margin-right:6px; cursor:pointer;" onclick="carregarEdicaoRotina(' \){d.id}')">✏️</button><button style="background:var(--red); border:none; padding:6px 10px; border-radius:6px; cursor:pointer;" onclick="apagarRotina('${d.id}')">X</button></div></div>`;
+                    if(r.dia_semana==='todos') {
+                        for(let i=0;i<7;i++) document.getElementById(`col-${i}`).innerHTML += h;
+                    } else {
+                        try { document.getElementById(`col-${r.dia_semana}`).innerHTML += h; } catch(e){}
+                    }
+                });
+                renderizarTimeline();
+            });
+        }
+
+        function renderizarTimeline() {
+            const container = document.getElementById('timelineInteligente');
+            if(!container) return;
+            container.innerHTML = "";
+            const hoje = new Date();
+            const diaSemana = hoje.getDay().toString();
+            const horaAtual = hoje.getHours() * 60 + hoje.getMinutes();
+            let rotinasHoje = Object.values(cacheRotinas).filter(r => r.dia_semana === 'todos' || r.dia_semana === diaSemana).sort((a,b) => a.hora.localeCompare(b.hora));
+            if(rotinasHoje.length === 0) {
+                container.innerHTML = "<p style='color:#999; text-align:center; padding:40px 0'>Sem rotinas hoje.</p>";
+                return;
+            }
+            let proxMarked = false;
+            rotinasHoje.forEach(r => {
+                const [h, m] = r.hora.split(':').map(Number);
+                const minutos = h * 60 + m;
+                let cl = minutos < horaAtual ? "passado" : (!proxMarked ? (proxMarked=true, "proximo") : "");
+                const atv = cacheAtividades[r.acao] || {};
+                container.innerHTML += `
+                    <div class="tl-item \( {cl}" style=" \){cl==='proximo'?'border:2px solid #e67e22; background:#fff8f2;':''}">
+                        <div class="tl-time" style="\( {cl==='proximo'?'background:#e67e22; font-size:15px; padding:10px;':''}"> \){r.hora}</div>
+                        <div class="tl-content">
+                            <img src="${atv.imagem||''}" class="tl-img" onerror="this.style.display='none'">
+                            <div class="tl-text">
+                                <b style="\( {cl==='proximo'?'color:#e67e22; font-size:16px;':''}"> \){r.acao} ${cl==='proximo'?'⏳':''}</b>
+                                <span style="display:block; font-size:13px; color:#666;">${atv.texto||''}</span>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        window.salvarAtividade = async () => {
+            const idInput = document.getElementById('idAtividade');
+            const editId = document.getElementById('editIdAtividade').value;
+            let idFinal = editId ? editId : idInput.value.toLowerCase().replace(/\s/g, '');
+            if(!idFinal) return alert("ID Obrigatório");
+            let alvos = [];
+            try {
+                if(document.getElementById('dev_todos')?.checked) alvos.push('todos');
+                document.querySelectorAll('input[name="dev_item"]:checked').forEach(c => alvos.push(c.value));
+            } catch(e){}
+            await setDoc(doc(db, `usuarios/\( {usuarioAtual.uid}/filhos/ \){filhoAtualId}/atividades`, idFinal), {
+                texto: document.getElementById('txtAtividade').value,
+                imagem: document.getElementById('imgAtividade').value,
+                tempo_personalizado: document.getElementById('tempoAtividade').value,
+                tamanho_avatar: document.getElementById('rangeTamanho').value,
+                texto_5min: document.getElementById('txt5min').value,
+                imagem_5min: document.getElementById('img5min').value,
+                texto_3min: document.getElementById('txt3min').value,
+                imagem_3min: document.getElementById('img3min').value,
+                posicao_especifica: document.getElementById('posAtividade').value,
+                falar_texto: document.getElementById('checkVoz').checked,
+                bloquear_tela: document.getElementById('checkBlock').checked,
+                dispositivos_alvo: alvos
+            });
+            alert("Atividade Salva!");
+            limparFormAtividade();
+        };
+
+        window.carregarEdicaoAtividade = (id) => {
+            const d = cacheAtividades[id];
+            if(!d) return;
+            document.getElementById('idAtividade').value = id;
+            document.getElementById('idAtividade').disabled = true;
+            document.getElementById('editIdAtividade').value = id;
+            document.getElementById('txtAtividade').value = d.texto||"";
+            document.getElementById('imgAtividade').value = d.imagem||"";
+            document.getElementById('tempoAtividade').value = d.tempo_personalizado||"";
+            document.getElementById('rangeTamanho').value = d.tamanho_avatar||"150";
+            atualizarPreview();
+            document.getElementById('txt5min').value = d.texto_5min||"";
+            document.getElementById('txt3min').value = d.texto_3min||"";
+            document.getElementById('posAtividade').value = d.posicao_especifica||"";
+            document.getElementById('checkVoz').checked = (d.falar_texto!==false);
+            document.getElementById('checkBlock').checked = (d.bloquear_tela===true);
+        };
+
+        window.limparFormAtividade = () => {
+            document.getElementById('idAtividade').disabled = false;
+            document.getElementById('idAtividade').value = "";
+            document.getElementById('editIdAtividade').value = "";
+            document.querySelectorAll('#telaDashboard input[type=text], #telaDashboard input[type=number]').forEach(i=>i.value="");
+            document.getElementById('rangeTamanho').value = "150";
+            atualizarPreview();
+        };
+
+        window.salvarRotina = async () => {
+            const h = document.getElementById('horaRotina').value;
+            const id = document.getElementById('editIdRotina').value;
+            if(!h) return;
+            const d = {
+                hora: h,
+                dia_semana: document.getElementById('diaRotina').value,
+                acao: document.getElementById('selectAtividadeRotina').value
+            };
+            if(id) await updateDoc(doc(db,`usuarios/\( {usuarioAtual.uid}/filhos/ \){filhoAtualId}/rotinas`,id),d);
+            else await addDoc(collection(db,`usuarios/\( {usuarioAtual.uid}/filhos/ \){filhoAtualId}/rotinas`),d);
+            document.getElementById('editIdRotina').value = "";
+            document.getElementById('horaRotina').value = "";
+        };
+
+        window.carregarEdicaoRotina = (id) => {
+            const r = cacheRotinas[id];
+            if(!r) return;
+            document.getElementById('editIdRotina').value = id;
+            document.getElementById('horaRotina').value = r.hora;
+            document.getElementById('diaRotina').value = r.dia_semana;
+            document.getElementById('selectAtividadeRotina').value = r.acao;
+        };
+
+        window.apagarAtividade = async(id) => {
+            if(confirm("Apagar atividade?")) await deleteDoc(doc(db, `usuarios/\( {usuarioAtual.uid}/filhos/ \){filhoAtualId}/atividades`, id));
+        };
+
+        window.apagarRotina = async(id) => {
+            if(confirm("Apagar rotina?")) await deleteDoc(doc(db, `usuarios/\( {usuarioAtual.uid}/filhos/ \){filhoAtualId}/rotinas`, id));
+        };
+
+        window.enviarAcao = async(a) => {
+            if(!filhoAtualId) return alert("Selecione um filho");
+            await setDoc(doc(db, `usuarios/\( {usuarioAtual.uid}/filhos/ \){filhoAtualId}/config/estado_atual`), {acao:a, timestamp:new Date()}, {merge:true});
+        };
+
+        window.apagarDispositivo = async(id) => {
+            if(confirm("Remover este computador?")) await deleteDoc(doc(db, `usuarios/\( {usuarioAtual.uid}/filhos/ \){filhoAtualId}/dispositivos`, id));
+        };
+
+        window.abrirDicas = () => document.getElementById('modalDicas').classList.add('aberta');
+        window.fecharDicas = () => document.getElementById('modalDicas').classList.remove('aberta');
+    </script>
 </body>
 </html>
