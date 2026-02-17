@@ -486,24 +486,49 @@
         window.apagarDispositivo = async(id) => { if(confirm("Remover este computador?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/dispositivos`, id)); };
         window.abrirDicas = () => document.getElementById('modalDicas').classList.add('aberta');
         window.fecharDicas = () => document.getElementById('modalDicas').classList.remove('aberta');
-// --- GALERIA CORRIGIDA (SALVA LINK COMPLETO) ---
-        function montarGaleriaInfinita() {
-            const container = document.getElementById('galVisual');
-            if(!container) return; container.innerHTML = "";
-            const nomes = ["ARRUMANDO_CAMA", "BANHO", "BOCEJANDO", "COMER", "DESLIGAR-PC", "LIGAR-PC", "ESCOVANDO_DENTES"];
-            for(let i=1; i<=50; i++) nomes.push(`${i}`); 
-            nomes.forEach(nomeBase => {
-                [".gif", ".png", ".jpg", ".GIF", ".PNG", ".JPG"].forEach(ext => {
-                    const nomeArq = nomeBase.includes('.') ? nomeBase : nomeBase + ext;
-                    const img = new Image();
-                    img.src = `IMG/${nomeArq}`; img.className = 'img-sel';
-                    img.onload = () => { if(!container.querySelector(`img[src*="${nomeBase}"]`)) { img.classList.add('visivel'); container.appendChild(img); }};
-                    // CORREÇÃO AQUI: Salva o img.src completo (http://...)
-                    img.onclick = () => { document.querySelectorAll('.img-sel').forEach(i => i.classList.remove('ativa')); img.classList.add('ativa'); document.getElementById('imgAtividade').value = img.src; window.atualizarPreview(); };
-                });
-            });
-        }
+function montarGaleriaInfinita() {
+    const container = document.getElementById('galVisual');
+    if(!container) return; 
+    container.innerHTML = "";
+    
+    // Lista de nomes base
+    const nomes = ["ARRUMANDO_CAMA", "BANHO", "BOCEJANDO", "COMER", "DESLIGAR-PC", "LIGAR-PC", "ESCOVANDO_DENTES"];
+    // Adiciona números de 1 a 50
+    for(let i=1; i<=50; i++) nomes.push(`${i}`); 
+
+    nomes.forEach(nomeBase => {
+        // Tenta todas as extensões possíveis
+        [".gif", ".png", ".jpg", ".GIF", ".PNG", ".JPG"].forEach(ext => {
+            
+            const nomeArq = nomeBase.includes('.') ? nomeBase : nomeBase + ext;
+            const img = new Image();
+            img.src = `IMG/${nomeArq}`; // Ou o caminho completo se preferir
+            img.className = 'img-sel';
+            
+            // --- O SEGREDO ESTÁ AQUI ---
+            // Colocamos uma etiqueta única na imagem
+            img.setAttribute('data-id', nomeBase); 
+
+            img.onload = () => { 
+                // Verificamos se já existe alguém com essa ETIQUETA EXATA
+                // (Isso impede que o '1' seja confundido com o '10')
+                if(!container.querySelector(`img[data-id="${nomeBase}"]`)) { 
+                    img.classList.add('visivel'); 
+                    container.appendChild(img); 
+                }
+            };
+
+            img.onclick = () => {
+                document.querySelectorAll('.img-sel').forEach(i => i.classList.remove('ativa'));
+                img.classList.add('ativa'); 
+                document.getElementById('imgAtividade').value = img.src; 
+                window.atualizarPreview();
+            };
+        });
+    });
+}
  </script>
 </body>
 </html>
+
 
