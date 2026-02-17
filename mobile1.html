@@ -3,421 +3,389 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super Rotina Pro Mobile</title>
+    <title>Super Rotina App</title>
     <style>
-        :root {
-            --primary: #3498db;
-            --secondary: #2ecc71;
-            --danger: #e74c3c;
-            --bg: #f0f2f5;
-            --card: #ffffff;
-            --text: #333;
-        }
-
+        /* --- ESTILOS APP MOBILE --- */
         body { 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            background: var(--bg); 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: #f0f2f5; 
             margin: 0; 
-            padding: 0;
-            color: var(--text);
-            padding-bottom: 70px; /* Espaço para a barra inferior */
+            padding-bottom: 80px; /* Espaço para o menu inferior */
+            color: #333; 
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- NAVEGAÇÃO POR ABAS --- */
-        .tela { display: none; padding: 15px; box-sizing: border-box; }
+        /* --- TELAS (SISTEMA DE ABAS) --- */
+        .tela { display: none; padding: 15px; padding-top: 70px; animation: fadeIn 0.3s; }
         .tela.ativa { display: block; }
-
-        /* Barra Superior */
-        .app-bar {
-            background: var(--primary);
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        /* Cards Estilo Mobile */
-        .card {
-            background: var(--card);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        h2 { font-size: 16px; margin: 0 0 15px 0; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 8px; }
-
-        /* Formulários Mobile-First */
-        .form-group { margin-bottom: 15px; }
-        label { font-size: 12px; font-weight: bold; color: #7f8c8d; display: block; margin-bottom: 5px; }
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px; /* Evita zoom automático no iOS */
-            box-sizing: border-box;
-        }
-
-        /* Grid de Ações Rápidas */
-        .grid-acoes {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .acao-item {
-            background: #f8f9fa;
-            border: 1px solid #eee;
-            border-radius: 12px;
-            padding: 10px;
-            text-align: center;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .acao-item img { width: 35px; height: 35px; object-fit: contain; }
-
-        /* Barra de Navegação Inferior */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            z-index: 1000;
-        }
-
-        .nav-btn {
-            border: none;
-            background: none;
-            color: #95a5a6;
-            font-size: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .nav-btn.active { color: var(--primary); }
-        .nav-btn b { font-size: 20px; }
-
-        /* Botões */
-        button.main-btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-
-        .btn-blue { background: var(--primary); }
-        .btn-green { background: var(--secondary); }
-
-        /* Timeline Responsiva */
-        .tl-item {
-            display: flex;
-            background: white;
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 10px;
-            align-items: center;
-            border-left: 4px solid var(--primary);
-        }
-        .tl-time { font-weight: bold; margin-right: 15px; color: var(--primary); }
+        .tela-login { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
         
-        /* Lista de Dispositivos */
-        .devices-box { border: 1px solid #eee; border-radius: 8px; max-height: 120px; overflow-y: auto; }
-        .device-label { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .hidden { display: none !important; }
+        /* --- HEADER FIXO (TOPO) --- */
+        .app-header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
+            background: white; border-bottom: 1px solid #eee;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 15px; box-sizing: border-box; z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        
+        /* --- MENU INFERIOR (RODAPÉ) --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 65px;
+            background: white; border-top: 1px solid #eee;
+            display: flex; justify-content: space-around; align-items: center;
+            z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            color: #95a5a6; font-size: 10px; font-weight: 600;
+            background: none; border: none; cursor: pointer;
+        }
+        .nav-item span { font-size: 24px; margin-bottom: 2px; }
+        .nav-item.ativo { color: #3498db; }
+
+        /* --- CARDS E ELEMENTOS --- */
+        .card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        h2 { margin-top: 0; font-size: 16px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px; color: #2c3e50; }
+        
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 15px; background: #f9f9f9; margin-bottom: 10px; }
+        label { display: block; font-size: 11px; font-weight: bold; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; }
+
+        /* --- BOTÕES --- */
+        button { border: none; border-radius: 10px; padding: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 14px; margin-bottom: 5px; }
+        .btn-blue { background: #3498db; color: white; }
+        .btn-green { background: #2ecc71; color: white; }
+        .btn-red { background: #e74c3c; color: white; }
+        .btn-icon { width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+
+        /* --- GALERIA MOBILE --- */
+        .galeria-v { 
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; 
+            max-height: 200px; overflow-y: auto; background: #f8f9fa; 
+            padding: 8px; border-radius: 10px; border: 1px solid #eee; margin-bottom: 10px;
+        }
+        .img-sel { width: 100%; aspect-ratio: 1; object-fit: contain; background: white; border-radius: 8px; border: 2px solid transparent; display: none; }
+        .img-sel.visivel { display: block; }
+        .img-sel.ativa { border-color: #2ecc71; transform: scale(0.95); }
+
+        /* --- MONITORAMENTO E LISTAS --- */
+        .pc-status-card { display: flex; justify-content: space-between; align-items: center; background: #f4f6f8; padding: 10px; border-radius: 10px; margin-bottom: 10px; }
+        .timeline-box { background: white; border-radius: 10px; padding: 5px; }
+        .tl-item { display: flex; align-items: center; padding: 10px; margin-bottom: 10px; background: #fff; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .tl-time { background: #3498db; color: white; padding: 5px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-right: 10px; }
+        .tl-img { width: 35px; height: 35px; object-fit: contain; margin-right: 10px; }
+        .tl-item.passado { opacity: 0.5; filter: grayscale(100%); }
+        .tl-item.proximo { border: 2px solid #e67e22; background: #fff8e1; }
+
+        /* --- GRÁFICO --- */
+        .grafico-container { display: flex; align-items: flex-end; gap: 8px; height: 120px; padding-top: 25px; overflow-x: auto; }
+        .barra-wrapper { display: flex; flex-direction: column; align-items: center; min-width: 35px; position: relative; }
+        .barra { width: 15px; background: #3498db; border-radius: 4px 4px 0 0; }
+        .barra-valor { position: absolute; top: -20px; font-size: 10px; font-weight: bold; }
+        
+        /* --- CONTROLES FILHO (Header) --- */
+        .grupo-filho { display: flex; align-items: center; gap: 5px; }
+        .grupo-filho select { margin: 0; border: none; background: transparent; font-weight: bold; font-size: 16px; width: auto; }
+        
+        /* --- AÇÕES RÁPIDAS --- */
+        .grid-acoes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .btn-acao { background: white; border: 1px solid #eee; border-radius: 10px; padding: 10px; text-align: center; }
+        
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; float: right; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #2ecc71; }
+        input:checked + .slider:before { transform: translateX(20px); }
     </style>
 </head>
 <body>
 
-<div id="appBar" class="app-bar hidden">
-    <div style="display:flex; align-items:center; gap:10px">
-        <select id="selectFilho" onchange="mudarFilho()" style="width:auto; padding:5px; height:35px; font-size:14px;"></select>
-        <button onclick="novoFilho()" style="background:var(--secondary); color:white; border:none; border-radius:5px; width:30px; height:30px;">+</button>
-    </div>
-    <span id="displayCodigo" style="font-size:12px; font-family:monospace; background:rgba(255,255,255,0.2); padding:4px 8px; border-radius:4px;">---</span>
-</div>
-
-<div id="telaLogin" class="tela ativa">
-    <div style="text-align:center; margin-top:50px;">
-        <h1 style="color:var(--primary)">Super Rotina</h1>
-        <div class="card">
-            <input type="email" id="email" placeholder="Seu E-mail">
-            <input type="password" id="senha" placeholder="Sua Senha">
-            <button class="main-btn btn-blue" onclick="fazerLogin()">Entrar</button>
-            <button class="main-btn" style="background:none; color:var(--secondary)" onclick="criarConta()">Criar Nova Conta</button>
+    <div id="telaLogin" class="tela-login" style="display:flex;">
+        <div style="width: 80%; max-width: 300px; text-align: center;">
+            <h1 style="color:#3498db; margin-bottom: 30px;">🔐 Super Rotina</h1>
+            <input type="email" id="email" placeholder="E-mail">
+            <input type="password" id="senha" placeholder="Senha">
+            <button class="btn-blue" onclick="fazerLogin()">Entrar</button>
+            <button class="btn-green" onclick="criarConta()">Criar Conta</button>
         </div>
     </div>
-</div>
 
-<div id="tabHome" class="tela">
-    <div class="card">
-        <h2>🖥️ Status do Computador</h2>
-        <div id="painelMonitoramento" style="font-size:14px">Buscando status...</div>
-    </div>
-
-    <div class="card">
-        <h2>📅 Próximas Atividades</h2>
-        <div id="timelineInteligente"></div>
-    </div>
-
-    <div class="card">
-        <h2>🎮 Controle Manual</h2>
-        <div id="gridAcoes" class="grid-acoes"></div>
-        <div style="display:flex; gap:10px; margin-top:15px">
-            <button onclick="enviarAcao('livre')" style="flex:1; background:#95a5a6; border:none; padding:10px; border-radius:8px; color:white">LIBERAR</button>
-            <button onclick="enviarAcao('bloqueio')" style="flex:1; background:var(--danger); border:none; padding:10px; border-radius:8px; color:white">BLOQUEAR</button>
+    <div id="appHeader" class="app-header" style="display:none;">
+        <div class="grupo-filho">
+            <select id="selectFilho" onchange="mudarFilho()"></select>
+            <button onclick="novoFilho()" class="btn-green btn-icon" style="width:30px; height:30px; font-size:14px;">+</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span id="displayCodigo" style="background:#fff8e1; padding:5px 10px; border-radius:12px; font-size:12px; color:#f1c40f; font-weight:bold">...</span>
+            <button onclick="sair()" class="btn-red btn-icon" style="width:30px; height:30px; font-size:12px;">🚪</button>
         </div>
     </div>
-</div>
 
-<div id="tabAtividades" class="tela">
-    <div class="card">
-        <h2>🎨 Criar Atividade</h2>
-        <input type="hidden" id="editIdAtividade">
-        <label>Nome Curto (ex: aula)</label>
-        <input type="text" id="idAtividade">
+    <div id="mainContent" style="display:none;">
         
-        <div style="display:flex; gap:10px; margin-top:10px">
-            <div style="flex:1"><label>Tempo (s)</label><input type="number" id="tempoAtividade"></div>
-            <div style="flex:2"><label>Texto na Tela</label><input type="text" id="txtAtividade"></div>
+        <div id="tab-home" class="tela ativa">
+            <div class="card">
+                <h2>🗺️ Mapa do Dia</h2>
+                <div id="timelineInteligente" class="timeline-box"><p style="text-align:center; color:#999">Carregando...</p></div>
+            </div>
+            <div class="card">
+                <h2>🖥️ Status PC</h2>
+                <div id="painelMonitoramento"></div>
+                <div id="listaDispositivos" style="display:none;"></div> </div>
         </div>
 
-        <label style="margin-top:10px">Imagem (URL)</label>
-        <input type="text" id="imgAtividade" oninput="atualizarPreview()">
+        <div id="tab-criar" class="tela">
+            <div class="card">
+                <h2>🎨 Nova Atividade</h2>
+                <input type="hidden" id="editIdAtividade">
+                <div style="display:flex; gap:10px">
+                    <input type="text" id="idAtividade" placeholder="ID (ex: banho)" style="flex:2">
+                    <input type="number" id="tempoAtividade" placeholder="15s" style="flex:1">
+                </div>
+                <input type="text" id="txtAtividade" placeholder="Texto Principal">
+                
+                <div class="form-group">
+                    <label>Imagem (Pasta IMG)</label>
+                    <div id="galVisual" class="galeria-v"></div>
+                    <input type="text" id="imgAtividade" oninput="atualizarPreview()" placeholder="IMG/1.gif">
+                </div>
 
-        <div style="text-align:center; padding:10px">
-            <img id="previewAvatar" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" style="width:60px; height:60px; border:1px solid #eee; border-radius:10px;">
-            <input type="range" id="rangeTamanho" min="50" max="500" value="150" style="width:100%" oninput="atualizarPreview()">
+                <div style="text-align:center; padding:10px; background:#f9f9f9; border-radius:10px; margin-bottom:10px;">
+                    <label>Tamanho: <span id="labelTamanho">150px</span></label>
+                    <input type="range" id="rangeTamanho" min="50" max="500" value="150" oninput="atualizarPreview()" style="width:100%">
+                    <img id="previewAvatar" src="" style="width:150px;">
+                </div>
+
+                <div style="display:flex; gap:10px">
+                    <input type="text" id="txt5min" placeholder="Aviso 5min">
+                    <input type="text" id="txt3min" placeholder="Aviso 3min">
+                </div>
+                <div style="display:flex; gap:10px; display:none">
+                    <input type="text" id="img5min"><input type="text" id="img3min"> </div>
+
+                <select id="posAtividade">
+                    <option value="center">Centro</option>
+                    <option value="bottom-right">↘ Baixo Direita</option>
+                    <option value="top-center">⬆ Topo</option>
+                </select>
+
+                <div style="margin-bottom:15px; overflow:hidden;">
+                    <div style="margin-bottom:10px;">Voz <label class="switch"><input type="checkbox" id="checkVoz" checked><span class="slider"></span></label></div>
+                    <div>Bloquear <label class="switch"><input type="checkbox" id="checkBlock"><span class="slider"></span></label></div>
+                </div>
+
+                <div style="display:flex; gap:10px">
+                    <button class="btn-blue" onclick="salvarAtividade()">Salvar</button>
+                    <button style="background:#95a5a6; color:white;" onclick="limparFormAtividade()">Limpar</button>
+                </div>
+
+                <div class="lista-container" style="margin-top:20px;">
+                    <h3>Atividades Salvas</h3>
+                    <ul id="listaAtividades" style="padding:0; list-style:none"></ul>
+                </div>
+            </div>
         </div>
 
-        <label>Exibir em quais PCs?</label>
-        <div class="devices-box" id="listaDispositivos"></div>
+        <div id="tab-agenda" class="tela">
+            <div class="card">
+                <h2>📅 Agendar</h2>
+                <input type="hidden" id="editIdRotina">
+                <div style="display:flex; gap:10px">
+                    <input type="time" id="horaRotina" style="flex:1">
+                    <select id="diaRotina" style="flex:1">
+                        <option value="todos">Todos</option>
+                        <option value="1">Seg</option><option value="2">Ter</option><option value="3">Qua</option>
+                        <option value="4">Qui</option><option value="5">Sex</option><option value="6">Sáb</option><option value="0">Dom</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap:10px">
+                    <select id="selectAtividadeRotina" style="flex:2"></select>
+                    <button class="btn-green" style="flex:1" onclick="salvarRotina()">OK</button>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Semana</h2>
+                <div class="calendario-wrapper"><div id="calendarioContainer" style="display:flex; gap:5px;"></div></div>
+            </div>
+            <div class="card">
+                <h2>📊 Histórico</h2>
+                <div id="graficoHistorico" class="grafico-container"></div>
+            </div>
+        </div>
 
-        <button class="main-btn btn-blue" onclick="salvarAtividade()">💾 Salvar Atividade</button>
+        <div id="tab-controle" class="tela">
+            <div class="card">
+                <h2>🎮 Ações Rápidas</h2>
+                <div id="gridAcoes" class="grid-acoes"></div>
+            </div>
+            <div class="card">
+                <h2>Comandos de Tela</h2>
+                <div style="display:flex; gap:10px">
+                    <button onclick="enviarAcao('livre')" style="background:#95a5a6; color:white">🔓 LIBERAR</button>
+                    <button onclick="enviarAcao('bloqueio')" class="btn-red">🔒 BLOQUEAR</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div class="card">
-        <h2>📋 Atividades Atuais</h2>
-        <div id="listaAtividades"></div>
-    </div>
-</div>
-
-<div id="tabAgenda" class="tela">
-    <div class="card">
-        <h2>📅 Agendar Horário</h2>
-        <input type="hidden" id="editIdRotina">
-        <label>Horário</label>
-        <input type="time" id="horaRotina">
-        
-        <label style="margin-top:10px">Dia da Semana</label>
-        <select id="diaRotina">
-            <option value="todos">Todos os dias</option>
-            <option value="1">Segunda</option>
-            <option value="2">Terça</option>
-            <option value="3">Quarta</option>
-            <option value="4">Quinta</option>
-            <option value="5">Sexta</option>
-            <option value="6">Sábado</option>
-            <option value="0">Domingo</option>
-        </select>
-
-        <label style="margin-top:10px">O que fazer?</label>
-        <select id="selectAtividadeRotina"></select>
-
-        <button class="main-btn btn-green" onclick="salvarRotina()">Confirmar Agenda</button>
+    <div id="bottomNav" class="bottom-nav" style="display:none;">
+        <button class="nav-item ativo" onclick="mudarAba('home')"><span>🏠</span>Início</button>
+        <button class="nav-item" onclick="mudarAba('criar')"><span>🎨</span>Criar</button>
+        <button class="nav-item" onclick="mudarAba('agenda')"><span>📅</span>Agenda</button>
+        <button class="nav-item" onclick="mudarAba('controle')"><span>🎮</span>Controle</button>
     </div>
 
-    <div class="card">
-        <h2>🗓️ Grade Semanal</h2>
-        <div id="calendarioContainer" style="overflow-x:auto; white-space:nowrap; padding-bottom:10px"></div>
-    </div>
-</div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, deleteDoc, updateDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-<nav id="bottomNav" class="bottom-nav hidden">
-    <button class="nav-btn active" onclick="switchTab('tabHome', this)"><b>🏠</b>Home</button>
-    <button class="nav-btn" onclick="switchTab('tabAtividades', this)"><b>🎨</b>Atividades</button>
-    <button class="nav-btn" onclick="switchTab('tabAgenda', this)"><b>📅</b>Agenda</button>
-    <button class="nav-btn" onclick="sair()"><b>🚪</b>Sair</button>
-</nav>
+        const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", storageBucket: "rotinaeduardo.firebasestorage.app", messagingSenderId: "210945268922", appId: "1:210945268922:web:ce9e585872090b378d7683" };
+        const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
+        let usuarioAtual, filhoAtualId, cacheAtividades={}, cacheRotinas={}, unsubs = [];
 
-<script type="module">
-    // --- LÓGICA DE TRANSIÇÃO DE TELA (NOVO) ---
-    window.switchTab = (id, btn) => {
-        document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('ativa');
-        btn.classList.add('active');
-        window.scrollTo(0,0);
-    }
+        // --- SISTEMA DE ABAS ---
+        window.mudarAba = (aba) => {
+            document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('ativo'));
+            document.getElementById(`tab-${aba}`).classList.add('ativa');
+            // Lógica simples para ativar o ícone correto
+            const btnIndex = { 'home':0, 'criar':1, 'agenda':2, 'controle':3 };
+            document.querySelectorAll('.nav-item')[btnIndex[aba]].classList.add('ativo');
+        };
 
-    // --- IMPORTAÇÃO E FIREBASE (MANTIDOS) ---
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, deleteDoc, updateDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        // --- GALERIA AUTOMÁTICA (1.gif ... 50.gif) ---
+        function montarGaleriaInfinita() {
+            const container = document.getElementById('galVisual');
+            if(!container) return; container.innerHTML = "";
+            const nomes = ["ARRUMANDO_CAMA", "BANHO", "BOCEJANDO", "COMER", "DESLIGAR-PC", "LIGAR-PC", "ESCOVANDO_DENTES"];
+            for(let i=1; i<=50; i++) nomes.push(`${i}`); 
 
-    const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", storageBucket: "rotinaeduardo.firebasestorage.app", messagingSenderId: "210945268922", appId: "1:210945268922:web:ce9e585872090b378d7683", measurementId: "G-MDYWRH9RNP" };
-    const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
-    let usuarioAtual, filhoAtualId, cacheAtividades={}, cacheRotinas={}, unsubscribeAtividades, unsubscribeRotinas, unsubscribeDispositivos;
-
-    // Login
-    window.fazerLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert("Erro ao entrar")} };
-    window.criarConta = async () => { try { await createUserWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert("Erro ao criar")} };
-    window.sair = () => signOut(auth);
-
-    onAuthStateChanged(auth, (u) => {
-        if(u) { 
-            usuarioAtual=u; 
-            document.getElementById('telaLogin').classList.remove('ativa');
-            document.getElementById('tabHome').classList.add('ativa');
-            document.getElementById('appBar').classList.remove('hidden');
-            document.getElementById('bottomNav').classList.remove('hidden');
-            carregarFilhos(); 
-        } else { 
-            location.reload();
+            nomes.forEach(nomeBase => {
+                [".gif", ".png", ".jpg"].forEach(ext => {
+                    const nomeArq = nomeBase.includes('.') ? nomeBase : nomeBase + ext;
+                    const img = new Image();
+                    img.src = `IMG/${nomeArq}`; // Tenta carregar
+                    img.className = 'img-sel';
+                    img.onload = () => { 
+                        if(!container.querySelector(`img[src*="${nomeArq}"]`)) {
+                            img.classList.add('visivel'); container.appendChild(img); 
+                        }
+                    };
+                    img.onclick = () => {
+                        document.querySelectorAll('.img-sel').forEach(i => i.classList.remove('ativa'));
+                        img.classList.add('ativa'); document.getElementById('imgAtividade').value = `IMG/${nomeArq}`;
+                        window.atualizarPreview();
+                    };
+                });
+            });
         }
-    });
 
-    // Preview
-    window.atualizarPreview = () => {
-        const val = document.getElementById('rangeTamanho').value;
-        const img = document.getElementById('previewAvatar');
-        const url = document.getElementById('imgAtividade').value;
-        img.style.width = (val/4) + "px"; // Miniatura proporcional
-        if(url) img.src = url;
-    };
-
-    // Carregar Perfil do Filho
-    function carregarFilhos() {
-        onSnapshot(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), (s) => {
-            const sel = document.getElementById('selectFilho');
-            sel.innerHTML="";
-            if(s.empty) { novoFilho(); return; }
-            s.forEach(d => {
-                let o = document.createElement('option');
-                o.value = d.id; o.innerText = d.data().nome;
-                sel.appendChild(o);
-            });
-            if(!filhoAtualId) filhoAtualId = sel.value;
-            carregarDadosFilho();
-        });
-    }
-
-    window.novoFilho = async () => {
-        const n = prompt("Nome do Filho:");
-        if(!n) return;
-        const c = Math.random().toString(36).substring(2,8).toUpperCase();
-        const r = await addDoc(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), { nome: n, codigo_pareamento: c });
-        await setDoc(doc(db, "conexoes", c), { caminho_dados: `usuarios/${usuarioAtual.uid}/filhos/${r.id}` });
-    };
-
-    window.mudarFilho = () => {
-        filhoAtualId = document.getElementById('selectFilho').value;
-        carregarDadosFilho();
-    };
-
-    function carregarDadosFilho() {
-        const base = `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}`;
-        getDoc(doc(db, base)).then(d => document.getElementById('displayCodigo').innerText = d.data().codigo_pareamento);
-
-        if(unsubscribeAtividades) unsubscribeAtividades();
+        // --- AUTH ---
+        window.fazerLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert(e.message)} };
+        window.criarConta = async () => { try { await createUserWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert(e.message)} };
+        window.sair = () => { signOut(auth); location.reload(); };
         
-        unsubscribeAtividades = onSnapshot(collection(db, `${base}/atividades`), (snap) => {
-            const lista = document.getElementById('listaAtividades');
-            const grid = document.getElementById('gridAcoes');
-            const selAg = document.getElementById('selectAtividadeRotina');
+        onAuthStateChanged(auth, (u) => { 
+            if(u) { 
+                usuarioAtual=u; 
+                document.getElementById('telaLogin').style.display='none';
+                document.getElementById('appHeader').style.display='flex';
+                document.getElementById('bottomNav').style.display='flex';
+                document.getElementById('mainContent').style.display='block';
+                carregarFilhos(); 
+                montarGaleriaInfinita(); 
+            } else { 
+                document.getElementById('telaLogin').style.display='flex';
+            } 
+        });
+
+        // --- FUNÇÕES ---
+        window.atualizarPreview = () => { const r = document.getElementById('rangeTamanho').value; const u = document.getElementById('imgAtividade').value; document.getElementById('labelTamanho').innerText = r + "px"; const i = document.getElementById('previewAvatar'); i.style.width = r + "px"; if(u) i.src = u; };
+        
+        function carregarFilhos() { onSnapshot(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), (s) => { const sel = document.getElementById('selectFilho'); sel.innerHTML=""; let tem=false; s.forEach(d=>{ tem=true; let o=document.createElement('option'); o.value=d.id; o.innerText=d.data().nome; sel.appendChild(o); }); if(!tem) novoFilho(); else { if(!filhoAtualId) filhoAtualId=sel.value; carregarDadosFilho(); } }); }
+        window.novoFilho = async () => { const n = prompt("Nome:"); if(n){ const c = Math.random().toString(36).substring(2,8).toUpperCase(); const r = await addDoc(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), { nome: n, codigo_pareamento: c }); await setDoc(doc(db, "conexoes", c), { caminho_dados: `usuarios/${usuarioAtual.uid}/filhos/${r.id}` }); mudarFilho(); }};
+        window.excluirFilho = async () => { if(confirm("Excluir?")) { await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos`, filhoAtualId)); location.reload(); }};
+        window.mudarFilho = () => { filhoAtualId=document.getElementById('selectFilho').value; unsubs.forEach(f=>f()); unsubs=[]; carregarDadosFilho(); };
+
+        function carregarDadosFilho() {
+            if(!filhoAtualId) return;
+            const base = `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}`;
+            getDoc(doc(db, base)).then(d => { if(d.exists()) document.getElementById('displayCodigo').innerText=d.data().codigo_pareamento; });
+
+            unsubs.push(onSnapshot(collection(db, `${base}/dispositivos`), (snap) => {
+                const boxM = document.getElementById('painelMonitoramento'); boxM.innerHTML = "";
+                if(snap.empty) boxM.innerHTML = "<p style='text-align:center;color:#999'>Nenhum PC</p>";
+                snap.forEach(d => {
+                    const dev = d.data(); const isO = dev.online && (new Date() - dev.online.toDate() < 120000);
+                    const h = Math.floor((dev.tempo_hoje_minutos||0)/60); const m = (dev.tempo_hoje_minutos||0)%60;
+                    boxM.innerHTML += `<div class="pc-status-card"><div><strong>${dev.nome||"PC"}</strong> <span class="pc-badge ${isO?'badge-online':'badge-offline'}">${isO?'ON':'OFF'}</span></div><div>${h}h ${m}m</div></div>`;
+                });
+            }));
+
+            unsubs.push(onSnapshot(query(collection(db, `${base}/historico_uso`), orderBy("data", "desc"), limit(7)), (snap) => {
+                const box = document.getElementById('graficoHistorico'); box.innerHTML = "";
+                let d = []; snap.forEach(doc => d.push(doc.data())); d.reverse();
+                if(d.length===0) return box.innerHTML="<small>Sem histórico</small>";
+                let max = Math.max(...d.map(x => x.minutos), 1);
+                d.forEach(i => {
+                    const alt = (i.minutos/max)*80; // Altura ajustada
+                    box.innerHTML += `<div class="barra-wrapper"><div class="barra-valor">${i.minutos>60?(i.minutos/60).toFixed(1)+'h':i.minutos+'m'}</div><div class="barra" style="height:${Math.max(alt,5)}px"></div><div class="barra-dia">${i.data.split('-')[2]}</div></div>`;
+                });
+            }));
+
+            unsubs.push(onSnapshot(collection(db, `${base}/atividades`), (snap) => {
+                const l = document.getElementById('listaAtividades'); const s = document.getElementById('selectAtividadeRotina'); const g = document.getElementById('gridAcoes');
+                l.innerHTML=""; s.innerHTML=""; g.innerHTML=""; cacheAtividades={};
+                snap.forEach(d => {
+                    const dd = d.data(); cacheAtividades[d.id] = dd;
+                    l.innerHTML += `<li><div style="display:flex; align-items:center"><img src="${dd.imagem}" class="img-mini"> <b>${d.id}</b></div><div><button class="btn-edit" onclick="carregarEdicaoAtividade('${d.id}')" style="width:auto; padding:5px 10px">✏️</button><button class="btn-red" onclick="apagarAtividade('${d.id}')" style="width:auto; padding:5px 10px">X</button></div></li>`;
+                    s.innerHTML += `<option value="${d.id}">${d.id}</option>`;
+                    g.innerHTML += `<div class="btn-acao" onclick="enviarAcao('${d.id}')"><img src="${dd.imagem}" style="width:30px; height:30px; object-fit:contain"><br><small style="font-weight:bold; font-size:10px">${d.id}</small></div>`;
+                });
+                renderizarTimeline();
+            }));
+
+            unsubs.push(onSnapshot(collection(db, `${base}/rotinas`), (snap) => {
+                cacheRotinas={}; snap.forEach(d => cacheRotinas[d.id]=d.data());
+                const c=document.getElementById('calendarioContainer'); c.innerHTML="";
+                const dias=["DOM","SEG","TER","QUA","QUI","SEX","SÁB"];
+                for(let i=0; i<7; i++) c.innerHTML+=`<div style="min-width:120px; border:1px solid #eee; padding:5px; border-radius:8px; background:white"><div style="text-align:center; font-weight:bold; border-bottom:1px solid #eee; margin-bottom:5px; color:#3498db">${dias[i]}</div><div id="col-${i}"></div></div>`;
+                Object.entries(cacheRotinas).forEach(([id, r]) => {
+                    const h=`<div class="card-rotina" style="margin-bottom:5px; font-size:11px; padding:5px; background:#f0f8ff; border-left:3px solid #3498db; border-radius:4px;"><b>${r.hora}</b> ${r.acao} <span onclick="apagarRotina('${id}')" style="color:red; float:right; cursor:pointer">x</span></div>`;
+                    if(r.dia_semana==='todos') for(let i=0;i<7;i++) document.getElementById(`col-${i}`).innerHTML+=h;
+                    else try{document.getElementById(`col-${r.dia_semana}`).innerHTML+=h}catch(e){}
+                });
+                renderizarTimeline();
+            }));
+        }
+
+        function renderizarTimeline() {
+            const t = document.getElementById('timelineInteligente'); if(!t) return; t.innerHTML="";
+            const hoje = new Date(); const dS = hoje.getDay().toString(); const hA = hoje.getHours()*60+hoje.getMinutes();
+            let prox=false;
+            const lista = Object.values(cacheRotinas).filter(r=>r.dia_semana==='todos'||r.dia_semana===dS).sort((a,b)=>a.hora.localeCompare(b.hora));
+            if(lista.length===0) return t.innerHTML="<p style='color:#999; text-align:center'>Sem rotinas hoje</p>";
             
-            lista.innerHTML = ""; grid.innerHTML = ""; selAg.innerHTML = "";
-            cacheAtividades = {};
-
-            snap.forEach(d => {
-                const data = d.data();
-                cacheAtividades[d.id] = data;
-                
-                // Lista na aba Config
-                lista.innerHTML += `<div class="tl-item" onclick="carregarEdicaoAtividade('${d.id}')"><b>${d.id}</b> <span style="margin-left:auto">✏️</span></div>`;
-                
-                // Grid na Home
-                grid.innerHTML += `<div class="acao-item" onclick="enviarAcao('${d.id}')"><img src="${data.imagem}"><br>${d.id}</div>`;
-                
-                // Select na Agenda
-                selAg.innerHTML += `<option value="${d.id}">${d.id}</option>`;
+            lista.forEach(r=>{
+                const [h,m] = r.hora.split(':').map(Number); const min = h*60+m;
+                let cl = min < hA ? "passado" : (!prox ? (prox=true, "proximo") : "futuro");
+                const img = cacheAtividades[r.acao]?.imagem || '';
+                t.innerHTML += `<div class="tl-item ${cl}"><div class="tl-time">${r.hora}</div><img src="${img}" class="tl-img"><b>${r.acao}</b></div>`;
             });
-            renderizarTimeline();
-        });
+        }
 
-        // Monitoramento Simples
-        onSnapshot(collection(db, `${base}/dispositivos`), (snap) => {
-            const p = document.getElementById('painelMonitoramento');
-            p.innerHTML = "";
-            snap.forEach(d => {
-                const dev = d.data();
-                const isOnline = dev.online && (new Date() - dev.online.toDate() < 120000);
-                p.innerHTML += `<div>${isOnline?'🟢':'⚪'} ${dev.nome || 'PC'} - ${dev.tempo_hoje_minutos || 0} min</div>`;
-            });
-        });
-
-        // Rotinas
-        onSnapshot(collection(db, `${base}/rotinas`), (snap) => {
-            cacheRotinas = {};
-            snap.forEach(d => cacheRotinas[d.id] = d.data());
-            renderizarTimeline();
-        });
-    }
-
-    function renderizarTimeline() {
-        const container = document.getElementById('timelineInteligente');
-        container.innerHTML = "";
-        const diaSemana = new Date().getDay().toString();
-        const rotinas = Object.values(cacheRotinas)
-            .filter(r => r.dia_semana === 'todos' || r.dia_semana === diaSemana)
-            .sort((a,b) => a.hora.localeCompare(b.hora));
-
-        rotinas.forEach(r => {
-            container.innerHTML += `<div class="tl-item"><span class="tl-time">${r.hora}</span> <span>${r.acao}</span></div>`;
-        });
-    }
-
-    window.enviarAcao = async(a) => { await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/config/estado_atual`), {acao:a, timestamp:new Date()}, {merge:true}); };
-    
-    window.salvarAtividade = async () => {
-        const id = document.getElementById('idAtividade').value.toLowerCase().replace(/\s/g, '');
-        if(!id) return;
-        await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id), {
-            texto: document.getElementById('txtAtividade').value,
-            imagem: document.getElementById('imgAtividade').value,
-            tempo_personalizado: document.getElementById('tempoAtividade').value,
-            tamanho_avatar: document.getElementById('rangeTamanho').value
-        });
-        alert("Atividade Salva!");
-    };
-
-    window.salvarRotina = async () => {
-        const h = document.getElementById('horaRotina').value;
-        if(!h) return;
-        await addDoc(collection(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`), {
-            hora: h,
-            dia_semana: document.getElementById('diaRotina').value,
-            acao: document.getElementById('selectAtividadeRotina').value
-        });
-        alert("Agendado!");
-    };
-</script>
+        window.salvarAtividade = async () => { const id = document.getElementById('idAtividade').value.toLowerCase().replace(/\s/g,''); if(!id) return alert("ID?"); await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id), { texto: document.getElementById('txtAtividade').value, imagem: document.getElementById('imgAtividade').value, tempo_personalizado: document.getElementById('tempoAtividade').value, tamanho_avatar: document.getElementById('rangeTamanho').value, texto_5min: document.getElementById('txt5min').value, texto_3min: document.getElementById('txt3min').value, posicao_especifica: document.getElementById('posAtividade').value, falar_texto: document.getElementById('checkVoz').checked, bloquear_tela: document.getElementById('checkBlock').checked }); alert("Salvo!"); limparFormAtividade(); };
+        window.salvarRotina = async () => { await addDoc(collection(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`), { hora: document.getElementById('horaRotina').value, dia_semana: document.getElementById('diaRotina').value, acao: document.getElementById('selectAtividadeRotina').value }); };
+        window.apagarAtividade = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id)); };
+        window.apagarRotina = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`, id)); };
+        window.enviarAcao = async(a) => { await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/config/estado_atual`), {acao:a, timestamp:new Date()}, {merge:true}); };
+        window.carregarEdicaoAtividade = (id) => { const d=cacheAtividades[id]; if(d) { document.getElementById('idAtividade').value=id; document.getElementById('idAtividade').disabled=true; document.getElementById('editIdAtividade').value=id; document.getElementById('txtAtividade').value=d.texto; document.getElementById('imgAtividade').value=d.imagem; atualizarPreview(); mudarAba('criar'); }};
+        window.limparFormAtividade = () => { document.getElementById('idAtividade').value=""; document.getElementById('txtAtividade').value=""; document.getElementById('imgAtividade').value=""; document.getElementById('idAtividade').disabled=false; };
+    </script>
 </body>
 </html>
