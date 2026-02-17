@@ -10,7 +10,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             background: #f0f2f5; 
             margin: 0; 
-            padding-bottom: 90px; /* Espaço extra para menu inferior */
+            padding-bottom: 90px; /* Espaço para menu inferior */
             color: #333; 
             -webkit-tap-highlight-color: transparent;
         }
@@ -74,17 +74,17 @@
         .img-sel.visivel { display: block; }
         .img-sel.ativa { border-color: #2ecc71; background: #eafaf1; }
 
-        /* --- AGENDA / CALENDÁRIO (Correção Scroll) --- */
+        /* --- AGENDA / CALENDÁRIO --- */
         .calendario-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; }
         .dia-coluna { 
-            min-width: 140px; /* Largura fixa menor */
+            min-width: 140px; 
             max-width: 140px;
             background: white; 
             border: 1px solid #eee; 
             border-radius: 10px; 
             padding: 8px;
             margin-right: 8px;
-            flex-shrink: 0; /* Impede encolhimento */
+            flex-shrink: 0;
         }
         .card-rotina { 
             background: #f0f8ff; 
@@ -101,7 +101,7 @@
             font-size: 10px; width: auto;
         }
 
-        /* --- LISTA DE ATIVIDADES (Correção Imagens Grandes) --- */
+        /* --- LISTA DE ATIVIDADES --- */
         .item-lista {
             display: flex; align-items: center; justify-content: space-between;
             padding: 10px; border-bottom: 1px solid #f0f0f0;
@@ -111,7 +111,7 @@
             background: #f9f9f9; border-radius: 6px; margin-right: 10px; border: 1px solid #eee;
         }
         
-        /* --- AÇÕES RÁPIDAS (Grid Ajustado) --- */
+        /* --- AÇÕES RÁPIDAS (Grid) --- */
         .grid-acoes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .btn-acao { 
             background: white; border: 1px solid #eee; border-radius: 10px; 
@@ -121,7 +121,7 @@
         .btn-acao img { width: 35px; height: 35px; object-fit: contain; margin-bottom: 5px; }
         .btn-acao small { font-size: 9px; line-height: 1.1; font-weight: bold; }
 
-        /* --- CONTROLES FILHO (Header) --- */
+        /* --- CONTROLES FILHO --- */
         .grupo-filho { display: flex; align-items: center; gap: 5px; }
         .grupo-filho select { margin: 0; border: none; background: transparent; font-weight: bold; font-size: 16px; width: auto; padding-right: 25px; }
         
@@ -205,13 +205,13 @@
                     <div id="galVisual" class="galeria-v"></div>
                     <input type="text" id="imgAtividade" oninput="atualizarPreview()" placeholder="IMG/1.gif" style="margin-bottom:5px">
                     
-                    <div style="display:flex; align-items:center; gap:10px; margin-top:10px">
-                        <div style="flex:1">
-                            <label>Tamanho: <span id="labelTamanho">150px</span></label>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:15px; border-top:1px dashed #ddd; padding-top:10px;">
+                        <div style="width:100%">
+                            <label>Ajuste de Tamanho: <span id="labelTamanho" style="color:#3498db; font-weight:bold">150px</span></label>
                             <input type="range" id="rangeTamanho" min="50" max="300" value="150" oninput="atualizarPreview()" style="width:100%">
                         </div>
-                        <div style="width:60px; height:60px; display:flex; align-items:center; justify-content:center; border:1px dashed #ccc; background:white; border-radius:6px; overflow:hidden">
-                            <img id="previewAvatar" src="" style="max-width:100%; max-height:100%">
+                        <div style="width:100%; min-height:150px; display:flex; align-items:center; justify-content:center; border:1px dashed #ccc; background:white; border-radius:10px; padding:10px;">
+                            <img id="previewAvatar" src="" style="width:150px; transition: width 0.1s ease;">
                         </div>
                     </div>
                 </div>
@@ -344,7 +344,7 @@
                     img.src = `IMG/${nomeArq}`; 
                     img.className = 'img-sel';
                     img.onload = () => { 
-                        if(!container.querySelector(`img[src*="${nomeBase}"]`)) { // Evita duplicatas visuais
+                        if(!container.querySelector(`img[src*="${nomeBase}"]`)) { 
                             img.classList.add('visivel'); container.appendChild(img); 
                         }
                     };
@@ -377,7 +377,7 @@
         });
 
         // --- FUNÇÕES ---
-        window.atualizarPreview = () => { const r = document.getElementById('rangeTamanho').value; const u = document.getElementById('imgAtividade').value; document.getElementById('labelTamanho').innerText = r + "px"; const i = document.getElementById('previewAvatar'); i.style.width = "auto"; i.style.height = "auto"; if(u) i.src = u; };
+        window.atualizarPreview = () => { const r = document.getElementById('rangeTamanho').value; const u = document.getElementById('imgAtividade').value; document.getElementById('labelTamanho').innerText = r + "px"; const i = document.getElementById('previewAvatar'); i.style.width = r + "px"; if(u) i.src = u; };
         
         function carregarFilhos() { onSnapshot(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), (s) => { const sel = document.getElementById('selectFilho'); sel.innerHTML=""; let tem=false; s.forEach(d=>{ tem=true; let o=document.createElement('option'); o.value=d.id; o.innerText=d.data().nome; sel.appendChild(o); }); if(!tem) novoFilho(); else { if(!filhoAtualId) filhoAtualId=sel.value; carregarDadosFilho(); } }); }
         window.novoFilho = async () => { const n = prompt("Nome:"); if(n){ const c = Math.random().toString(36).substring(2,8).toUpperCase(); const r = await addDoc(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), { nome: n, codigo_pareamento: c }); await setDoc(doc(db, "conexoes", c), { caminho_dados: `usuarios/${usuarioAtual.uid}/filhos/${r.id}` }); mudarFilho(); }};
@@ -415,13 +415,11 @@
                 l.innerHTML=""; s.innerHTML=""; g.innerHTML=""; cacheAtividades={};
                 snap.forEach(d => {
                     const dd = d.data(); cacheAtividades[d.id] = dd;
-                    // LISTA MENOR
                     l.innerHTML += `<li class="item-lista">
                         <div style="display:flex; align-items:center"><img src="${dd.imagem}"> <b>${d.id}</b></div>
                         <div><button class="btn-small" style="background:#f39c12; margin-right:5px; color:white" onclick="carregarEdicaoAtividade('${d.id}')">✏️</button><button class="btn-red btn-small" onclick="apagarAtividade('${d.id}')">X</button></div>
                     </li>`;
                     s.innerHTML += `<option value="${d.id}">${d.id}</option>`;
-                    // GRID MENOR
                     g.innerHTML += `<div class="btn-acao" onclick="enviarAcao('${d.id}')"><img src="${dd.imagem}"><br><small>${d.id}</small></div>`;
                 });
                 renderizarTimeline();
@@ -461,7 +459,25 @@
         window.apagarAtividade = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id)); };
         window.apagarRotina = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`, id)); };
         window.enviarAcao = async(a) => { await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/config/estado_atual`), {acao:a, timestamp:new Date()}, {merge:true}); };
-        window.carregarEdicaoAtividade = (id) => { const d=cacheAtividades[id]; if(d) { document.getElementById('idAtividade').value=id; document.getElementById('idAtividade').disabled=true; document.getElementById('editIdAtividade').value=id; document.getElementById('txtAtividade').value=d.texto||""; document.getElementById('imgAtividade').value=d.imagem||""; document.getElementById('tempoAtividade').value=d.tempo_personalizado||""; document.getElementById('rangeTamanho').value=d.tamanho_avatar||"150"; document.getElementById('txt5min').value=d.texto_5min||""; document.getElementById('txt3min').value=d.texto_3min||""; document.getElementById('img5min').value=d.imagem_5min||""; document.getElementById('img3min').value=d.imagem_3min||""; document.getElementById('posAtividade').value=d.posicao_especifica||"center"; document.getElementById('checkVoz').checked=(d.falar_texto!==false); document.getElementById('checkBlock').checked=(d.bloquear_tela===true); atualizarPreview(); mudarAba('criar'); }};
+        
+        // CORREÇÃO: SCROLL TO TOP AO EDITAR
+        window.carregarEdicaoAtividade = (id) => { 
+            const d=cacheAtividades[id]; 
+            if(d) { 
+                document.getElementById('idAtividade').value=id; document.getElementById('idAtividade').disabled=true; document.getElementById('editIdAtividade').value=id; 
+                document.getElementById('txtAtividade').value=d.texto||""; document.getElementById('imgAtividade').value=d.imagem||""; 
+                document.getElementById('tempoAtividade').value=d.tempo_personalizado||""; document.getElementById('rangeTamanho').value=d.tamanho_avatar||"150"; 
+                document.getElementById('txt5min').value=d.texto_5min||""; document.getElementById('txt3min').value=d.texto_3min||""; 
+                document.getElementById('img5min').value=d.imagem_5min||""; document.getElementById('img3min').value=d.imagem_3min||""; 
+                document.getElementById('posAtividade').value=d.posicao_especifica||"center"; document.getElementById('checkVoz').checked=(d.falar_texto!==false); 
+                document.getElementById('checkBlock').checked=(d.bloquear_tela===true); 
+                atualizarPreview(); 
+                mudarAba('criar'); 
+                // Linha mágica: Rola para o topo suavemente
+                window.scrollTo({ top: 0, behavior: 'smooth' }); 
+            }
+        };
+        
         window.limparFormAtividade = () => { document.getElementById('idAtividade').value=""; document.getElementById('txtAtividade').value=""; document.getElementById('imgAtividade').value=""; document.getElementById('idAtividade').disabled=false; document.getElementById('previewAvatar').src=""; };
     </script>
 </body>
