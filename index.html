@@ -486,30 +486,24 @@
         window.apagarDispositivo = async(id) => { if(confirm("Remover este computador?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/dispositivos`, id)); };
         window.abrirDicas = () => document.getElementById('modalDicas').classList.add('aberta');
         window.fecharDicas = () => document.getElementById('modalDicas').classList.remove('aberta');
-function montarGaleriaInfinita() {
-    const container = document.getElementById('galVisual');
-    container.innerHTML = ""; 
-
-    // Ele vai tentar testar do arquivo 1 até o 50 automaticamente
-    for (let i = 1; i <= 50; i++) {
-        const img = new Image();
-        const nomeArquivo = `${i}.gif`; // Exige que você nomeie como 1.gif, 2.gif...
-        img.src = `IMG/${nomeArquivo}`;
-        img.className = 'img-sel';
-        
-        img.onload = () => {
-            img.classList.add('visivel');
-            container.appendChild(img);
-        };
-
-        img.onclick = () => {
-            document.querySelectorAll('.img-sel').forEach(el => el.classList.remove('ativa'));
-            img.classList.add('ativa');
-            document.getElementById('imgAtividade').value = `IMG/${nomeArquivo}`;
-            window.atualizarPreview();
-        };
-    }
-}
+// --- GALERIA CORRIGIDA (SALVA LINK COMPLETO) ---
+        function montarGaleriaInfinita() {
+            const container = document.getElementById('galVisual');
+            if(!container) return; container.innerHTML = "";
+            const nomes = ["ARRUMANDO_CAMA", "BANHO", "BOCEJANDO", "COMER", "DESLIGAR-PC", "LIGAR-PC", "ESCOVANDO_DENTES"];
+            for(let i=1; i<=50; i++) nomes.push(`${i}`); 
+            nomes.forEach(nomeBase => {
+                [".gif", ".png", ".jpg", ".GIF", ".PNG", ".JPG"].forEach(ext => {
+                    const nomeArq = nomeBase.includes('.') ? nomeBase : nomeBase + ext;
+                    const img = new Image();
+                    img.src = `IMG/${nomeArq}`; img.className = 'img-sel';
+                    img.onload = () => { if(!container.querySelector(`img[src*="${nomeBase}"]`)) { img.classList.add('visivel'); container.appendChild(img); }};
+                    // CORREÇÃO AQUI: Salva o img.src completo (http://...)
+                    img.onclick = () => { document.querySelectorAll('.img-sel').forEach(i => i.classList.remove('ativa')); img.classList.add('ativa'); document.getElementById('imgAtividade').value = img.src; window.atualizarPreview(); };
+                });
+            });
+        }
  </script>
 </body>
 </html>
+
