@@ -31,7 +31,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.03);
         }
         
-        .grupo-filho { display: flex; align-items: center; gap: 5px; }
+        .grupo-filho { display: flex; align-items: center; gap: 8px; }
         .grupo-filho select { 
             margin: 0; border: none; background: #f0f2f5; 
             font-weight: bold; font-size: 15px; width: auto; 
@@ -74,7 +74,15 @@
         .btn-green { background: #2ecc71; color: white; }
         .btn-red { background: #e74c3c; color: white; }
         
-        /* --- AGENDA (BOTÕES EDITAR E APAGAR) --- */
+        /* BOTÕES DE AÇÃO (LÁPIS/LIXEIRA) */
+        .btn-acao-icone {
+            background: transparent; border: none; cursor: pointer; 
+            font-size: 16px; padding: 8px; margin-left: 2px;
+            transition: transform 0.2s;
+        }
+        .btn-acao-icone:active { transform: scale(1.2); }
+
+        /* --- AGENDA (CORREÇÃO DE SOBREPOSIÇÃO) --- */
         .calendario-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; display: flex; gap: 12px; }
         .dia-coluna { 
             min-width: 160px; max-width: 160px;
@@ -84,21 +92,40 @@
         }
         .dia-header { background: #3498db; color: white; text-align: center; padding: 8px; font-weight: bold; font-size: 13px; }
         .lista-rotinas { padding: 8px; min-height: 100px; background: #fdfdfd; }
+        
         .card-rotina { 
             background: white; border: 1px solid #eee;
             padding: 8px; margin-bottom: 8px; border-radius: 8px; 
-            font-size: 12px; position: relative;
-            display: flex; align-items: center; gap: 8px;
+            font-size: 12px;
+            /* Flexbox para alinhar e evitar sobreposição */
+            display: flex; align-items: center; justify-content: space-between; gap: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
-        .hora-tag { background: #eaf2f8; color: #2980b9; padding: 3px 6px; border-radius: 6px; font-weight: bold; font-size: 11px; }
-        
-        .acoes-rotina { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); display: flex; gap: 5px; }
-        .btn-mini { background: none; border: none; font-size: 14px; padding: 4px; cursor: pointer; }
+        .hora-tag { 
+            background: #eaf2f8; color: #2980b9; 
+            padding: 3px 6px; border-radius: 6px; font-weight: bold; font-size: 11px;
+            flex-shrink: 0; /* Não deixa a hora encolher */
+        }
+        .rotina-texto {
+            flex: 1; /* Ocupa o espaço disponível */
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* Corta texto longo com ... */
+            font-weight: 500;
+        }
+        .acoes-rotina { 
+            display: flex; flex-shrink: 0; /* Não deixa os botões encolherem */
+        }
 
-        /* --- GRÁFICO --- */
-        .grafico-container { display: flex; align-items: flex-end; gap: 12px; height: 140px; padding-top: 25px; overflow-x: auto; }
-        .barra-wrapper { display: flex; flex-direction: column; align-items: center; min-width: 35px; position: relative; flex: 1; }
+        /* --- HISTÓRICO (ALINHAMENTO ESQUERDA) --- */
+        .grafico-container { 
+            display: flex; align-items: flex-end; gap: 12px; 
+            height: 140px; padding-top: 25px; overflow-x: auto;
+            justify-content: flex-start; /* Alinha tudo à esquerda */
+        }
+        .barra-wrapper { 
+            display: flex; flex-direction: column; align-items: center; 
+            min-width: 35px; position: relative; 
+            /* Removido flex: 1 para não esticar */
+        }
         .barra { width: 18px; background: linear-gradient(to top, #3498db, #5dade2); border-radius: 6px 6px 0 0; }
         .barra-valor { position: absolute; top: -20px; font-size: 10px; font-weight: bold; width: 100%; text-align: center; color: #555; }
         .barra-dia { font-size: 10px; color: #888; margin-top: 6px; font-weight: 500; }
@@ -109,15 +136,12 @@
         .pc-badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; letter-spacing: 0.5px; }
         .badge-online { background: #d4edda; color: #155724; } .badge-offline { background: #e2e3e5; color: #666; }
 
-        /* --- MAPA DO DIA (CORREÇÃO IMAGEM GRANDE) --- */
+        /* --- MAPA DO DIA --- */
         .timeline-box { background: white; border-radius: 12px; padding: 5px; }
         .tl-item { display: flex; align-items: center; padding: 12px; margin-bottom: 10px; background: #fff; border: 1px solid #f0f0f0; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
         .tl-time { background: #3498db; color: white; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: bold; margin-right: 12px; min-width: 40px; text-align: center; }
         .tl-content { flex: 1; display: flex; align-items: center; }
-        
-        /* AQUI ESTÁ A CORREÇÃO: Forçar tamanho pequeno na imagem da timeline */
         .tl-item img { width: 50px; height: 50px; object-fit: contain; border-radius: 8px; margin-right: 10px; background: #f9f9f9; flex-shrink: 0; }
-        
         .tl-item.passado { opacity: 0.5; filter: grayscale(100%); }
         .tl-item.proximo { border: 2px solid #f39c12; background: #fef9e7; }
         
@@ -140,8 +164,11 @@
         input:checked + .slider { background-color: #2ecc71; }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* --- LISTAS --- */
-        .item-lista { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f5f5f5; }
+        /* --- LISTA DE ATIVIDADES (ESTILO ATUALIZADO) --- */
+        .item-lista { 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 12px; border-bottom: 1px solid #f5f5f5; 
+        }
     </style>
 </head>
 <body>
@@ -396,7 +423,14 @@
                 l.innerHTML=""; s.innerHTML=""; g.innerHTML=""; cacheAtividades={};
                 snap.forEach(d => {
                     const dd = d.data(); cacheAtividades[d.id] = dd;
-                    l.innerHTML += `<li class="item-lista"><div style="display:flex; align-items:center"><img src="${dd.imagem}" style="width:40px;height:40px;object-fit:contain;border-radius:6px;margin-right:10px;background:#f9f9f9"> <b>${d.id}</b></div><div><button class="btn-small btn-blue" style="margin-right:5px;" onclick="carregarEdicaoAtividade('${d.id}')">✏️</button><button class="btn-red btn-small" onclick="apagarAtividade('${d.id}')">X</button></div></li>`;
+                    // LISTA COM ÍCONES LIMPOS
+                    l.innerHTML += `<li class="item-lista">
+                        <div style="display:flex; align-items:center"><img src="${dd.imagem}" style="width:40px;height:40px;object-fit:contain;border-radius:6px;margin-right:10px;background:#f9f9f9"> <b>${d.id}</b></div>
+                        <div>
+                            <button class="btn-acao-icone" onclick="carregarEdicaoAtividade('${d.id}')">✏️</button>
+                            <button class="btn-acao-icone" style="color:red" onclick="apagarAtividade('${d.id}')">🗑️</button>
+                        </div>
+                    </li>`;
                     s.innerHTML += `<option value="${d.id}">${d.id}</option>`;
                     g.innerHTML += `<div class="btn-acao" onclick="enviarAcao('${d.id}')"><img src="${dd.imagem}"><br><small>${d.id}</small></div>`;
                 });
@@ -410,8 +444,15 @@
                 for(let i=0; i<7; i++) c.innerHTML+=`<div class="dia-coluna"><div class="dia-header">${dias[i]}</div><div class="lista-rotinas" id="col-${i}"></div></div>`;
                 
                 Object.entries(cacheRotinas).sort((a,b)=>a[1].hora.localeCompare(b[1].hora)).forEach(([id, r]) => {
-                    const h=`<div class="card-rotina"><span class="hora-tag">${r.hora}</span> <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${r.acao}</span> 
-                    <div class="acoes-rotina"><button class="btn-mini" onclick="carregarEdicaoRotina('${id}')">✏️</button><button class="btn-mini" style="color:red" onclick="apagarRotina('${id}')">🗑️</button></div></div>`;
+                    // CARD DA AGENDA COM FLEXBOX (SEM SOBREPOSIÇÃO)
+                    const h=`<div class="card-rotina">
+                        <span class="hora-tag">${r.hora}</span> 
+                        <span class="rotina-texto">${r.acao}</span> 
+                        <div class="acoes-rotina">
+                            <button class="btn-acao-icone" style="font-size:14px" onclick="carregarEdicaoRotina('${id}')">✏️</button>
+                            <button class="btn-acao-icone" style="color:red; font-size:14px" onclick="apagarRotina('${id}')">🗑️</button>
+                        </div>
+                    </div>`;
                     if(r.dia_semana==='todos') for(let i=0;i<7;i++) document.getElementById(`col-${i}`).innerHTML+=h;
                     else try{document.getElementById(`col-${r.dia_semana}`).innerHTML+=h}catch(e){}
                 });
@@ -459,7 +500,7 @@
             document.getElementById('horaRotina').value = r.hora;
             document.getElementById('diaRotina').value = r.dia_semana;
             document.getElementById('selectAtividadeRotina').value = r.acao;
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Rola pra cima para editar
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
         
         window.limparFormAtividade = () => { document.getElementById('idAtividade').value=""; document.getElementById('txtAtividade').value=""; document.getElementById('imgAtividade').value=""; document.getElementById('idAtividade').disabled=false; document.getElementById('previewAvatar').src=""; };
