@@ -74,7 +74,7 @@
         .btn-green { background: #2ecc71; color: white; }
         .btn-red { background: #e74c3c; color: white; }
         
-        /* BOTÕES DE AÇÃO (LÁPIS/LIXEIRA - Estilo Agenda) */
+        /* BOTÕES DE AÇÃO (LÁPIS/LIXEIRA) */
         .btn-acao-icone {
             background: transparent; border: none; cursor: pointer; 
             font-size: 18px; padding: 5px 10px; margin: 0;
@@ -82,52 +82,54 @@
         }
         .btn-acao-icone:active { transform: scale(1.2); }
 
-        /* --- AGENDA (LAYOUT FLEXÍVEL) --- */
-        .calendario-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; display: flex; gap: 12px; }
+        /* --- AGENDA (AJUSTE "UM DIA POR VEZ" + IMAGEM) --- */
+        .calendario-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px; display: flex; gap: 15px; }
         .dia-coluna { 
-            min-width: 160px; max-width: 160px;
+            min-width: 280px; /* BEM MAIS LARGO AGORA */
+            max-width: 350px;
             background: white; border: 1px solid #eee; border-radius: 16px; 
             padding: 0; flex-shrink: 0; overflow: hidden;
             box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
-        .dia-header { background: #3498db; color: white; text-align: center; padding: 8px; font-weight: bold; font-size: 13px; }
-        .lista-rotinas { padding: 8px; min-height: 100px; background: #fdfdfd; }
+        .dia-header { background: #3498db; color: white; text-align: center; padding: 10px; font-weight: bold; font-size: 14px; letter-spacing: 1px; }
+        .lista-rotinas { padding: 10px; min-height: 100px; background: #fdfdfd; }
         
         .card-rotina { 
             background: white; border: 1px solid #eee;
-            padding: 8px; margin-bottom: 8px; border-radius: 8px; 
-            font-size: 12px;
-            /* Layout Flexível para evitar sobreposição */
-            display: flex; align-items: center; gap: 8px;
+            padding: 8px 10px; margin-bottom: 8px; border-radius: 10px; 
+            font-size: 13px;
+            display: flex; align-items: center; gap: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
         .hora-tag { 
             background: #eaf2f8; color: #2980b9; 
-            padding: 3px 6px; border-radius: 6px; font-weight: bold; font-size: 11px;
-            flex-shrink: 0; /* Hora nunca encolhe */
+            padding: 5px 8px; border-radius: 8px; font-weight: bold; font-size: 12px;
+            flex-shrink: 0; 
+        }
+        /* IMAGEM NA AGENDA */
+        .rotina-img {
+            width: 35px; height: 35px; object-fit: contain;
+            background: #f9f9f9; border-radius: 6px;
+            flex-shrink: 0;
         }
         .rotina-texto {
-            flex: 1; /* Ocupa o espaço que sobra */
-            min-width: 0; /* Permite que o texto seja cortado */
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* Adiciona ... se for grande */
-            font-weight: 500;
+            flex: 1; min-width: 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-weight: 600; color: #444; font-size: 14px;
         }
         .acoes-rotina { 
-            display: flex; align-items: center; 
-            flex-shrink: 0; /* Botões nunca encolhem */
+            display: flex; align-items: center; flex-shrink: 0;
         }
 
-        /* --- HISTÓRICO (ALINHAMENTO ESQUERDA) --- */
+        /* --- HISTÓRICO --- */
         .grafico-container { 
             display: flex; align-items: flex-end; 
             height: 140px; padding-top: 25px; overflow-x: auto;
-            justify-content: flex-start; /* Alinha à esquerda */
-            gap: 15px; /* Espaço fixo entre barras */
+            justify-content: flex-start; gap: 15px; 
         }
         .barra-wrapper { 
             display: flex; flex-direction: column; align-items: center; 
             min-width: 30px; position: relative; 
-            /* Removido flex: 1 para não esticar */
         }
         .barra { width: 18px; background: linear-gradient(to top, #3498db, #5dade2); border-radius: 6px 6px 0 0; }
         .barra-valor { position: absolute; top: -20px; font-size: 10px; font-weight: bold; width: 100%; text-align: center; color: #555; }
@@ -198,19 +200,16 @@
     <div id="mainContent" style="display:none;">
         
         <div id="tab-home" class="tela ativa">
-            
             <div class="card">
                 <h2>🖥️ Status do Computador</h2>
                 <div id="painelMonitoramento"></div>
                 <div id="listaDispositivos" style="display:none;"></div>
             </div>
-
             <div class="card">
                 <h2>📊 Histórico de Uso</h2>
                 <div id="resumoMensal" class="resumo-mes">Carregando total...</div>
                 <div id="graficoHistorico" class="grafico-container"></div>
             </div>
-
             <div class="card">
                 <h2>🗺️ Roteiro de Hoje</h2>
                 <div id="timelineInteligente" class="timeline-box"><p style="text-align:center; color:#999; padding:10px">Carregando...</p></div>
@@ -298,9 +297,9 @@
             </div>
             
             <div class="card" style="background:transparent; box-shadow:none; padding:0; border:none">
-                <h2 style="margin-bottom:10px; padding-left:10px">Semana</h2>
+                <h2 style="margin-bottom:10px; padding-left:10px">Semana (Arraste para o lado)</h2>
                 <div class="calendario-wrapper">
-                    <div id="calendarioContainer" style="display:flex; gap:12px; padding:0 5px;"></div>
+                    <div id="calendarioContainer" style="display:flex; gap:15px; padding:0 5px;"></div>
                 </div>
             </div>
         </div>
@@ -423,7 +422,6 @@
                 l.innerHTML=""; s.innerHTML=""; g.innerHTML=""; cacheAtividades={};
                 snap.forEach(d => {
                     const dd = d.data(); cacheAtividades[d.id] = dd;
-                    // LISTA COM BOTOES LIMPOS
                     l.innerHTML += `<li class="item-lista">
                         <div style="display:flex; align-items:center; flex:1; min-width:0">
                             <img src="${dd.imagem}" style="width:40px;height:40px;object-fit:contain;border-radius:6px;margin-right:10px;background:#f9f9f9"> 
@@ -447,8 +445,13 @@
                 for(let i=0; i<7; i++) c.innerHTML+=`<div class="dia-coluna"><div class="dia-header">${dias[i]}</div><div class="lista-rotinas" id="col-${i}"></div></div>`;
                 
                 Object.entries(cacheRotinas).sort((a,b)=>a[1].hora.localeCompare(b[1].hora)).forEach(([id, r]) => {
+                    // Lógica para pegar imagem da atividade
+                    const atv = cacheAtividades[r.acao] || {};
+                    const imgUrl = atv.imagem || ''; 
+                    
                     const h=`<div class="card-rotina">
                         <span class="hora-tag">${r.hora}</span> 
+                        ${imgUrl ? `<img src="${imgUrl}" class="rotina-img">` : ''}
                         <span class="rotina-texto">${r.acao}</span> 
                         <div class="acoes-rotina">
                             <button class="btn-acao-icone" style="font-size:14px" onclick="carregarEdicaoRotina('${id}')">✏️</button>
