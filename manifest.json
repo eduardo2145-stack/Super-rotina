@@ -1,8 +1,10 @@
 {
   "name": "Amigo Virtual",
   "short_name": "Amigo",
-  "start_url": "/index.html",
+  "description": "Sistema de Rotina e Controle",
+  "start_url": "./mobile.html",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#eef2f7",
   "theme_color": "#3498db",
   "icons": [
