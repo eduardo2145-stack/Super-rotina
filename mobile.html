@@ -479,14 +479,22 @@
 
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/Super-rotina/service-worker.js")
-    .then(() => console.log("PWA pronto ✅"));
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/Super-rotina/service-worker.js")
+      .then(reg => {
+        console.log("Service Worker registrado:", reg.scope);
+      })
+      .catch(err => console.log("Erro SW:", err));
+  });
 }
+
 
 
     </script>
 </body>
 </html>
+
 
 
 
