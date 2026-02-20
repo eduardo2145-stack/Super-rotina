@@ -499,7 +499,7 @@
         return { W, ITENS_POR_LINHA: itensPorLinha, MARGEM_X: margemX };
     }
 
-    function criarCaminhoInfografico(totalRotinas, conf) {
+        function criarCaminhoInfografico(totalRotinas, conf) {
         const container = document.getElementById('mapa-container');
         const linhas = Math.max(1, Math.ceil(totalRotinas / conf.ITENS_POR_LINHA));
         container.style.height = ((linhas * H_ROW) + 150) + "px";
@@ -519,14 +519,26 @@
             }
         }
         
+        // ==========================================
+        // SOLUÇÃO: O "PUXADINHO" DA SETA
+        // Estica a última linha em 65px para a seta sair debaixo do círculo
+        // ==========================================
+        const extensaoFinal = 65; 
+        let pontaFinalX = (linhas % 2 === 1) ? (conf.W - conf.MARGEM_X) + extensaoFinal : conf.MARGEM_X - extensaoFinal;
+
+        // Adiciona a extensão extra no desenho da linha SVG
+        d += ` L ${pontaFinalX},${y} `;
+        
         const setaContainer = document.getElementById('seta-final-container');
-        const finalX = (linhas % 2 === 1) ? (conf.W - conf.MARGEM_X) : conf.MARGEM_X;
         const direcaoSeta = (linhas % 2 === 1) ? 'seta-dir' : 'seta-esq';
         const ajusteX = (linhas % 2 === 1) ? -5 : 5;
-        setaContainer.innerHTML = `<div class="seta-final ${direcaoSeta}" style="left: ${finalX + ajusteX}px; top: ${y}px;"></div>`;
+        
+        // Agora a seta é posicionada na ponta da extensão, e não mais debaixo do círculo!
+        setaContainer.innerHTML = `<div class="seta-final ${direcaoSeta}" style="left: ${pontaFinalX + ajusteX}px; top: ${y}px;"></div>`;
 
         return d;
     }
+
 
     function carregarRotinasDoBanco() {
         const hoje = new Date();
