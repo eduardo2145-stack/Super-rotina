@@ -1,20 +1,20 @@
 {
   "name": "Amigo Virtual - Rotinas",
   "short_name": "Amigo Virtual - Rotinas",
-  "start_url": "./dash.html",
+  "start_url": "./Dash.html",
   "display": "fullscreen",
   "background_color": "#F7F5F0",
   "theme_color": "#93C49D",
   "orientation": "landscape",
   "icons": [
   {
-    "src": "./icon-192.png",
+    "src": "./icon-rot-192.png",
     "sizes": "192x192",
     "type": "image/png",
     "purpose": "any"
   },
   {
-    "src": "./icon-512.png",
+    "src": "./icon-rot-512.png",
     "sizes": "512x512",
     "type": "image/png",
     "purpose": "maskable"
