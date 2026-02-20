@@ -321,21 +321,27 @@
 
     window.fecharAvaliacao = () => { const m = document.getElementById('modalAvaliacao'); m.classList.remove('ativo'); setTimeout(() => { m.style.display = 'none'; }, 300); };
 
-   window.avaliar = async (qtd) => {
+window.avaliar = async (qtd) => {
         if(!rotinaAvaliacaoAtual) return;
         const feed = document.getElementById('mensagem-feedback');
-        if(qtd === 3) { feed.innerText = "Parabéns! Você é incrível! 🚀"; feed.style.color = "#27AE60"; confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } }); } 
+        
+        if(qtd === 3) { 
+            feed.innerText = "Parabéns! Você é incrível! 🚀"; 
+            feed.style.color = "#27AE60"; 
+            
+            // MÁGICA AQUI: zIndex: 10000 faz o confete explodir na FRENTE de tudo!
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 10000 }); 
+        } 
         else if (qtd === 2) { feed.innerText = "Continue assim, você chega lá! 👍"; feed.style.color = "#F39C12"; } 
         else if (qtd === 1) { feed.innerText = "Muito bom, mas vamos melhorar! 💪"; feed.style.color = "#E67E22"; } 
         else { feed.innerText = "Tudo bem, tentaremos amanhã! 💙"; feed.style.color = "#D98880"; }
+        
         feed.style.opacity = '1';
 
         const dataHoje = obterDataDeHoje();
         
-        // 1. Salva na rotina (Para aparecer na rua embaixo do boneco)
         await updateDoc(doc(db, `${caminho_dados}/rotinas`, rotinaAvaliacaoAtual), { estrelas_ganhas: qtd, data_avaliacao: dataHoje });
         
-        // 2. MÁGICA: Salva no Histórico Eterno (Para calcular o Menu!)
         const idLog = dataHoje + "_" + rotinaAvaliacaoAtual;
         await setDoc(doc(db, `${caminho_dados}/historico_estrelas`, idLog), { data: dataHoje, estrelas: qtd });
 
