@@ -259,22 +259,77 @@
     let cacheAtividades = {};
     let rotinasCache = [];
 
-    // ==========================================
-    // O CÉREBRO DO MASCOTE (DICAS EDUCATIVAS LÚDICAS E CALMAS)
+        // ==========================================
+    // O SUPER CÉREBRO DO MASCOTE (DICAS EDUCATIVAS LÚDICAS E CALMAS)
     // ==========================================
     const dicasMascote = {
+        // 🍎 ALIMENTAÇÃO E HIDRATAÇÃO
         "comer": "O alimento é a energia mágica que faz você crescer forte e esperto. Bom apetite!",
-        "almoçar": "Pausa para reabastecer! O almoço deixa seu corpo preparado para as aventuras da tarde.",
-        "jantar": "O jantar ajuda sua barriguinha a ficar tranquila para você ter sonhos muito felizes.",
+        "almoç": "Pausa para reabastecer! O almoço deixa seu corpo preparado para as aventuras da tarde.",
+        "jant": "O jantar ajuda sua barriguinha a ficar tranquila para você ter sonhos muito felizes.",
+        "café": "O café da manhã liga o motor do seu corpo para começar o dia com tudo!",
+        "lanch": "Hora do lanchinho! Uma pausa gostosa para encher a barriga e voltar a brincar.",
+        "frut": "Frutas são doces da natureza! Elas têm vitaminas que são como escudos protetores para o corpo.",
+        "maçã": "A maçã é crocante e faz um barulhinho super legal! E ainda deixa seus dentes fortes.",
+        "banana": "Sabia que a banana é a fruta dos campeões? Ela dá muita força para os músculos!",
+        "morango": "Vermelhinho e docinho! O morango é cheio de superpoderes para a sua saúde.",
+        "água": "Glub, glub! Beber água refresca e ajuda o seu cérebro a pensar bem rapidinho.",
+        "suco": "Um suquinho gostoso para refrescar e encher o corpo de vitaminas boas!",
+
+        // 🛁 HIGIENE E CUIDADO PESSOAL
         "banho": "Água quentinha e sabonete! O banho relaxa o corpo e manda as sujeirinhas pelo ralo.",
-        "dentes": "Sua escova é uma varinha mágica que deixa os dentes brilhantes e fortes!",
+        "dente": "Sua escova é uma varinha mágica que deixa os dentes brilhantes e fortes!",
+        "escovar": "Sua escova é uma varinha mágica que deixa os dentes brilhantes e fortes!",
+        "mão": "Lavar as mãos manda os bichinhos invisíveis embora. Chuá, chuá, tchau sujeira!",
+        "banheiro": "Muito bem! Usar o banheiro e lavar as mãos depois mostra como você já está grande.",
+        "xixi": "Sinal verde para o banheiro! Fazer xixi alivia a barriguinha e te deixa pronto para brincar mais.",
+        "cocô": "Hora de ir ao trono! O corpo fica levinho e muito feliz depois de usar o banheiro.",
+        "cabelo": "Pentear o cabelo faz uma massagem gostosa na cabeça e te deixa super estiloso!",
+        "unha": "Cortar as unhas deixa seus dedos prontos para tocar em tudo sem arranhar. Rapidinho e não dói!",
+        "pijama": "Colocar o pijama é o abraço de pano que avisa ao corpo: 'está chegando a hora de descansar'.",
+
+        // 🛏️ SONO E DESCANSO
         "dormir": "Hora de descansar. Enquanto você dorme, seu cérebro guarda tudo de legal que você aprendeu hoje.",
+        "acordar": "Bom dia! Espreguice o corpo como um gatinho e dê boas-vindas a um novo dia de aventuras.",
+        "soneca": "Uma pausa para os olhinhos descansarem. A soneca recarrega a sua bateria para mais tarde!",
+        "cama": "Sua cama é o seu ninho quentinho e seguro. Feche os olhos e tenha sonhos lindos!",
+
+        // 📚 ESCOLA, ESTUDOS E TERAPIAS
         "escola": "A escola é um lugar cheio de descobertas e amigos novos. Aproveite bastante!",
-        "estudar": "Aprender coisas novas deixa sua mente super poderosa. Você consegue!",
+        "estud": "Aprender coisas novas deixa sua mente super poderosa. Você consegue!",
+        "tarefa": "Fazer a tarefa é como um treino de herói: deixa seu cérebro cada vez mais forte!",
+        "liçã": "Fazer a lição é como montar um quebra-cabeça. Um passinho de cada vez e você termina!",
+        "ler": "Ler um livro é como viajar para um mundo mágico sem sair do lugar. Que história legal!",
+        "livro": "Os livros guardam segredos incríveis. Qual será a descoberta de hoje?",
+        "pintar": "Uau! Usar as cores faz a sua imaginação brilhar. Capriche na sua obra de arte.",
+        "desenhar": "Desenhar é colocar no papel o que está na sua cabeça. Mostre seu talento!",
+        "médico": "O médico é o amigo que ajuda o seu corpo a ficar sempre forte e saudável.",
+        "terapia": "Hora de treinar habilidades novas e super legais! Você vai se divertir e aprender muito.",
+        "fono": "Hora de brincar com as palavras e os sons! Sua voz é muito importante.",
+        "psicólog": "Um momento para falar sobre as emoções e sentimentos. Seu coração está em um lugar seguro.",
+
+        // 🧹 TAREFAS E ORGANIZAÇÃO
+        "guardar": "Guardar os brinquedos é como colocar cada coisa na sua caminha. Eles vão adorar descansar!",
+        "brinquedo": "Guardar os brinquedos é como colocar cada coisa na sua caminha. Eles vão adorar descansar!",
+        "arrumar": "Um ambiente arrumado deixa a cabeça tranquila. Obrigado por ser um super ajudante!",
+        "limpar": "Tudo limpinho e brilhando! Ajudar em casa é uma atitude de gente grande.",
+        "lixo": "Jogar o lixo no lixo ajuda a salvar o planeta Terra. O meio ambiente agradece!",
+        "roupa": "Roupa limpa no armário, roupa suja no cesto. A organização faz o dia ficar mais fácil!",
+
+        // 🎮 TELAS, LAZER E SOCIAL
         "pc": "Telinhas são divertidas, mas não esqueça de piscar os olhos e dar uma esticadinha no corpo!",
-        "celular": "Brincar no celular é legal, mas lembre-se que o mundo real também está cheio de brincadeiras.",
-        "brincar": "Use sua imaginação! Brincar é a melhor forma de aprender a ser feliz."
+        "computador": "Hora de usar a máquina inteligente! Lembre-se de sentar com a coluna retinha.",
+        "celular": "A telinha diverte, mas lembre-se que o mundo real também está cheio de brincadeiras.",
+        "tablet": "O tablet é muito legal, mas não deixe ele muito pertinho do rosto, tá bom?",
+        "tv": "Assistir TV é gostoso! Quando acabar, que tal criar sua própria historinha?",
+        "videogame": "Você é o controle mestre! Mas lembre-se: heróis de verdade também brincam lá fora.",
+        "brincar": "Use sua imaginação! Brincar é a melhor forma de aprender a ser feliz.",
+        "correr": "Correr faz o vento bater no rosto e o coração bater forte. Gaste toda essa energia boa!",
+        "parque": "O parque é o lugar perfeito para rir alto, pular e explorar a natureza.",
+        "abraç": "Um abraço apertado cura qualquer tristeza e enche o coração de alegria. Que delícia!",
+        "respirar": "Puxe o ar como se cheirasse uma flor, solte como se soprasse uma vela. Isso traz muita paz."
     };
+
 
     window.abrirDica = (acaoTexto) => {
         const modal = document.getElementById('modalDica');
