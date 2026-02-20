@@ -115,8 +115,13 @@ body {
         #mapa-container { position: relative; width: 100%; max-width: 1100px; margin: 150px auto 50px auto; padding-bottom: 80px; }
         svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
         
-        .estrada-corpo { fill: none; stroke-width: 45; stroke-linecap: round; opacity: 1; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.15)); }
-        .estrada-tracejada { fill: none; stroke: rgba(255,255,255,0.9); stroke-width: 4; stroke-dasharray: 14,14; stroke-linecap: round; pointer-events: none; z-index: 3; }
+        .estrada-corpo { 
+    fill: none; 
+    stroke-width: 45; 
+    stroke-linecap: round; 
+    opacity: 0.95; 
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.18)); 
+}.estrada-tracejada { fill: none; stroke: rgba(255,255,255,0.9); stroke-width: 4; stroke-dasharray: 14,14; stroke-linecap: round; pointer-events: none; z-index: 3; }
         
         .c-1 { stroke: #f6b93b; } .c-2 { stroke: #2ecc71; } .c-3 { stroke: #00cec9; } .c-4 { stroke: #0984e3; } .c-5 { stroke: #6c5ce7; }
         
