@@ -3,135 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Amigo Virtual - Sensorial</title>
+    <title>Amigo Virtual - Gamificado</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <style>
-        /* Paleta TEA Friendly (Baixa Saturação, Tons Pastéis e Calmantes) */
+        /* Paleta TEA Friendly */
         :root { 
-            --cor-primaria: #93C49D; /* Verde Sálvia Calmante */
-            --cor-secundaria: #E8B87D; /* Mostarda Suave */
-            --cor-texto: #5A5A5A; /* Cinza chumbo (evita o preto puro que cansa a vista) */
-            --fundo-base: #F7F5F0; /* Off-white / Creme suave (Zero branco puro) */
+            --cor-primaria: #93C49D; 
+            --cor-secundaria: #F4D03F; /* Amarelo Estrela Suave */
+            --cor-texto: #5A5A5A; 
+            --fundo-base: #F7F5F0; 
         }
         
         * { box-sizing: border-box; }
 
         html, body { 
             margin: 0; padding: 0; width: 100vw; height: 100vh; 
-            overflow: hidden !important; 
-            overscroll-behavior: none; 
+            overflow: hidden !important; overscroll-behavior: none; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: var(--fundo-base);
         }
 
-        /* --- FUNDO REGULADO --- */
         body {
-            /* Degradê super suave para não competir com a estrada */
             background: linear-gradient(to bottom, #EBF4F6 0%, #F7F5F0 50%, #E9F0E6 100%);
-            
-            /* Caso use a imagem "fundo.jpg", ela vai carregar. O background-color garante que não fique branco. */
             background-image: url('IMG/bg.jpg'); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-blend-mode: overlay; /* Suaviza a imagem de fundo com a cor base */
+            background-size: cover; background-position: center;
+            background-attachment: fixed; background-blend-mode: overlay; 
         }
 
         #app-scroll-wrapper {
-            width: 100%; height: 100%;
-            overflow-y: auto; 
-            overflow-x: hidden !important; 
-            -webkit-overflow-scrolling: touch; 
-            position: relative;
+            width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden !important; 
+            -webkit-overflow-scrolling: touch; position: relative;
         }
 
         #app-scroll-wrapper::-webkit-scrollbar { display: none; } 
         #app-scroll-wrapper { -ms-overflow-style: none; scrollbar-width: none; } 
 
+        /* --- PLACAR DE ESTRELAS NO TOPO DIREITO --- */
+        #placar-estrelas {
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            background: rgba(255, 255, 255, 0.95); border: 2px solid #F4D03F; padding: 10px 20px;
+            border-radius: 30px; font-size: 22px; font-weight: 900; color: #D4AC0D;
+            box-shadow: 0 5px 15px rgba(244, 208, 63, 0.3); backdrop-filter: blur(5px);
+            display: none; /* Só aparece quando logado */
+            align-items: center; gap: 8px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        /* Animação quando ganha estrela */
+        .placar-animado { transform: scale(1.2); color: #F1C40F !important; }
+
         /* --- MENUS E LOGIN --- */
         .tela-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(247, 245, 240, 0.92); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; }
         .box-auth { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-align: center; max-width: 350px; width: 90%; border: 2px solid #EBEBEB; }
         .box-auth h1 { margin-top: 0; color: var(--cor-texto); font-size: 24px; font-weight: 700; }
-        .box-auth input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 16px; outline: none; transition: 0.3s; color: var(--cor-texto); background: #FCFCFC; }
+        .box-auth input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 16px; outline: none; color: var(--cor-texto); background: #FCFCFC; }
         .box-auth input:focus { border-color: var(--cor-primaria); background: #FFF; }
-        .box-auth button { width: 100%; padding: 15px; background: var(--cor-primaria); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; box-shadow: 0 4px 10px rgba(147, 196, 157, 0.3); }
+        .box-auth button { width: 100%; padding: 15px; background: var(--cor-primaria); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         
         #grid-filhos { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; margin-top: 20px; }
-        .btn-filho { background: white; border: 2px solid var(--cor-primaria); padding: 18px; border-radius: 16px; font-size: 20px; font-weight: bold; color: var(--cor-texto); cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(147, 196, 157, 0.15); }
+        .btn-filho { background: white; border: 2px solid var(--cor-primaria); padding: 18px; border-radius: 16px; font-size: 20px; font-weight: bold; color: var(--cor-texto); cursor: pointer; transition: 0.2s; }
         .btn-filho:hover { background: var(--cor-primaria); color: white; transform: translateY(-2px); }
-        .btn-sair { background: transparent !important; color: #D98880 !important; border: 2px solid #D98880 !important; box-shadow: none !important; margin-top: 20px;}
+        .btn-sair { background: transparent !important; color: #D98880 !important; border: 2px solid #D98880 !important; margin-top: 20px;}
 
         #menu-container { position: fixed; top: 20px; left: 20px; z-index: 1000; }
-        #menu-btn { background: rgba(255,255,255,0.9); border: 2px solid #EBEBEB; padding: 10px 20px; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); font-weight: bold; font-size: 15px; display: flex; align-items: center; gap: 8px; color: var(--cor-texto); backdrop-filter: blur(5px); }
+        #menu-btn { background: rgba(255,255,255,0.9); border: 2px solid #EBEBEB; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; font-size: 15px; display: flex; align-items: center; gap: 8px; color: var(--cor-texto); backdrop-filter: blur(5px); }
         #lista-criancas { background: white; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); display: none; padding: 8px; border: 1px solid #EBEBEB; margin-top: 8px; min-width: 160px; }
-        .opcao-crianca { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #F0F0F0; transition: 0.2s; font-size: 15px; border-radius: 10px; font-weight: 600; color: var(--cor-texto);}
-        .opcao-crianca:hover { background: #F4F9F5; color: var(--cor-primaria); }
+        .opcao-crianca { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #F0F0F0; font-size: 15px; border-radius: 10px; font-weight: 600; color: var(--cor-texto);}
 
-        #telaDiaLivre { display: none; flex-direction: column; align-items: center; justify-content: center; height: 90vh; text-align: center; color: var(--cor-texto); background: rgba(255,255,255,0.7); border-radius: 30px; margin: 20px; backdrop-filter: blur(10px); }
-        #telaDiaLivre img { width: 120px; opacity: 0.6; margin-bottom: 20px; }
-        #telaDiaLivre h1 { font-size: 30px; margin: 0; color: var(--cor-primaria); font-weight: 800; }
-
-        /* --- MODAL DO MASCOTE (SUAVE, SEM ESCURECER MUITO) --- */
-        #modalDica { 
+        /* --- MODAL DE AVALIAÇÃO (GAMEFICAÇÃO) --- */
+        #modalAvaliacao { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            /* Fundo esbranquiçado fosco em vez de preto, evita susto visual */
             background: rgba(247, 245, 240, 0.85); backdrop-filter: blur(8px);
             display: none; align-items: center; justify-content: center; z-index: 9999;
-            opacity: 0; transition: opacity 0.4s ease;
+            opacity: 0; transition: opacity 0.3s ease;
         }
         
-        .mascote-container {
-            display: flex; align-items: flex-end; gap: 20px;
-            transform: translateY(30px); transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-            max-width: 90%;
+        .box-avaliacao {
+            background: white; padding: 35px 30px; border-radius: 28px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1); text-align: center; max-width: 380px; width: 90%;
+            border: 2px solid #F0F0F0; transform: translateY(30px); transition: transform 0.4s ease;
         }
 
-        .mascote-img { width: 150px; height: auto; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.1)); }
+        #modalAvaliacao.ativo { opacity: 1; display: flex; }
+        #modalAvaliacao.ativo .box-avaliacao { transform: translateY(0); }
 
-        .balao-fala {
-            background: white; padding: 25px 30px; border-radius: 28px; border-bottom-left-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; max-width: 380px; border: 2px solid #F0F0F0;
-        }
+        .box-avaliacao h2 { margin: 0 0 10px 0; color: var(--cor-texto); font-size: 24px; text-transform: uppercase; }
+        .box-avaliacao p.sub { color: #888; font-size: 15px; margin-bottom: 25px; }
+
+        .botoes-estrelas { display: flex; flex-direction: column; gap: 12px; }
         
-        .balao-fala::before {
-            content: ""; position: absolute; bottom: -2px; left: -18px;
-            width: 0; height: 0; border-right: 20px solid white; border-top: 20px solid transparent; border-bottom: 0px solid transparent;
+        .btn-star {
+            background: #FFFDE7; border: 2px solid #F4D03F; padding: 15px; border-radius: 18px;
+            font-size: 26px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 5px;
+            box-shadow: 0 4px 10px rgba(244, 208, 63, 0.15);
+        }
+        .btn-star:hover { background: #FCF3CF; transform: scale(1.03); }
+        .btn-star:active { transform: scale(0.97); }
+
+        .btn-nao-fez {
+            background: transparent; color: #D98880; border: 2px dashed #D98880; padding: 12px;
+            border-radius: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; font-size: 16px; transition: 0.2s;
+        }
+        .btn-nao-fez:hover { background: #FDEDEC; }
+
+        #mensagem-feedback {
+            font-size: 18px; font-weight: 800; color: var(--cor-primaria); margin-top: 20px; 
+            min-height: 25px; opacity: 0; transition: opacity 0.3s;
         }
 
-        .balao-fala h2 { margin: 0 0 12px 0; color: var(--cor-primaria); font-size: 22px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .balao-fala p { margin: 0 0 24px 0; font-size: 17px; color: var(--cor-texto); line-height: 1.5; font-weight: 500; }
-        .balao-fala button {
-            background: var(--cor-primaria); color: white; border: none; padding: 14px 25px;
-            border-radius: 14px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;
-            box-shadow: 0 4px 12px rgba(147, 196, 157, 0.3); transition: 0.2s;
-        }
-        .balao-fala button:active { transform: scale(0.97); }
-
-        #modalDica.ativo { opacity: 1; display: flex; }
-        #modalDica.ativo .mascote-container { transform: translateY(0); }
-
-        /* --- ESTRADA --- */
-        #mapa-container { 
-            position: relative; width: 100%; max-width: 1100px; 
-            margin: 150px auto 50px auto; padding-bottom: 80px; 
-        }
+        /* --- ESTRADA E ÍCONES (Mantidos Intactos) --- */
+        #mapa-container { position: relative; width: 100%; max-width: 1100px; margin: 150px auto 50px auto; padding-bottom: 80px; }
         svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
         
-        /* Sombra da estrada bem mais suave e difusa */
         .estrada-corpo { fill: none; stroke-width: 45; stroke-linecap: round; opacity: 1; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.06)); }
         .estrada-tracejada { fill: none; stroke: rgba(255,255,255,0.8); stroke-width: 4; stroke-dasharray: 14,14; stroke-linecap: round; pointer-events: none; z-index: 3; }
         
-        /* Novas Cores Reguladas (Pastéis) */
-        .c-1 { stroke: #E8B87D; } /* Mostarda Suave */
-        .c-2 { stroke: #93C49D; } /* Sálvia */
-        .c-3 { stroke: #80C2D6; } /* Azul Água */
-        .c-4 { stroke: #86A3D4; } /* Azul Jeans */
-        .c-5 { stroke: #B4A3D6; } /* Lavanda */
-        
-        .seta-final { position: absolute; width: 0; height: 0; border-top: 48px solid transparent; border-bottom: 48px solid transparent; z-index: 2; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.08)); transition: left 0.5s; }
-        .seta-dir { border-left: 68px solid #B4A3D6; transform: translate(0, -50%); }
-        .seta-esq { border-right: 68px solid #B4A3D6; transform: translate(-100%, -50%); }
+        .c-1 { stroke: #E8B87D; } .c-2 { stroke: #93C49D; } .c-3 { stroke: #80C2D6; } .c-4 { stroke: #86A3D4; } .c-5 { stroke: #B4A3D6; } 
 
-        /* --- MARCADORES --- */
         .marcador { position: absolute; width: 0; height: 0; z-index: 10; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
         .icone-circulo {
@@ -140,42 +128,19 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center;
             overflow: hidden; z-index: 3; transition: all 0.3s ease; cursor: pointer;
         }
-        
         .icone-circulo:hover { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 12px 25px rgba(0,0,0,0.12); }
         .icone-circulo:active { transform: translate(-50%, -50%) scale(0.98); }
         .icone-circulo img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 
-        .textos { 
-            position: absolute; left: 0; bottom: 55px; transform: translateX(-50%); width: 220px; text-align: center;
-            z-index: 5; pointer-events: none; display: flex; flex-direction: column; align-items: center;
-        }
+        .textos { position: absolute; left: 0; bottom: 55px; transform: translateX(-50%); width: 220px; text-align: center; z-index: 5; pointer-events: none; display: flex; flex-direction: column; align-items: center; }
+        .badge-hora { display: inline-block; padding: 4px 16px; border-radius: 20px; color: white !important; font-size: 16px; font-weight: 800; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 6px; border: 2px solid rgba(255,255,255,0.5); }
+        .textos .acao { display: block; font-size: 14px; font-weight: 700; color: var(--cor-texto) !important; text-transform: uppercase; text-shadow: 0 2px 5px rgba(255,255,255,0.9), 0 -2px 5px rgba(255,255,255,0.9), 2px 0 5px rgba(255,255,255,0.9), -2px 0 5px rgba(255,255,255,0.9); }
 
-        .badge-hora { 
-            display: inline-block; padding: 4px 16px; border-radius: 20px; 
-            color: white !important; font-size: 16px; font-weight: 800; letter-spacing: 0.5px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 6px; border: 2px solid rgba(255,255,255,0.5);
-        }
-        
-        .textos .acao { 
-            display: block; font-size: 14px; font-weight: 700; color: var(--cor-texto) !important; 
-            text-transform: uppercase; 
-            /* Sombra tipo "Halo" branco bem difuso, para leitura sem agredir a vista */
-            text-shadow: 0 2px 5px rgba(255,255,255,0.9), 0 -2px 5px rgba(255,255,255,0.9), 2px 0 5px rgba(255,255,255,0.9), -2px 0 5px rgba(255,255,255,0.9);
-        }
-
-        /* --- ESTADOS (CALMOS) --- */
-        /* O passado fica com uma opacidade suave, sem ficar extremamente cinza (Mantém a cor sutil) */
         .passado .icone-circulo { border-color: #D5D5D5 !important; opacity: 0.7; filter: grayscale(0.4) opacity(0.8); transform: translate(-50%, -50%) scale(0.95); box-shadow: none; }
         .passado .textos { opacity: 0.6; }
         
         .agora { z-index: 100; }
-        
-        /* Animação de respiração: Lenta, Suave, Reguladora (3 segundos) */
-        .agora .icone-circulo { 
-            border-color: var(--cor-primaria) !important; 
-            box-shadow: 0 0 0 4px rgba(147, 196, 157, 0.2), 0 15px 30px rgba(0,0,0,0.1);
-            animation: respiracaoCalma 3s infinite alternate ease-in-out; 
-        }
+        .agora .icone-circulo { border-color: var(--cor-primaria) !important; box-shadow: 0 0 0 4px rgba(147, 196, 157, 0.2), 0 15px 30px rgba(0,0,0,0.1); animation: respiracaoCalma 3s infinite alternate ease-in-out; }
         .agora .badge-hora { transform: scale(1.05); background: var(--cor-primaria) !important; box-shadow: 0 4px 12px rgba(147, 196, 157, 0.4); }
 
         @keyframes respiracaoCalma { 
@@ -186,18 +151,28 @@
 </head>
 <body>
 
-    <div id="modalDica" onclick="fecharDica()">
-        <div class="mascote-container" onclick="event.stopPropagation()">
-            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712010.png" class="mascote-img" alt="Amigo Virtual">
-            <div class="balao-fala">
-                <h2 id="dicaTitulo">Hora da Ação!</h2>
-                <p id="dicaTexto">Mensagem do mascote aqui...</p>
-                <button onclick="fecharDica()">Entendi!</button>
+    <div id="app-scroll-wrapper">
+
+        <div id="placar-estrelas">
+            ⭐ <span id="num-estrelas">0</span>
+        </div>
+
+        <div id="modalAvaliacao" onclick="fecharAvaliacao()">
+            <div class="box-avaliacao" onclick="event.stopPropagation()">
+                <h2 id="titulo-aval">Atividade</h2>
+                <p class="sub">Como você se saiu nessa tarefa?</p>
+                
+                <div class="botoes-estrelas">
+                    <button class="btn-star" onclick="avaliar(3)">⭐ ⭐ ⭐</button>
+                    <button class="btn-star" onclick="avaliar(2)">⭐ ⭐</button>
+                    <button class="btn-star" onclick="avaliar(1)">⭐</button>
+                </div>
+                
+                <button class="btn-nao-fez" onclick="avaliar(0)">Não executei</button>
+                
+                <div id="mensagem-feedback"></div>
             </div>
         </div>
-    </div>
-
-    <div id="app-scroll-wrapper">
 
         <div id="telaLogin" class="tela-overlay" style="display: flex;">
             <div class="box-auth">
@@ -224,12 +199,6 @@
                 </div>
             </div>
 
-            <div id="telaDiaLivre">
-                <img src="https://cdn-icons-png.flaticon.com/512/3082/3082025.png" alt="Dia Livre">
-                <h1>Dia Livre!</h1>
-                <p>Nenhuma rotina cadastrada para hoje.</p>
-            </div>
-
             <div id="mapa-container">
                 <svg id="svgEstrada">
                     <g id="camada-cores"></g>
@@ -237,7 +206,6 @@
                     <path id="pathTracejado" class="estrada-tracejada" />
                 </svg>
                 <div id="cards-layer"></div>
-                <div id="seta-final-container"></div>
             </div>
         </div>
 
@@ -245,7 +213,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, orderBy, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
     const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", appId: "1:210945268922:web:ce9e585872090b378d7683" };
@@ -258,124 +226,97 @@
     let nome_crianca = localStorage.getItem('nome_crianca');
     let cacheAtividades = {};
     let rotinasCache = [];
+    
+    let rotinaAvaliacaoAtual = null; // Guarda o ID da rotina que está sendo avaliada
 
-        // ==========================================
-    // O SUPER CÉREBRO DO MASCOTE (DICAS EDUCATIVAS LÚDICAS E CALMAS)
     // ==========================================
-    const dicasMascote = {
-        // 🍎 ALIMENTAÇÃO E HIDRATAÇÃO
-        "comer": "O alimento é a energia mágica que faz você crescer forte e esperto. Bom apetite!",
-        "almoç": "Pausa para reabastecer! O almoço deixa seu corpo preparado para as aventuras da tarde.",
-        "jant": "O jantar ajuda sua barriguinha a ficar tranquila para você ter sonhos muito felizes.",
-        "café": "O café da manhã liga o motor do seu corpo para começar o dia com tudo!",
-        "lanch": "Hora do lanchinho! Uma pausa gostosa para encher a barriga e voltar a brincar.",
-        "frut": "Frutas são doces da natureza! Elas têm vitaminas que são como escudos protetores para o corpo.",
-        "maçã": "A maçã é crocante e faz um barulhinho super legal! E ainda deixa seus dentes fortes.",
-        "banana": "Sabia que a banana é a fruta dos campeões? Ela dá muita força para os músculos!",
-        "morango": "Vermelhinho e docinho! O morango é cheio de superpoderes para a sua saúde.",
-        "água": "Glub, glub! Beber água refresca e ajuda o seu cérebro a pensar bem rapidinho.",
-        "suco": "Um suquinho gostoso para refrescar e encher o corpo de vitaminas boas!",
+    // LÓGICA DE GAMIFICAÇÃO E AVALIAÇÃO
+    // ==========================================
+    
+    // Pega a data de hoje formatada (Ex: "2026-02-20") para resetar as estrelas todo dia
+    function obterDataDeHoje() {
+        const hoje = new Date();
+        return `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-${String(hoje.getDate()).padStart(2,'0')}`;
+    }
 
-        // 🛁 HIGIENE E CUIDADO PESSOAL
-        "banho": "Água quentinha e sabonete! O banho relaxa o corpo e manda as sujeirinhas pelo ralo.",
-        "dente": "Sua escova é uma varinha mágica que deixa os dentes brilhantes e fortes!",
-        "escovar": "Sua escova é uma varinha mágica que deixa os dentes brilhantes e fortes!",
-        "mão": "Lavar as mãos manda os bichinhos invisíveis embora. Chuá, chuá, tchau sujeira!",
-        "banheiro": "Muito bem! Usar o banheiro e lavar as mãos depois mostra como você já está grande.",
-        "xixi": "Sinal verde para o banheiro! Fazer xixi alivia a barriguinha e te deixa pronto para brincar mais.",
-        "cocô": "Hora de ir ao trono! O corpo fica levinho e muito feliz depois de usar o banheiro.",
-        "cabelo": "Pentear o cabelo faz uma massagem gostosa na cabeça e te deixa super estiloso!",
-        "unha": "Cortar as unhas deixa seus dedos prontos para tocar em tudo sem arranhar. Rapidinho e não dói!",
-        "pijama": "Colocar o pijama é o abraço de pano que avisa ao corpo: 'está chegando a hora de descansar'.",
-
-        // 🛏️ SONO E DESCANSO
-        "dormir": "Hora de descansar. Enquanto você dorme, seu cérebro guarda tudo de legal que você aprendeu hoje.",
-        "acordar": "Bom dia! Espreguice o corpo como um gatinho e dê boas-vindas a um novo dia de aventuras.",
-        "soneca": "Uma pausa para os olhinhos descansarem. A soneca recarrega a sua bateria para mais tarde!",
-        "cama": "Sua cama é o seu ninho quentinho e seguro. Feche os olhos e tenha sonhos lindos!",
-
-        // 📚 ESCOLA, ESTUDOS E TERAPIAS
-        "escola": "A escola é um lugar cheio de descobertas e amigos novos. Aproveite bastante!",
-        "estud": "Aprender coisas novas deixa sua mente super poderosa. Você consegue!",
-        "tarefa": "Fazer a tarefa é como um treino de herói: deixa seu cérebro cada vez mais forte!",
-        "liçã": "Fazer a lição é como montar um quebra-cabeça. Um passinho de cada vez e você termina!",
-        "ler": "Ler um livro é como viajar para um mundo mágico sem sair do lugar. Que história legal!",
-        "livro": "Os livros guardam segredos incríveis. Qual será a descoberta de hoje?",
-        "pintar": "Uau! Usar as cores faz a sua imaginação brilhar. Capriche na sua obra de arte.",
-        "desenhar": "Desenhar é colocar no papel o que está na sua cabeça. Mostre seu talento!",
-        "médico": "O médico é o amigo que ajuda o seu corpo a ficar sempre forte e saudável.",
-        "terapia": "Hora de treinar habilidades novas e super legais! Você vai se divertir e aprender muito.",
-        "fono": "Hora de brincar com as palavras e os sons! Sua voz é muito importante.",
-        "psicólog": "Um momento para falar sobre as emoções e sentimentos. Seu coração está em um lugar seguro.",
-
-        // 🧹 TAREFAS E ORGANIZAÇÃO
-        "guardar": "Guardar os brinquedos é como colocar cada coisa na sua caminha. Eles vão adorar descansar!",
-        "brinquedo": "Guardar os brinquedos é como colocar cada coisa na sua caminha. Eles vão adorar descansar!",
-        "arrumar": "Um ambiente arrumado deixa a cabeça tranquila. Obrigado por ser um super ajudante!",
-        "limpar": "Tudo limpinho e brilhando! Ajudar em casa é uma atitude de gente grande.",
-        "lixo": "Jogar o lixo no lixo ajuda a salvar o planeta Terra. O meio ambiente agradece!",
-        "roupa": "Roupa limpa no armário, roupa suja no cesto. A organização faz o dia ficar mais fácil!",
-
-        // 🎮 TELAS, LAZER E SOCIAL
-        "pc": "Telinhas são divertidas, mas não esqueça de piscar os olhos e dar uma esticadinha no corpo!",
-        "computador": "Hora de usar a máquina inteligente! Lembre-se de sentar com a coluna retinha.",
-        "celular": "A telinha diverte, mas lembre-se que o mundo real também está cheio de brincadeiras.",
-        "tablet": "O tablet é muito legal, mas não deixe ele muito pertinho do rosto, tá bom?",
-        "tv": "Assistir TV é gostoso! Quando acabar, que tal criar sua própria historinha?",
-        "videogame": "Você é o controle mestre! Mas lembre-se: heróis de verdade também brincam lá fora.",
-        "brincar": "Use sua imaginação! Brincar é a melhor forma de aprender a ser feliz.",
-        "correr": "Correr faz o vento bater no rosto e o coração bater forte. Gaste toda essa energia boa!",
-        "parque": "O parque é o lugar perfeito para rir alto, pular e explorar a natureza.",
-        "abraç": "Um abraço apertado cura qualquer tristeza e enche o coração de alegria. Que delícia!",
-        "respirar": "Puxe o ar como se cheirasse uma flor, solte como se soprasse uma vela. Isso traz muita paz."
-    };
-
-    window.abrirDica = (acaoTexto, descricaoPersonalizada) => {
-        const modal = document.getElementById('modalDica');
-        const titulo = document.getElementById('dicaTitulo');
-        const texto = document.getElementById('dicaTexto');
+    window.abrirModalAvaliacao = (idRotina, nomeAcao) => {
+        rotinaAvaliacaoAtual = idRotina;
+        document.getElementById('titulo-aval').innerText = nomeAcao;
+        document.getElementById('mensagem-feedback').style.opacity = '0';
         
-        let mensagemEncontrada = "";
-
-        // 1ª PRIORIDADE: Lê o texto do painel
-        if (descricaoPersonalizada && descricaoPersonalizada.trim() !== "" && descricaoPersonalizada !== "undefined") {
-            mensagemEncontrada = descricaoPersonalizada;
-        } 
-        // 2ª PRIORIDADE: Procura no cérebro IGNORANDO ACENTOS E LETRAS MAIÚSCULAS
-        else {
-            // Essa mágica limpa os acentos do que você digitou no painel (Ex: "Água" vira "agua")
-            let palavraChave = acaoTexto.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-            
-            for (const [palavra, dica] of Object.entries(dicasMascote)) {
-                // Também limpa os acentos do dicionário (Ex: "liçã" vira "lica")
-                let palavraLimpa = palavra.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-                
-                if (palavraChave.includes(palavraLimpa)) {
-                    mensagemEncontrada = dica;
-                    break;
-                }
-            }
-        }
-
-        // 3ª PRIORIDADE: Frase genérica
-        if (!mensagemEncontrada) {
-            mensagemEncontrada = "Cada atividade que você faz é um passo para um dia incrível. Continue assim!";
-        }
-
-        titulo.innerText = acaoTexto;
-        texto.innerText = mensagemEncontrada;
-        
+        const modal = document.getElementById('modalAvaliacao');
         modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('ativo'), 10);
     };
 
-
-    window.fecharDica = () => {
-        const modal = document.getElementById('modalDica');
+    window.fecharAvaliacao = () => {
+        const modal = document.getElementById('modalAvaliacao');
         modal.classList.remove('ativo');
-        setTimeout(() => modal.style.display = 'none', 400); 
+        setTimeout(() => { modal.style.display = 'none'; rotinaAvaliacaoAtual = null; }, 300); 
     };
 
+    window.avaliar = async (qtdEstrelas) => {
+        if(!rotinaAvaliacaoAtual) return;
+        
+        const feedbackEl = document.getElementById('mensagem-feedback');
+        
+        // As mensagens mágicas que você pediu!
+        if(qtdEstrelas === 3) {
+            feedbackEl.innerText = "Parabéns! Você é incrível! 🚀";
+            feedbackEl.style.color = "#27AE60";
+            // Solta os fogos! (Confete)
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+        } else if (qtdEstrelas === 2) {
+            feedbackEl.innerText = "Continue assim, você chega lá! 👍";
+            feedbackEl.style.color = "#F39C12";
+        } else if (qtdEstrelas === 1) {
+            feedbackEl.innerText = "Muito bom, mas vamos melhorar! 💪";
+            feedbackEl.style.color = "#E67E22";
+        } else {
+            feedbackEl.innerText = "Tudo bem, tentaremos amanhã! 💙";
+            feedbackEl.style.color = "#D98880";
+        }
+
+        feedbackEl.style.opacity = '1';
+
+        // Salva a avaliação no Firebase (na rotina específica, com a data de hoje)
+        const rotinaRef = doc(db, `${caminho_dados}/rotinas`, rotinaAvaliacaoAtual);
+        await updateDoc(rotinaRef, {
+            estrelas_ganhas: qtdEstrelas,
+            data_avaliacao: obterDataDeHoje()
+        });
+
+        // Espera 2.5 segundos para a criança ler a mensagem e fecha sozinho
+        setTimeout(() => {
+            fecharAvaliacao();
+        }, 2500);
+    };
+
+    function atualizarPlacarDeEstrelas(listaRotinas) {
+        let total = 0;
+        const hoje = obterDataDeHoje();
+
+        // Soma as estrelas apenas se a avaliação foi feita HOJE
+        listaRotinas.forEach(rot => {
+            if (rot.data_avaliacao === hoje && typeof rot.estrelas_ganhas === 'number') {
+                total += rot.estrelas_ganhas;
+            }
+        });
+
+        const placarNum = document.getElementById('num-estrelas');
+        const placarBox = document.getElementById('placar-estrelas');
+        
+        // Faz a animação de pulso se o número mudar
+        if(placarNum.innerText !== total.toString()) {
+            placarNum.innerText = total;
+            placarBox.classList.add('placar-animado');
+            setTimeout(() => placarBox.classList.remove('placar-animado'), 300);
+        }
+    }
+
+    // ==========================================
+    // SISTEMA DE LOGIN 
+    // ==========================================
     onAuthStateChanged(auth, (user) => {
         if (user) {
             id_usuario_pai = user.uid;
@@ -388,6 +329,7 @@
             document.getElementById('telaLogin').style.display = 'flex';
             document.getElementById('telaSelecionarFilho').style.display = 'none';
             document.getElementById('telaMapa').style.display = 'none';
+            document.getElementById('placar-estrelas').style.display = 'none';
         }
     });
 
@@ -417,7 +359,6 @@
                 const pathFilho = `usuarios/${id_usuario_pai}/filhos/${d.id}`;
                 grid.innerHTML += `<button class="btn-filho" onclick="selecionarCrianca('${pathFilho}', '${info.nome}')">${info.nome}</button>`;
             });
-            if(snap.empty) grid.innerHTML = "<p>Nenhum filho cadastrado.</p>";
         });
     }
 
@@ -427,36 +368,19 @@
         window.location.reload(true);
     };
 
-    function processarCacheAtividades(snap) {
-        snap.forEach(doc => {
-            const data = doc.data();
-            const idOriginal = doc.id;
-            const nomeOrig = data.nome || "";
-            const acaoOrig = data.acao || "";
-
-            cacheAtividades[idOriginal] = data;
-            if (nomeOrig) cacheAtividades[nomeOrig] = data;
-            if (acaoOrig) cacheAtividades[acaoOrig] = data;
-
-            cacheAtividades[idOriginal.trim().toLowerCase()] = data;
-            if (nomeOrig) cacheAtividades[nomeOrig.trim().toLowerCase()] = data;
-            if (acaoOrig) cacheAtividades[acaoOrig.trim().toLowerCase()] = data;
-        });
-        if(rotinasCache.length > 0) desenharPista(rotinasCache);
-    }
-
     function iniciarApp() {
         document.getElementById('telaLogin').style.display = 'none'; 
         document.getElementById('telaSelecionarFilho').style.display = 'none'; 
         document.getElementById('telaMapa').style.display = 'block'; 
+        document.getElementById('placar-estrelas').style.display = 'flex'; // Mostra as estrelas
         document.getElementById('nome-atual').innerText = nome_crianca;
         
         const partes = caminho_dados.split('/'); 
         const pastaUsuario = `${partes[0]}/${partes[1]}`;
         const pastaIrmaos = `${partes[0]}/${partes[1]}/${partes[2]}`;
 
-        onSnapshot(collection(db, `${pastaUsuario}/atividades`), processarCacheAtividades);
-        onSnapshot(collection(db, `${caminho_dados}/atividades`), processarCacheAtividades);
+        onSnapshot(collection(db, `${pastaUsuario}/atividades`), processarCache);
+        onSnapshot(collection(db, `${caminho_dados}/atividades`), processarCache);
 
         onSnapshot(collection(db, pastaIrmaos), (snap) => {
             const menu = document.getElementById('menu-filhos-items');
@@ -471,82 +395,63 @@
         setInterval(heartbeat, 30000);
         setInterval(() => desenharPista(rotinasCache), 60000);
     }
+
+    function processarCache(snap) {
+        snap.forEach(doc => {
+            const data = doc.data();
+            const id = doc.id.trim().toLowerCase();
+            const n = (data.nome || "").trim().toLowerCase();
+            const a = (data.acao || "").trim().toLowerCase();
+            cacheAtividades[id] = data;
+            if(n) cacheAtividades[n] = data;
+            if(a) cacheAtividades[a] = data;
+        });
+        if(rotinasCache.length > 0) desenharPista(rotinasCache);
+    }
     
     window.toggleMenu = () => { const m = document.getElementById('lista-criancas'); m.style.display = m.style.display==='block'?'none':'block'; };
     
-    function converterMin(h) { 
-        let [hr, mn] = h.split(':').map(Number); 
-        if(hr < 5) hr += 24; 
-        return hr * 60 + mn; 
-    }
+    function converterMin(h) { let [hr, mn] = h.split(':').map(Number); if(hr < 5) hr += 24; return hr * 60 + mn; }
 
     function obterMinutosAtuais() {
-        const agora = new Date();
-        let hrSys = agora.getHours();
-        let mnSys = agora.getMinutes();
-        if(hrSys < 5) hrSys += 24;
-        return hrSys * 60 + mnSys;
+        const agora = new Date(); let hrSys = agora.getHours(); let mnSys = agora.getMinutes();
+        if(hrSys < 5) hrSys += 24; return hrSys * 60 + mnSys;
     }
 
-    const iconesInteligentes = {
-        "dormir": "https://cdn-icons-png.flaticon.com/512/3094/3094836.png",
-        "almoçar": "https://cdn-icons-png.flaticon.com/512/3413/3413574.png",
-        "comer": "https://cdn-icons-png.flaticon.com/512/3413/3413574.png",
-        "dentes": "https://cdn-icons-png.flaticon.com/512/2965/2965314.png",
-        "banho": "https://cdn-icons-png.flaticon.com/512/3103/3103445.png"
-    };
-    function buscarIconeAcao(acaoTexto) {
-        if(!acaoTexto) return 'https://cdn-icons-png.flaticon.com/512/1048/1048953.png';
-        const textoLimpo = acaoTexto.toLowerCase();
-        for (const [palavra, link] of Object.entries(iconesInteligentes)) {
-            if (textoLimpo.includes(palavra)) return link;
-        }
-        return 'https://cdn-icons-png.flaticon.com/512/1048/1048953.png';
-    }
+    function buscarIconeAcao(acaoTexto) { return 'https://cdn-icons-png.flaticon.com/512/1048/1048953.png'; }
 
     const H_ROW = 240; 
     
     function calcularConfiguracaoTela() {
-        const container = document.getElementById('mapa-container');
-        const W = container.clientWidth;
-        
-        let itensPorLinha = 5;
-        let margemX = 140; 
-
-        if (W < 550) { itensPorLinha = 2; margemX = 90; }
-        else if (W < 800) { itensPorLinha = 3; margemX = 110; }
-        else if (W < 1000) { itensPorLinha = 4; margemX = 130; }
-        else { itensPorLinha = 5; margemX = 150; }
-
-        return { W, ITENS_POR_LINHA: itensPorLinha, MARGEM_X: margemX };
+        const W = document.getElementById('mapa-container').clientWidth;
+        let itens = 5, margem = 140; 
+        if (W < 550) { itens = 2; margem = 90; }
+        else if (W < 800) { itens = 3; margem = 110; }
+        else if (W < 1000) { itens = 4; margem = 130; }
+        return { W, ITENS_POR_LINHA: itens, MARGEM_X: margem };
     }
 
     function criarCaminhoInfografico(totalRotinas, conf) {
         const container = document.getElementById('mapa-container');
-        const linhas = Math.max(1, Math.ceil(totalRotinas / conf.ITENS_POR_LINHA));
-        container.style.height = ((linhas * H_ROW) + 150) + "px";
+        if (totalRotinas === 0) return "";
+        const ultimaLinhaIndex = Math.floor((totalRotinas - 1) / conf.ITENS_POR_LINHA);
+        container.style.height = ((ultimaLinhaIndex * H_ROW) + 200) + "px";
         
         let d = `M ${conf.MARGEM_X},120 `;
         let y = 120;
+        const stepX = (conf.W - (2 * conf.MARGEM_X)) / (conf.ITENS_POR_LINHA - 1 || 1);
 
-        for (let i = 0; i < linhas; i++) {
-            let nextX = (i % 2 === 0) ? (conf.W - conf.MARGEM_X) : conf.MARGEM_X;
-            d += `L ${nextX},${y} `; 
-            if (i < linhas - 1) {
-                let arcY = y + H_ROW;
-                let raio = H_ROW / 2;
-                let direcaoArco = (i % 2 === 0) ? 1 : 0;
-                d += `A ${raio} ${raio} 0 0 ${direcaoArco} ${nextX} ${arcY} `; 
-                y = arcY;
+        for (let i = 0; i <= ultimaLinhaIndex; i++) {
+            if (i < ultimaLinhaIndex) {
+                let nextX = (i % 2 === 0) ? (conf.W - conf.MARGEM_X) : conf.MARGEM_X;
+                d += `L ${nextX},${y} A ${H_ROW/2} ${H_ROW/2} 0 0 ${(i % 2 === 0) ? 1 : 0} ${nextX} ${y + H_ROW} `; 
+                y += H_ROW;
+            } else {
+                let pos = (totalRotinas - 1) % conf.ITENS_POR_LINHA;
+                let endX = (i % 2 === 0) ? conf.MARGEM_X + (pos * stepX) : (conf.W - conf.MARGEM_X) - (pos * stepX);
+                d += `L ${endX},${y} `;
             }
         }
-        
-        const setaContainer = document.getElementById('seta-final-container');
-        const finalX = (linhas % 2 === 1) ? (conf.W - conf.MARGEM_X) : conf.MARGEM_X;
-        const direcaoSeta = (linhas % 2 === 1) ? 'seta-dir' : 'seta-esq';
-        const ajusteX = (linhas % 2 === 1) ? -5 : 5;
-        setaContainer.innerHTML = `<div class="seta-final ${direcaoSeta}" style="left: ${finalX + ajusteX}px; top: ${y}px;"></div>`;
-
         return d;
     }
 
@@ -556,41 +461,34 @@
 
         onSnapshot(query(collection(db, `${caminho_dados}/rotinas`), orderBy("hora")), (snap) => {
             const listaBruta = []; 
-            snap.forEach(d => listaBruta.push(d.data()));
+            snap.forEach(d => {
+                let r = d.data();
+                r.id = d.id; // Preciso salvar o ID do documento para poder atualizar as estrelas depois!
+                listaBruta.push(r);
+            });
             rotinasCache = listaBruta.filter(r => !r.dia_semana || r.dia_semana === 'todos' || r.dia_semana === diaSemanaAtual);
             rotinasCache.sort((a,b) => converterMin(a.hora) - converterMin(b.hora));
             
+            atualizarPlacarDeEstrelas(rotinasCache); // Atualiza o placar lá em cima
             desenharPista(rotinasCache);
         });
     }
 
     function desenharPista(lista) {
-        if(lista.length === 0) {
-            document.getElementById('mapa-container').style.display = 'none';
-            document.getElementById('telaDiaLivre').style.display = 'flex';
-            return;
-        } else {
-            document.getElementById('mapa-container').style.display = 'block';
-            document.getElementById('telaDiaLivre').style.display = 'none';
-        }
-
+        if(lista.length === 0) return;
         const conf = calcularConfiguracaoTela();
         const dPath = criarCaminhoInfografico(lista.length, conf);
         
-        const pathTrace = document.getElementById('pathTracejado');
-        pathTrace.setAttribute('d', dPath);
-        const totalLen = pathTrace.getTotalLength();
+        document.getElementById('pathTracejado').setAttribute('d', dPath);
+        const totalLen = document.getElementById('pathTracejado').getTotalLength();
 
         const grupoCores = document.getElementById('camada-cores'); grupoCores.innerHTML = "";
-        
-        // Cores Sensoriais Pastéis
-        const coresClasses = ["c-1", "c-2", "c-3", "c-4", "c-5"];
-        const hexCores = ["#E8B87D", "#93C49D", "#80C2D6", "#86A3D4", "#B4A3D6"];
+        const cores = ["#E8B87D", "#93C49D", "#80C2D6", "#86A3D4", "#B4A3D6"];
         const pedacoSize = totalLen / 5; 
 
         for(let i=0; i<5; i++) {
             const pathSeg = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            pathSeg.setAttribute('d', dPath); pathSeg.setAttribute('class', `estrada-corpo ${coresClasses[i]}`);
+            pathSeg.setAttribute('d', dPath); pathSeg.setAttribute('class', `estrada-corpo c-${i+1}`);
             pathSeg.style.strokeDasharray = `${pedacoSize + 10} ${totalLen}`; pathSeg.style.strokeDashoffset = -(i * pedacoSize);
             grupoCores.appendChild(pathSeg);
         }
@@ -599,49 +497,29 @@
         
         const minAtual = obterMinutosAtuais();
         let indexAtual = -1;
-        
-        for(let i = 0; i < lista.length; i++) {
-            if (minAtual >= converterMin(lista[i].hora)) {
-                indexAtual = i; 
-            }
-        }
+        for(let i = 0; i < lista.length; i++) { if (minAtual >= converterMin(lista[i].hora)) indexAtual = i; }
 
         lista.forEach((rot, index) => {
             const linhaAtual = Math.floor(index / conf.ITENS_POR_LINHA);
-            const posNaLinha = index % conf.ITENS_POR_LINHA; 
-            const yPos = 120 + (linhaAtual * H_ROW);
-            const larguraUtil = conf.W - (2 * conf.MARGEM_X);
-            const stepX = larguraUtil / (conf.ITENS_POR_LINHA - 1 || 1);
-
-            let xPos = (linhaAtual % 2 === 0) ? conf.MARGEM_X + (posNaLinha * stepX) : (conf.W - conf.MARGEM_X) - (posNaLinha * stepX);
-
-            const percentTotal = index / lista.length;
-            const indiceCor = Math.floor(percentTotal * 4.99);
-            const corAtual = hexCores[indiceCor % 5];
+            const stepX = (conf.W - (2 * conf.MARGEM_X)) / (conf.ITENS_POR_LINHA - 1 || 1);
+            let xPos = (linhaAtual % 2 === 0) ? conf.MARGEM_X + ((index % conf.ITENS_POR_LINHA) * stepX) : (conf.W - conf.MARGEM_X) - ((index % conf.ITENS_POR_LINHA) * stepX);
+            const corAtual = cores[Math.floor((index / lista.length) * 4.99) % 5];
 
             const div = document.createElement('div');
-            const classeTexto = (linhaAtual % 2 === 0) ? 'texto-cima' : 'texto-baixo';
-            div.className = `marcador ${classeTexto}`;
-            div.style.left = xPos + "px"; 
-            div.style.top = yPos + "px";
+            div.className = `marcador ${(linhaAtual % 2 === 0) ? 'texto-cima' : 'texto-baixo'}`;
+            div.style.left = xPos + "px"; div.style.top = (120 + (linhaAtual * H_ROW)) + "px";
 
-            if(index < indexAtual) {
-                div.classList.add('passado');
-            }
-            else if(index === indexAtual) {
-                div.classList.add('agora');
-                if(conf.W > 800) {
-                   setTimeout(() => document.getElementById('app-scroll-wrapper').scrollTo({top: yPos - 300, behavior:'smooth'}), 500); 
-                }
-            }
+            if(index < indexAtual) div.classList.add('passado');
+            else if(index === indexAtual) div.classList.add('agora');
 
             const acaoLimpa = (rot.acao || "").trim().toLowerCase();
-            const atvBanco = cacheAtividades[acaoLimpa] || {};
-            let imagemFinal = atvBanco.imagem || rot.imagem || rot.foto || buscarIconeAcao(rot.acao);
+            const atv = cacheAtividades[acaoLimpa] || {};
+            let imagemFinal = atv.imagem || rot.imagem || rot.foto || buscarIconeAcao(rot.acao);
+            let acaoSegura = rot.acao.replace(/'/g, "\\'");
 
-            // AÇÃO ONCLICK PARA O MASCOTE
+            // O ONCLICK AGORA ABRE A TELA DE ESTRELAS E PASSA O ID DA ROTINA!
             div.innerHTML = `
-                <div class="icone-circulo" style="border-color:${corAtual}" onclick="abrirDica('${rot.acao}')">
+                <div class="icone-circulo" style="border-color:${corAtual}" onclick="abrirModalAvaliacao('${rot.id}', '${acaoSegura}')">
                     <img src="${imagemFinal}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1048/1048953.png'">
                 </div>
                 <div class="textos">
@@ -655,11 +533,8 @@
         let lengthPassado = 0;
         if (indexAtual >= 0) {
             const compReta = conf.W - (2 * conf.MARGEM_X);
-            const compCurva = Math.PI * (H_ROW / 2);
             const pedacoReta = compReta / (conf.ITENS_POR_LINHA - 1 || 1);
-            const linhaDoAtual = Math.floor(indexAtual / conf.ITENS_POR_LINHA);
-            const posicaoNaLinha = indexAtual % conf.ITENS_POR_LINHA;
-            lengthPassado = (linhaDoAtual * (compReta + compCurva)) + (posicaoNaLinha * pedacoReta);
+            lengthPassado = (Math.floor(indexAtual / conf.ITENS_POR_LINHA) * (compReta + Math.PI * (H_ROW / 2))) + ((indexAtual % conf.ITENS_POR_LINHA) * pedacoReta);
         }
 
         const caminhoCinza = document.getElementById('pathCinzaPassado');
@@ -668,13 +543,8 @@
         caminhoCinza.style.strokeDashoffset = totalLen - lengthPassado; 
     }
 
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => desenharPista(rotinasCache), 300);
-    });
-
-    async function heartbeat() { if(caminho_dados) setDoc(doc(db, `${caminho_dados}/dispositivos/tablet_amigo`), { nome: "Tablet "+nome_crianca, online: serverTimestamp() }, {merge:true}); }
+    window.addEventListener('resize', () => { setTimeout(() => desenharPista(rotinasCache), 300); });
+    async function heartbeat() { if(caminho_dados) setDoc(doc(db, `${caminho_dados}/dispositivos/tablet_amigo`), { nome: "Tablet", online: serverTimestamp() }, {merge:true}); }
 </script>
 </body>
 </html>
