@@ -18,15 +18,23 @@
         }
 
         /* --- FUNDO CUSTOMIZÁVEL --- */
-        body {
-            background-color: #ffffff; 
-            background-image: url('IMG/bg.jpg'); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-        }
+        /* --- FUNDO TERAPÊUTICO SUAVE --- */
+body {
+    background: linear-gradient(
+        180deg,
+        #f2f7fb 0%,
+        #eaf3f9 40%,
+        #f8fbff 100%
+    );
 
+    /* Se quiser manter a imagem, deixe essa linha ativa */
+    /* background-image: url('IMG/bg.jpg'); */
+
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
         /* --- CONTAINER DE ROLAGEM INTERNA --- */
         #app-scroll-wrapper {
             width: 100%; height: 100%;
