@@ -3,39 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Amigo Virtual</title>
+    <title>Amigo Virtual - Sensorial</title>
     <style>
-        :root { --cor-primaria: #26de81; --cor-secundaria: #f7b731; }
+        /* Paleta TEA Friendly (Baixa Saturação, Tons Pastéis e Calmantes) */
+        :root { 
+            --cor-primaria: #93C49D; /* Verde Sálvia Calmante */
+            --cor-secundaria: #E8B87D; /* Mostarda Suave */
+            --cor-texto: #5A5A5A; /* Cinza chumbo (evita o preto puro que cansa a vista) */
+            --fundo-base: #F7F5F0; /* Off-white / Creme suave (Zero branco puro) */
+        }
         
         * { box-sizing: border-box; }
 
-        /* --- TRAVA TOTAL DA PÁGINA --- */
         html, body { 
             margin: 0; padding: 0; width: 100vw; height: 100vh; 
             overflow: hidden !important; 
             overscroll-behavior: none; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--fundo-base);
         }
 
-        /* --- FUNDO CUSTOMIZÁVEL --- */
-        /* --- FUNDO TERAPÊUTICO SUAVE --- */
-body {
-    background: linear-gradient(
-        180deg,
-        #f2f7fb 0%,
-        #eaf3f9 40%,
-        #f8fbff 100%
-    );
+        /* --- FUNDO REGULADO --- */
+        body {
+            /* Degradê super suave para não competir com a estrada */
+            background: linear-gradient(to bottom, #EBF4F6 0%, #F7F5F0 50%, #E9F0E6 100%);
+            
+            /* Caso use a imagem "fundo.jpg", ela vai carregar. O background-color garante que não fique branco. */
+            background-image: url('IMG/bg.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-blend-mode: overlay; /* Suaviza a imagem de fundo com a cor base */
+        }
 
-    /* Se quiser manter a imagem, deixe essa linha ativa */
-    /* background-image: url('IMG/bg.jpg'); */
-
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-}
-        /* --- CONTAINER DE ROLAGEM INTERNA --- */
         #app-scroll-wrapper {
             width: 100%; height: 100%;
             overflow-y: auto; 
@@ -48,104 +48,101 @@ body {
         #app-scroll-wrapper { -ms-overflow-style: none; scrollbar-width: none; } 
 
         /* --- MENUS E LOGIN --- */
-        .tela-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; }
-        .box-auth { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; max-width: 350px; width: 90%; }
-        .box-auth h1 { margin-top: 0; color: #444; font-size: 24px; }
-        .box-auth input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #eee; border-radius: 10px; font-size: 16px; outline: none; transition: 0.3s; }
-        .box-auth input:focus { border-color: var(--cor-primaria); }
-        .box-auth button { width: 100%; padding: 15px; background: var(--cor-primaria); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .tela-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(247, 245, 240, 0.92); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; }
+        .box-auth { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-align: center; max-width: 350px; width: 90%; border: 2px solid #EBEBEB; }
+        .box-auth h1 { margin-top: 0; color: var(--cor-texto); font-size: 24px; font-weight: 700; }
+        .box-auth input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 16px; outline: none; transition: 0.3s; color: var(--cor-texto); background: #FCFCFC; }
+        .box-auth input:focus { border-color: var(--cor-primaria); background: #FFF; }
+        .box-auth button { width: 100%; padding: 15px; background: var(--cor-primaria); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; box-shadow: 0 4px 10px rgba(147, 196, 157, 0.3); }
         
         #grid-filhos { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; margin-top: 20px; }
-        .btn-filho { background: white; border: 3px solid var(--cor-primaria); padding: 20px; border-radius: 15px; font-size: 20px; font-weight: bold; color: #444; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(38, 222, 129, 0.2); }
-        .btn-filho:hover { background: var(--cor-primaria); color: white; transform: scale(1.05); }
-        .btn-sair { background: transparent !important; color: #e74c3c !important; border: 2px solid #e74c3c !important; box-shadow: none !important; margin-top: 20px;}
+        .btn-filho { background: white; border: 2px solid var(--cor-primaria); padding: 18px; border-radius: 16px; font-size: 20px; font-weight: bold; color: var(--cor-texto); cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(147, 196, 157, 0.15); }
+        .btn-filho:hover { background: var(--cor-primaria); color: white; transform: translateY(-2px); }
+        .btn-sair { background: transparent !important; color: #D98880 !important; border: 2px solid #D98880 !important; box-shadow: none !important; margin-top: 20px;}
 
         #menu-container { position: fixed; top: 20px; left: 20px; z-index: 1000; }
-        #menu-btn { background: white; border: 2px solid #ddd; padding: 10px 20px; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-weight: bold; font-size: 15px; display: flex; align-items: center; gap: 8px; color: #444; }
-        #lista-criancas { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; padding: 5px; border: 1px solid #eee; margin-top: 5px; min-width: 150px; }
-        .opcao-crianca { padding: 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; transition: 0.3s; font-size: 14px; border-radius: 8px; font-weight: bold; color: #555;}
-        .opcao-crianca:hover { background: #f0fdf4; color: var(--cor-primaria); }
+        #menu-btn { background: rgba(255,255,255,0.9); border: 2px solid #EBEBEB; padding: 10px 20px; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); font-weight: bold; font-size: 15px; display: flex; align-items: center; gap: 8px; color: var(--cor-texto); backdrop-filter: blur(5px); }
+        #lista-criancas { background: white; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); display: none; padding: 8px; border: 1px solid #EBEBEB; margin-top: 8px; min-width: 160px; }
+        .opcao-crianca { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #F0F0F0; transition: 0.2s; font-size: 15px; border-radius: 10px; font-weight: 600; color: var(--cor-texto);}
+        .opcao-crianca:hover { background: #F4F9F5; color: var(--cor-primaria); }
 
-        #telaDiaLivre { display: none; flex-direction: column; align-items: center; justify-content: center; height: 90vh; text-align: center; color: #555; background: rgba(255,255,255,0.8); border-radius: 30px; margin: 20px; backdrop-filter: blur(5px); }
-        #telaDiaLivre img { width: 120px; opacity: 0.7; margin-bottom: 20px; }
-        #telaDiaLivre h1 { font-size: 32px; margin: 0; color: var(--cor-primaria); }
+        #telaDiaLivre { display: none; flex-direction: column; align-items: center; justify-content: center; height: 90vh; text-align: center; color: var(--cor-texto); background: rgba(255,255,255,0.7); border-radius: 30px; margin: 20px; backdrop-filter: blur(10px); }
+        #telaDiaLivre img { width: 120px; opacity: 0.6; margin-bottom: 20px; }
+        #telaDiaLivre h1 { font-size: 30px; margin: 0; color: var(--cor-primaria); font-weight: 800; }
 
-        /* --- MODAL DO MASCOTE (A NOVA MÁGICA) --- */
+        /* --- MODAL DO MASCOTE (SUAVE, SEM ESCURECER MUITO) --- */
         #modalDica { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+            /* Fundo esbranquiçado fosco em vez de preto, evita susto visual */
+            background: rgba(247, 245, 240, 0.85); backdrop-filter: blur(8px);
             display: none; align-items: center; justify-content: center; z-index: 9999;
-            opacity: 0; transition: opacity 0.3s ease;
+            opacity: 0; transition: opacity 0.4s ease;
         }
         
         .mascote-container {
             display: flex; align-items: flex-end; gap: 20px;
-            transform: translateY(50px); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(30px); transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
             max-width: 90%;
         }
 
-        .mascote-img { width: 140px; height: auto; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
+        .mascote-img { width: 150px; height: auto; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.1)); }
 
         .balao-fala {
-            background: white; padding: 25px; border-radius: 25px; border-bottom-left-radius: 5px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2); position: relative; max-width: 350px;
+            background: white; padding: 25px 30px; border-radius: 28px; border-bottom-left-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; max-width: 380px; border: 2px solid #F0F0F0;
         }
         
-        /* O biquinho do balão de fala apontando pro mascote */
         .balao-fala::before {
-            content: ""; position: absolute; bottom: 0; left: -15px;
+            content: ""; position: absolute; bottom: -2px; left: -18px;
             width: 0; height: 0; border-right: 20px solid white; border-top: 20px solid transparent; border-bottom: 0px solid transparent;
         }
 
-        .balao-fala h2 { margin: 0 0 10px 0; color: var(--cor-primaria); font-size: 22px; text-transform: uppercase; }
-        .balao-fala p { margin: 0 0 20px 0; font-size: 18px; color: #555; line-height: 1.4; font-weight: 500; }
+        .balao-fala h2 { margin: 0 0 12px 0; color: var(--cor-primaria); font-size: 22px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .balao-fala p { margin: 0 0 24px 0; font-size: 17px; color: var(--cor-texto); line-height: 1.5; font-weight: 500; }
         .balao-fala button {
-            background: var(--cor-primaria); color: white; border: none; padding: 12px 25px;
-            border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;
-            box-shadow: 0 5px 15px rgba(38, 222, 129, 0.3); transition: 0.2s;
+            background: var(--cor-primaria); color: white; border: none; padding: 14px 25px;
+            border-radius: 14px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;
+            box-shadow: 0 4px 12px rgba(147, 196, 157, 0.3); transition: 0.2s;
         }
-        .balao-fala button:active { transform: scale(0.95); }
+        .balao-fala button:active { transform: scale(0.97); }
 
-        /* Quando o modal fica visível, ele ativa as animações */
         #modalDica.ativo { opacity: 1; display: flex; }
         #modalDica.ativo .mascote-container { transform: translateY(0); }
 
-
         /* --- ESTRADA --- */
-        #mapa-container { position: relative; width: 100%; max-width: 1100px; margin: 150px auto 50px auto; padding-bottom: 80px; }
+        #mapa-container { 
+            position: relative; width: 100%; max-width: 1100px; 
+            margin: 150px auto 50px auto; padding-bottom: 80px; 
+        }
         svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
         
-        .estrada-corpo { 
-    fill: none; 
-    stroke-width: 45; 
-    stroke-linecap: round; 
-    opacity: 0.9; 
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08)); 
-}estrada-tracejada { fill: none; stroke: rgba(255,255,255,0.9); stroke-width: 4; stroke-dasharray: 14,14; stroke-linecap: round; pointer-events: none; z-index: 3; }
+        /* Sombra da estrada bem mais suave e difusa */
+        .estrada-corpo { fill: none; stroke-width: 45; stroke-linecap: round; opacity: 1; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.06)); }
+        .estrada-tracejada { fill: none; stroke: rgba(255,255,255,0.8); stroke-width: 4; stroke-dasharray: 14,14; stroke-linecap: round; pointer-events: none; z-index: 3; }
         
-        .c-1 { stroke: #f3c77a; }   /* amarelo pastel */
-.c-2 { stroke: #7ed6a3; }   /* verde suave */
-.c-3 { stroke: #6fd3d8; }   /* azul claro suave */
-.c-4 { stroke: #74b9ff; }   /* azul calmo */
-.c-5 { stroke: #a29bfe; }   /* lilás suave */  
-        .seta-final { position: absolute; width: 0; height: 0; border-top: 50px solid transparent; border-bottom: 50px solid transparent; z-index: 2; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2)); transition: left 0.5s; }
-        .seta-dir { border-left: 70px solid #6c5ce7; transform: translate(0, -50%); }
-        .seta-esq { border-right: 70px solid #6c5ce7; transform: translate(-100%, -50%); }
+        /* Novas Cores Reguladas (Pastéis) */
+        .c-1 { stroke: #E8B87D; } /* Mostarda Suave */
+        .c-2 { stroke: #93C49D; } /* Sálvia */
+        .c-3 { stroke: #80C2D6; } /* Azul Água */
+        .c-4 { stroke: #86A3D4; } /* Azul Jeans */
+        .c-5 { stroke: #B4A3D6; } /* Lavanda */
+        
+        .seta-final { position: absolute; width: 0; height: 0; border-top: 48px solid transparent; border-bottom: 48px solid transparent; z-index: 2; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.08)); transition: left 0.5s; }
+        .seta-dir { border-left: 68px solid #B4A3D6; transform: translate(0, -50%); }
+        .seta-esq { border-right: 68px solid #B4A3D6; transform: translate(-100%, -50%); }
 
         /* --- MARCADORES --- */
         .marcador { position: absolute; width: 0; height: 0; z-index: 10; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
         .icone-circulo {
             position: absolute; left: 0; top: 0; transform: translate(-50%, -50%);
-            width: 85px; height: 85px; background: white; border-radius: 50%; border: 5px solid #ccc;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center;
-            overflow: hidden; z-index: 3; background-color: #fff; transition: all 0.2s ease;
-            cursor: pointer; /* Muda o mouse para uma mãozinha avisando que dá pra clicar! */
+            width: 82px; height: 82px; background: white; border-radius: 50%; border: 5px solid #ccc;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center;
+            overflow: hidden; z-index: 3; transition: all 0.3s ease; cursor: pointer;
         }
         
-        /* Efeito de clique no círculo */
-        .icone-circulo:hover { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
-        .icone-circulo:active { transform: translate(-50%, -50%) scale(0.95); }
+        .icone-circulo:hover { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 12px 25px rgba(0,0,0,0.12); }
+        .icone-circulo:active { transform: translate(-50%, -50%) scale(0.98); }
         .icone-circulo img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 
         .textos { 
@@ -154,44 +151,36 @@ body {
         }
 
         .badge-hora { 
-            display: inline-block; padding: 4px 14px; border-radius: 20px; 
-            color: white !important; font-size: 16px; font-weight: 900; letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin-bottom: 6px;
+            display: inline-block; padding: 4px 16px; border-radius: 20px; 
+            color: white !important; font-size: 16px; font-weight: 800; letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 6px; border: 2px solid rgba(255,255,255,0.5);
         }
         
         .textos .acao { 
-    display: block; 
-    font-size: 15px; 
-    font-weight: 700; 
-    color: #444 !important; 
-    text-transform: uppercase; 
-    text-shadow: 0 2px 6px rgba(255,255,255,0.8); 
-}
+            display: block; font-size: 14px; font-weight: 700; color: var(--cor-texto) !important; 
+            text-transform: uppercase; 
+            /* Sombra tipo "Halo" branco bem difuso, para leitura sem agredir a vista */
+            text-shadow: 0 2px 5px rgba(255,255,255,0.9), 0 -2px 5px rgba(255,255,255,0.9), 2px 0 5px rgba(255,255,255,0.9), -2px 0 5px rgba(255,255,255,0.9);
+        }
 
-        /* --- ESTADOS --- */
-        .passado .icone-circulo { 
-    border-color: #d5d5d5 !important; 
-    opacity: 0.75; 
-    filter: grayscale(0.4); 
-    transform: translate(-50%, -50%) scale(0.95); 
-} .passado .textos { opacity: 0.7; filter: grayscale(0.8); }
+        /* --- ESTADOS (CALMOS) --- */
+        /* O passado fica com uma opacidade suave, sem ficar extremamente cinza (Mantém a cor sutil) */
+        .passado .icone-circulo { border-color: #D5D5D5 !important; opacity: 0.7; filter: grayscale(0.4) opacity(0.8); transform: translate(-50%, -50%) scale(0.95); box-shadow: none; }
+        .passado .textos { opacity: 0.6; }
         
         .agora { z-index: 100; }
+        
+        /* Animação de respiração: Lenta, Suave, Reguladora (3 segundos) */
         .agora .icone-circulo { 
-    border-color: var(--cor-primaria) !important; 
-    box-shadow: 0 0 0 4px rgba(38, 222, 129, 0.2), 0 10px 20px rgba(0,0,0,0.15);
-    animation: pulseSuave 2.5s infinite alternate; 
-}
+            border-color: var(--cor-primaria) !important; 
+            box-shadow: 0 0 0 4px rgba(147, 196, 157, 0.2), 0 15px 30px rgba(0,0,0,0.1);
+            animation: respiracaoCalma 3s infinite alternate ease-in-out; 
+        }
+        .agora .badge-hora { transform: scale(1.05); background: var(--cor-primaria) !important; box-shadow: 0 4px 12px rgba(147, 196, 157, 0.4); }
 
-@keyframes pulseSuave { 
-    0% { transform: translate(-50%, -50%) scale(1); } 
-    100% { transform: translate(-50%, -50%) scale(1.03); } 
-}
-        .agora .badge-hora { transform: scale(1.1); background: var(--cor-primaria) !important; box-shadow: 0 0 15px var(--cor-primaria); }
-
-        @keyframes pulseGigante { 
+        @keyframes respiracaoCalma { 
             0% { transform: translate(-50%, -50%) scale(1); } 
-            100% { transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 0 0 10px rgba(38, 222, 129, 0), 0 25px 50px rgba(0,0,0,0.4); } 
+            100% { transform: translate(-50%, -50%) scale(1.04); box-shadow: 0 0 0 8px rgba(147, 196, 157, 0.1), 0 20px 40px rgba(0,0,0,0.15); } 
         }
     </style>
 </head>
@@ -200,7 +189,6 @@ body {
     <div id="modalDica" onclick="fecharDica()">
         <div class="mascote-container" onclick="event.stopPropagation()">
             <img src="https://cdn-icons-png.flaticon.com/512/4712/4712010.png" class="mascote-img" alt="Amigo Virtual">
-            
             <div class="balao-fala">
                 <h2 id="dicaTitulo">Hora da Ação!</h2>
                 <p id="dicaTexto">Mensagem do mascote aqui...</p>
@@ -214,7 +202,7 @@ body {
         <div id="telaLogin" class="tela-overlay" style="display: flex;">
             <div class="box-auth">
                 <h1>Login Amigo Virtual</h1>
-                <p style="color:#777; margin-bottom: 20px;">Use a mesma conta do painel</p>
+                <p style="color:#888; margin-bottom: 20px; font-size: 14px;">Use a mesma conta do painel</p>
                 <input type="email" id="inputEmail" placeholder="Seu E-mail">
                 <input type="password" id="inputSenha" placeholder="Sua Senha">
                 <button onclick="fazerLogin()">ENTRAR NO PAINEL</button>
@@ -222,7 +210,7 @@ body {
         </div>
 
         <div id="telaSelecionarFilho" class="tela-overlay" style="display: none;">
-            <h1 style="color: #444; font-size: 28px;">Quem está usando?</h1>
+            <h1 style="color: var(--cor-texto); font-size: 28px;">Quem está usando?</h1>
             <div id="grid-filhos"></div>
             <button class="btn-filho btn-sair" onclick="sairApp()">Sair da Conta</button>
         </div>
@@ -232,7 +220,7 @@ body {
                 <button id="menu-btn" onclick="toggleMenu()">🤖 <span id="nome-atual">...</span> ▾</button>
                 <div id="lista-criancas">
                     <div id="menu-filhos-items"></div>
-                    <div class="opcao-crianca" style="color:#e74c3c; border-top: 1px solid #eee; text-align: center;" onclick="sairApp()">Sair da Conta</div>
+                    <div class="opcao-crianca" style="color:#D98880; border-top: 1px solid #F0F0F0; text-align: center;" onclick="sairApp()">Sair da Conta</div>
                 </div>
             </div>
 
@@ -245,7 +233,7 @@ body {
             <div id="mapa-container">
                 <svg id="svgEstrada">
                     <g id="camada-cores"></g>
-                    <path id="pathCinzaPassado" class="estrada-corpo" style="stroke: #d1d8e0; opacity: 0.85; transition: stroke-dashoffset 1s ease-in-out; z-index: 2;" />
+                    <path id="pathCinzaPassado" class="estrada-corpo" style="stroke: #EAE6DF; opacity: 0.9; transition: stroke-dashoffset 1.5s ease-in-out; z-index: 2;" />
                     <path id="pathTracejado" class="estrada-tracejada" />
                 </svg>
                 <div id="cards-layer"></div>
@@ -272,20 +260,20 @@ body {
     let rotinasCache = [];
 
     // ==========================================
-    // O CÉREBRO DO MASCOTE (DICAS EDUCATIVAS)
+    // O CÉREBRO DO MASCOTE (DICAS EDUCATIVAS LÚDICAS E CALMAS)
     // ==========================================
     const dicasMascote = {
-        "comer": "Comer raspa o tacho! A comida é o combustível que te dá energia para brincar e crescer forte como um herói!",
-        "almoçar": "O almoço deixa seus músculos fortes e sua cabeça rápida para aprender coisas novas!",
-        "jantar": "O jantar quentinho prepara sua barriguinha para uma noite de sono de campeão!",
-        "banho": "Chá-bua! O banho manda os bichinhos da sujeira embora e te deixa cheirosinho e relaxado!",
-        "dentes": "Escovar os dentes espanta os bichinhos da cárie e deixa o seu sorriso brilhando de tão limpo!",
-        "dormir": "Zzz... Dormir bem faz o seu cérebro guardar tudo o que você aprendeu hoje e te dá forças para brincar amanhã!",
-        "escola": "Na escola você fica mais inteligente, descobre coisas mágicas e faz um montão de amigos legais!",
-        "estudar": "Estudar é como treinar os super-poderes do seu cérebro. Quanto mais você treina, mais inteligente você fica!",
-        "pc": "Brincar no computador é muito legal, mas não esqueça de piscar os olhos e espreguiçar o corpo!",
-        "celular": "A telinha diverte, mas brincar correndo pela casa e usando a imaginação é tão bom quanto!",
-        "brincar": "Hora da diversão! Brincar faz você muito feliz e ajuda a inventar mundos novos na sua cabeça!"
+        "comer": "O alimento é a energia mágica que faz você crescer forte e esperto. Bom apetite!",
+        "almoçar": "Pausa para reabastecer! O almoço deixa seu corpo preparado para as aventuras da tarde.",
+        "jantar": "O jantar ajuda sua barriguinha a ficar tranquila para você ter sonhos muito felizes.",
+        "banho": "Água quentinha e sabonete! O banho relaxa o corpo e manda as sujeirinhas pelo ralo.",
+        "dentes": "Sua escova é uma varinha mágica que deixa os dentes brilhantes e fortes!",
+        "dormir": "Hora de descansar. Enquanto você dorme, seu cérebro guarda tudo de legal que você aprendeu hoje.",
+        "escola": "A escola é um lugar cheio de descobertas e amigos novos. Aproveite bastante!",
+        "estudar": "Aprender coisas novas deixa sua mente super poderosa. Você consegue!",
+        "pc": "Telinhas são divertidas, mas não esqueça de piscar os olhos e dar uma esticadinha no corpo!",
+        "celular": "Brincar no celular é legal, mas lembre-se que o mundo real também está cheio de brincadeiras.",
+        "brincar": "Use sua imaginação! Brincar é a melhor forma de aprender a ser feliz."
     };
 
     window.abrirDica = (acaoTexto) => {
@@ -296,7 +284,6 @@ body {
         let palavraChave = acaoTexto.trim().toLowerCase();
         let mensagemEncontrada = null;
 
-        // Procura no cérebro se tem alguma dica para a palavra da rotina
         for (const [palavra, dica] of Object.entries(dicasMascote)) {
             if (palavraChave.includes(palavra)) {
                 mensagemEncontrada = dica;
@@ -304,26 +291,22 @@ body {
             }
         }
 
-        // Se ele não achar uma dica específica, fala uma frase de apoio genial padrão
         if (!mensagemEncontrada) {
-            mensagemEncontrada = "Você está indo muito bem! Seguir a rotina te transforma no super-herói do seu próprio dia!";
+            mensagemEncontrada = "Cada atividade que você faz é um passo para um dia incrível. Continue assim!";
         }
 
         titulo.innerText = acaoTexto;
         texto.innerText = mensagemEncontrada;
         
         modal.style.display = 'flex';
-        // Pequeno atraso para a animação do CSS funcionar
         setTimeout(() => modal.classList.add('ativo'), 10);
     };
 
     window.fecharDica = () => {
         const modal = document.getElementById('modalDica');
         modal.classList.remove('ativo');
-        setTimeout(() => modal.style.display = 'none', 300); // Espera a animação sair
+        setTimeout(() => modal.style.display = 'none', 400); 
     };
-    // ==========================================
-
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -531,8 +514,10 @@ body {
         const totalLen = pathTrace.getTotalLength();
 
         const grupoCores = document.getElementById('camada-cores'); grupoCores.innerHTML = "";
+        
+        // Cores Sensoriais Pastéis
         const coresClasses = ["c-1", "c-2", "c-3", "c-4", "c-5"];
-        const hexCores = ["#f6b93b", "#2ecc71", "#00cec9", "#0984e3", "#6c5ce7"];
+        const hexCores = ["#E8B87D", "#93C49D", "#80C2D6", "#86A3D4", "#B4A3D6"];
         const pedacoSize = totalLen / 5; 
 
         for(let i=0; i<5; i++) {
@@ -586,7 +571,7 @@ body {
             const atvBanco = cacheAtividades[acaoLimpa] || {};
             let imagemFinal = atvBanco.imagem || rot.imagem || rot.foto || buscarIconeAcao(rot.acao);
 
-            // AÇÃO ONCLICK PARA ABRIR O MASCOTE
+            // AÇÃO ONCLICK PARA O MASCOTE
             div.innerHTML = `
                 <div class="icone-circulo" style="border-color:${corAtual}" onclick="abrirDica('${rot.acao}')">
                     <img src="${imagemFinal}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1048/1048953.png'">
