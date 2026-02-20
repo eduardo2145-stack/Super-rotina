@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Amigo Virtual</title>
+    <style>
+        :root { --cor-primaria: #26de81; --cor-secundaria: #f7b731; }
+        
+        * { box-sizing: border-box; }
+
+        /* --- TRAVA TOTAL DA PÁGINA --- */
+        html, body { 
+            margin: 0; padding: 0; width: 100vw; height: 100vh; 
+            overflow: hidden !important; 
+            overscroll-behavior: none; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+
+        /* --- FUNDO CUSTOMIZÁVEL --- */
+        body {
+            background-color: #ffffff; 
+            background-image: url('IMG/bg.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+
+        /* --- CONTAINER DE ROLAGEM INTERNA --- */
+        #app-scroll-wrapper {
+            width: 100%; height: 100%;
+            overflow-y: auto; 
+            overflow-x: hidden !important; 
+            -webkit-overflow-scrolling: touch; 
+            position: relative;
+        }
+
+        #app-scroll-wrapper::-webkit-scrollbar { display: none; } 
+        #app-scroll-wrapper { -ms-overflow-style: none; scrollbar-width: none; } 
+
+        /* --- MENUS E LOGIN --- */
+        .tela-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; }
+        .box-auth { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; max-width: 350px; width: 90%; }
+        .box-auth h1 { margin-top: 0; color: #444; font-size: 24px; }
+        .box-auth input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #eee; border-radius: 10px; font-size: 16px; outline: none; transition: 0.3s; }
+        .box-auth input:focus { border-color: var(--cor-primaria); }
+        .box-auth button { width: 100%; padding: 15px; background: var(--cor-primaria); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        
+        #grid-filhos { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; margin-top: 20px; }
+        .btn-filho { background: white; border: 3px solid var(--cor-primaria); padding: 20px; border-radius: 15px; font-size: 20px; font-weight: bold; color: #444; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(38, 222, 129, 0.2); }
+        .btn-filho:hover { background: var(--cor-primaria); color: white; transform: scale(1.05); }
+        .btn-sair { background: transparent !important; color: #e74c3c !important; border: 2px solid #e74c3c !important; box-shadow: none !important; margin-top: 20px;}
+
+        #menu-container { position: fixed; top: 20px; left: 20px; z-index: 1000; }
+        #menu-btn { background: white; border: 2px solid #ddd; padding: 10px 20px; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-weight: bold; font-size: 15px; display: flex; align-items: center; gap: 8px; color: #444; }
+        #lista-criancas { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; padding: 5px; border: 1px solid #eee; margin-top: 5px; min-width: 150px; }
+        .opcao-crianca { padding: 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; transition: 0.3s; font-size: 14px; border-radius: 8px; font-weight: bold; color: #555;}
+        .opcao-crianca:hover { background: #f0fdf4; color: var(--cor-primaria); }
+
+        #telaDiaLivre { display: none; flex-direction: column; align-items: center; justify-content: center; height: 90vh; text-align: center; color: #555; background: rgba(255,255,255,0.8); border-radius: 30px; margin: 20px; backdrop-filter: blur(5px); }
+        #telaDiaLivre img { width: 120px; opacity: 0.7; margin-bottom: 20px; }
+        #telaDiaLivre h1 { font-size: 32px; margin: 0; color: var(--cor-primaria); }
+
+        /* --- MODAL DO MASCOTE (A NOVA MÁGICA) --- */
+        #modalDica { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center; z-index: 9999;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        
+        .mascote-container {
+            display: flex; align-items: flex-end; gap: 20px;
+            transform: translateY(50px); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 90%;
+        }
+
+        .mascote-img { width: 140px; height: auto; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
+
+        .balao-fala {
+            background: white; padding: 25px; border-radius: 25px; border-bottom-left-radius: 5px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2); position: relative; max-width: 350px;
+        }
+        
+        /* O biquinho do balão de fala apontando pro mascote */
+        .balao-fala::before {
+            content: ""; position: absolute; bottom: 0; left: -15px;
+            width: 0; height: 0; border-right: 20px solid white; border-top: 20px solid transparent; border-bottom: 0px solid transparent;
+        }
+
+        .balao-fala h2 { margin: 0 0 10px 0; color: var(--cor-primaria); font-size: 22px; text-transform: uppercase; }
+        .balao-fala p { margin: 0 0 20px 0; font-size: 18px; color: #555; line-height: 1.4; font-weight: 500; }
+        .balao-fala button {
+            background: var(--cor-primaria); color: white; border: none; padding: 12px 25px;
+            border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;
+            box-shadow: 0 5px 15px rgba(38, 222, 129, 0.3); transition: 0.2s;
+        }
+        .balao-fala button:active { transform: scale(0.95); }
+
+        /* Quando o modal fica visível, ele ativa as animações */
+        #modalDica.ativo { opacity: 1; display: flex; }
+        #modalDica.ativo .mascote-container { transform: translateY(0); }
+
+
+        /* --- ESTRADA --- */
+        #mapa-container { position: relative; width: 100%; max-width: 1100px; margin: 150px auto 50px auto; padding-bottom: 80px; }
+        svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+        
+        .estrada-corpo { fill: none; stroke-width: 45; stroke-linecap: round; opacity: 1; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.15)); }
+        .estrada-tracejada { fill: none; stroke: rgba(255,255,255,0.9); stroke-width: 4; stroke-dasharray: 14,14; stroke-linecap: round; pointer-events: none; z-index: 3; }
+        
+        .c-1 { stroke: #f6b93b; } .c-2 { stroke: #2ecc71; } .c-3 { stroke: #00cec9; } .c-4 { stroke: #0984e3; } .c-5 { stroke: #6c5ce7; }
+        
+        .seta-final { position: absolute; width: 0; height: 0; border-top: 50px solid transparent; border-bottom: 50px solid transparent; z-index: 2; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2)); transition: left 0.5s; }
+        .seta-dir { border-left: 70px solid #6c5ce7; transform: translate(0, -50%); }
+        .seta-esq { border-right: 70px solid #6c5ce7; transform: translate(-100%, -50%); }
+
+        /* --- MARCADORES --- */
+        .marcador { position: absolute; width: 0; height: 0; z-index: 10; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+        .icone-circulo {
+            position: absolute; left: 0; top: 0; transform: translate(-50%, -50%);
+            width: 85px; height: 85px; background: white; border-radius: 50%; border: 5px solid #ccc;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center;
+            overflow: hidden; z-index: 3; background-color: #fff; transition: all 0.2s ease;
+            cursor: pointer; /* Muda o mouse para uma mãozinha avisando que dá pra clicar! */
+        }
+        
+        /* Efeito de clique no círculo */
+        .icone-circulo:hover { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+        .icone-circulo:active { transform: translate(-50%, -50%) scale(0.95); }
+        .icone-circulo img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+        .textos { 
+            position: absolute; left: 0; bottom: 55px; transform: translateX(-50%); width: 220px; text-align: center;
+            z-index: 5; pointer-events: none; display: flex; flex-direction: column; align-items: center;
+        }
+
+        .badge-hora { 
+            display: inline-block; padding: 4px 14px; border-radius: 20px; 
+            color: white !important; font-size: 16px; font-weight: 900; letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin-bottom: 6px;
+        }
+        
+        .textos .acao { 
+            display: block; font-size: 15px; font-weight: 800; color: #333 !important; 
+            text-transform: uppercase; text-shadow: 2px 2px 0px #fff, -2px -2px 0px #fff, 2px -2px 0px #fff, -2px 2px 0px #fff, 0px 0px 8px #fff; 
+        }
+
+        /* --- ESTADOS --- */
+        .passado .icone-circulo { border-color: #bbb !important; opacity: 0.65; filter: grayscale(0.6) brightness(1.1); transform: translate(-50%, -50%) scale(0.9); }
+        .passado .textos { opacity: 0.7; filter: grayscale(0.8); }
+        
+        .agora { z-index: 100; }
+        .agora .icone-circulo { 
+            border-color: var(--cor-primaria) !important; 
+            box-shadow: 0 0 0 5px rgba(38, 222, 129, 0.3), 0 20px 40px rgba(0,0,0,0.3);
+            animation: pulseGigante 1.5s infinite alternate; 
+        }
+        .agora .badge-hora { transform: scale(1.1); background: var(--cor-primaria) !important; box-shadow: 0 0 15px var(--cor-primaria); }
+
+        @keyframes pulseGigante { 
+            0% { transform: translate(-50%, -50%) scale(1); } 
+            100% { transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 0 0 10px rgba(38, 222, 129, 0), 0 25px 50px rgba(0,0,0,0.4); } 
+        }
+    </style>
+</head>
+<body>
+
+    <div id="modalDica" onclick="fecharDica()">
+        <div class="mascote-container" onclick="event.stopPropagation()">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712010.png" class="mascote-img" alt="Amigo Virtual">
+            
+            <div class="balao-fala">
+                <h2 id="dicaTitulo">Hora da Ação!</h2>
+                <p id="dicaTexto">Mensagem do mascote aqui...</p>
+                <button onclick="fecharDica()">Entendi!</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-scroll-wrapper">
+
+        <div id="telaLogin" class="tela-overlay" style="display: flex;">
+            <div class="box-auth">
+                <h1>Login Amigo Virtual</h1>
+                <p style="color:#777; margin-bottom: 20px;">Use a mesma conta do painel</p>
+                <input type="email" id="inputEmail" placeholder="Seu E-mail">
+                <input type="password" id="inputSenha" placeholder="Sua Senha">
+                <button onclick="fazerLogin()">ENTRAR NO PAINEL</button>
+            </div>
+        </div>
+
+        <div id="telaSelecionarFilho" class="tela-overlay" style="display: none;">
+            <h1 style="color: #444; font-size: 28px;">Quem está usando?</h1>
+            <div id="grid-filhos"></div>
+            <button class="btn-filho btn-sair" onclick="sairApp()">Sair da Conta</button>
+        </div>
+
+        <div id="telaMapa" style="display: none;">
+            <div id="menu-container">
+                <button id="menu-btn" onclick="toggleMenu()">🤖 <span id="nome-atual">...</span> ▾</button>
+                <div id="lista-criancas">
+                    <div id="menu-filhos-items"></div>
+                    <div class="opcao-crianca" style="color:#e74c3c; border-top: 1px solid #eee; text-align: center;" onclick="sairApp()">Sair da Conta</div>
+                </div>
+            </div>
+
+            <div id="telaDiaLivre">
+                <img src="https://cdn-icons-png.flaticon.com/512/3082/3082025.png" alt="Dia Livre">
+                <h1>Dia Livre!</h1>
+                <p>Nenhuma rotina cadastrada para hoje.</p>
+            </div>
+
+            <div id="mapa-container">
+                <svg id="svgEstrada">
+                    <g id="camada-cores"></g>
+                    <path id="pathCinzaPassado" class="estrada-corpo" style="stroke: #d1d8e0; opacity: 0.85; transition: stroke-dashoffset 1s ease-in-out; z-index: 2;" />
+                    <path id="pathTracejado" class="estrada-tracejada" />
+                </svg>
+                <div id="cards-layer"></div>
+                <div id="seta-final-container"></div>
+            </div>
+        </div>
+
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", appId: "1:210945268922:web:ce9e585872090b378d7683" };
+    const app = initializeApp(firebaseConfig); 
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    
+    let id_usuario_pai = null; 
+    let caminho_dados = localStorage.getItem('caminho_dados');
+    let nome_crianca = localStorage.getItem('nome_crianca');
+    let cacheAtividades = {};
+    let rotinasCache = [];
+
+    // ==========================================
+    // O CÉREBRO DO MASCOTE (DICAS EDUCATIVAS)
+    // ==========================================
+    const dicasMascote = {
+        "comer": "Comer raspa o tacho! A comida é o combustível que te dá energia para brincar e crescer forte como um herói!",
+        "almoçar": "O almoço deixa seus músculos fortes e sua cabeça rápida para aprender coisas novas!",
+        "jantar": "O jantar quentinho prepara sua barriguinha para uma noite de sono de campeão!",
+        "banho": "Chá-bua! O banho manda os bichinhos da sujeira embora e te deixa cheirosinho e relaxado!",
+        "dentes": "Escovar os dentes espanta os bichinhos da cárie e deixa o seu sorriso brilhando de tão limpo!",
+        "dormir": "Zzz... Dormir bem faz o seu cérebro guardar tudo o que você aprendeu hoje e te dá forças para brincar amanhã!",
+        "escola": "Na escola você fica mais inteligente, descobre coisas mágicas e faz um montão de amigos legais!",
+        "estudar": "Estudar é como treinar os super-poderes do seu cérebro. Quanto mais você treina, mais inteligente você fica!",
+        "pc": "Brincar no computador é muito legal, mas não esqueça de piscar os olhos e espreguiçar o corpo!",
+        "celular": "A telinha diverte, mas brincar correndo pela casa e usando a imaginação é tão bom quanto!",
+        "brincar": "Hora da diversão! Brincar faz você muito feliz e ajuda a inventar mundos novos na sua cabeça!"
+    };
+
+    window.abrirDica = (acaoTexto) => {
+        const modal = document.getElementById('modalDica');
+        const titulo = document.getElementById('dicaTitulo');
+        const texto = document.getElementById('dicaTexto');
+        
+        let palavraChave = acaoTexto.trim().toLowerCase();
+        let mensagemEncontrada = null;
+
+        // Procura no cérebro se tem alguma dica para a palavra da rotina
+        for (const [palavra, dica] of Object.entries(dicasMascote)) {
+            if (palavraChave.includes(palavra)) {
+                mensagemEncontrada = dica;
+                break;
+            }
+        }
+
+        // Se ele não achar uma dica específica, fala uma frase de apoio genial padrão
+        if (!mensagemEncontrada) {
+            mensagemEncontrada = "Você está indo muito bem! Seguir a rotina te transforma no super-herói do seu próprio dia!";
+        }
+
+        titulo.innerText = acaoTexto;
+        texto.innerText = mensagemEncontrada;
+        
+        modal.style.display = 'flex';
+        // Pequeno atraso para a animação do CSS funcionar
+        setTimeout(() => modal.classList.add('ativo'), 10);
+    };
+
+    window.fecharDica = () => {
+        const modal = document.getElementById('modalDica');
+        modal.classList.remove('ativo');
+        setTimeout(() => modal.style.display = 'none', 300); // Espera a animação sair
+    };
+    // ==========================================
+
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            id_usuario_pai = user.uid;
+            if (caminho_dados && caminho_dados.includes(user.uid)) {
+                iniciarApp();
+            } else {
+                mostrarTelaSelecaoFilho();
+            }
+        } else {
+            document.getElementById('telaLogin').style.display = 'flex';
+            document.getElementById('telaSelecionarFilho').style.display = 'none';
+            document.getElementById('telaMapa').style.display = 'none';
+        }
+    });
+
+    window.fazerLogin = () => {
+        const email = document.getElementById('inputEmail').value;
+        const senha = document.getElementById('inputSenha').value;
+        if(!email || !senha) return alert("Preencha e-mail e senha!");
+        signInWithEmailAndPassword(auth, email, senha).catch(e => alert("Erro! Verifique as credenciais."));
+    };
+
+    window.sairApp = () => {
+        localStorage.removeItem('caminho_dados');
+        localStorage.removeItem('nome_crianca');
+        signOut(auth);
+    };
+
+    function mostrarTelaSelecaoFilho() {
+        document.getElementById('telaLogin').style.display = 'none';
+        document.getElementById('telaMapa').style.display = 'none';
+        document.getElementById('telaSelecionarFilho').style.display = 'flex';
+
+        onSnapshot(collection(db, `usuarios/${id_usuario_pai}/filhos`), (snap) => {
+            const grid = document.getElementById('grid-filhos');
+            grid.innerHTML = "";
+            snap.forEach(d => {
+                const info = d.data();
+                const pathFilho = `usuarios/${id_usuario_pai}/filhos/${d.id}`;
+                grid.innerHTML += `<button class="btn-filho" onclick="selecionarCrianca('${pathFilho}', '${info.nome}')">${info.nome}</button>`;
+            });
+            if(snap.empty) grid.innerHTML = "<p>Nenhum filho cadastrado.</p>";
+        });
+    }
+
+    window.selecionarCrianca = (caminho, nome) => {
+        localStorage.setItem('caminho_dados', caminho);
+        localStorage.setItem('nome_crianca', nome);
+        window.location.reload(true);
+    };
+
+    function processarCacheAtividades(snap) {
+        snap.forEach(doc => {
+            const data = doc.data();
+            const idOriginal = doc.id;
+            const nomeOrig = data.nome || "";
+            const acaoOrig = data.acao || "";
+
+            cacheAtividades[idOriginal] = data;
+            if (nomeOrig) cacheAtividades[nomeOrig] = data;
+            if (acaoOrig) cacheAtividades[acaoOrig] = data;
+
+            cacheAtividades[idOriginal.trim().toLowerCase()] = data;
+            if (nomeOrig) cacheAtividades[nomeOrig.trim().toLowerCase()] = data;
+            if (acaoOrig) cacheAtividades[acaoOrig.trim().toLowerCase()] = data;
+        });
+        if(rotinasCache.length > 0) desenharPista(rotinasCache);
+    }
+
+    function iniciarApp() {
+        document.getElementById('telaLogin').style.display = 'none'; 
+        document.getElementById('telaSelecionarFilho').style.display = 'none'; 
+        document.getElementById('telaMapa').style.display = 'block'; 
+        document.getElementById('nome-atual').innerText = nome_crianca;
+        
+        const partes = caminho_dados.split('/'); 
+        const pastaUsuario = `${partes[0]}/${partes[1]}`;
+        const pastaIrmaos = `${partes[0]}/${partes[1]}/${partes[2]}`;
+
+        onSnapshot(collection(db, `${pastaUsuario}/atividades`), processarCacheAtividades);
+        onSnapshot(collection(db, `${caminho_dados}/atividades`), processarCacheAtividades);
+
+        onSnapshot(collection(db, pastaIrmaos), (snap) => {
+            const menu = document.getElementById('menu-filhos-items');
+            menu.innerHTML = "";
+            snap.forEach(d => { 
+                const info = d.data(); 
+                menu.innerHTML += `<div class="opcao-crianca" onclick="selecionarCrianca('${pastaIrmaos}/${d.id}', '${info.nome}')">${info.nome}</div>`;
+            });
+        });
+        
+        carregarRotinasDoBanco();
+        setInterval(heartbeat, 30000);
+        setInterval(() => desenharPista(rotinasCache), 60000);
+    }
+    
+    window.toggleMenu = () => { const m = document.getElementById('lista-criancas'); m.style.display = m.style.display==='block'?'none':'block'; };
+    
+    function converterMin(h) { 
+        let [hr, mn] = h.split(':').map(Number); 
+        if(hr < 5) hr += 24; 
+        return hr * 60 + mn; 
+    }
+
+    function obterMinutosAtuais() {
+        const agora = new Date();
+        let hrSys = agora.getHours();
+        let mnSys = agora.getMinutes();
+        if(hrSys < 5) hrSys += 24;
+        return hrSys * 60 + mnSys;
+    }
+
+    const iconesInteligentes = {
+        "dormir": "https://cdn-icons-png.flaticon.com/512/3094/3094836.png",
+        "almoçar": "https://cdn-icons-png.flaticon.com/512/3413/3413574.png",
+        "comer": "https://cdn-icons-png.flaticon.com/512/3413/3413574.png",
+        "dentes": "https://cdn-icons-png.flaticon.com/512/2965/2965314.png",
+        "banho": "https://cdn-icons-png.flaticon.com/512/3103/3103445.png"
+    };
+    function buscarIconeAcao(acaoTexto) {
+        if(!acaoTexto) return 'https://cdn-icons-png.flaticon.com/512/1048/1048953.png';
+        const textoLimpo = acaoTexto.toLowerCase();
+        for (const [palavra, link] of Object.entries(iconesInteligentes)) {
+            if (textoLimpo.includes(palavra)) return link;
+        }
+        return 'https://cdn-icons-png.flaticon.com/512/1048/1048953.png';
+    }
+
+    const H_ROW = 240; 
+    
+    function calcularConfiguracaoTela() {
+        const container = document.getElementById('mapa-container');
+        const W = container.clientWidth;
+        
+        let itensPorLinha = 5;
+        let margemX = 140; 
+
+        if (W < 550) { itensPorLinha = 2; margemX = 90; }
+        else if (W < 800) { itensPorLinha = 3; margemX = 110; }
+        else if (W < 1000) { itensPorLinha = 4; margemX = 130; }
+        else { itensPorLinha = 5; margemX = 150; }
+
+        return { W, ITENS_POR_LINHA: itensPorLinha, MARGEM_X: margemX };
+    }
+
+    function criarCaminhoInfografico(totalRotinas, conf) {
+        const container = document.getElementById('mapa-container');
+        const linhas = Math.max(1, Math.ceil(totalRotinas / conf.ITENS_POR_LINHA));
+        container.style.height = ((linhas * H_ROW) + 150) + "px";
+        
+        let d = `M ${conf.MARGEM_X},120 `;
+        let y = 120;
+
+        for (let i = 0; i < linhas; i++) {
+            let nextX = (i % 2 === 0) ? (conf.W - conf.MARGEM_X) : conf.MARGEM_X;
+            d += `L ${nextX},${y} `; 
+            if (i < linhas - 1) {
+                let arcY = y + H_ROW;
+                let raio = H_ROW / 2;
+                let direcaoArco = (i % 2 === 0) ? 1 : 0;
+                d += `A ${raio} ${raio} 0 0 ${direcaoArco} ${nextX} ${arcY} `; 
+                y = arcY;
+            }
+        }
+        
+        const setaContainer = document.getElementById('seta-final-container');
+        const finalX = (linhas % 2 === 1) ? (conf.W - conf.MARGEM_X) : conf.MARGEM_X;
+        const direcaoSeta = (linhas % 2 === 1) ? 'seta-dir' : 'seta-esq';
+        const ajusteX = (linhas % 2 === 1) ? -5 : 5;
+        setaContainer.innerHTML = `<div class="seta-final ${direcaoSeta}" style="left: ${finalX + ajusteX}px; top: ${y}px;"></div>`;
+
+        return d;
+    }
+
+    function carregarRotinasDoBanco() {
+        const hoje = new Date();
+        const diaSemanaAtual = hoje.getDay().toString();
+
+        onSnapshot(query(collection(db, `${caminho_dados}/rotinas`), orderBy("hora")), (snap) => {
+            const listaBruta = []; 
+            snap.forEach(d => listaBruta.push(d.data()));
+            rotinasCache = listaBruta.filter(r => !r.dia_semana || r.dia_semana === 'todos' || r.dia_semana === diaSemanaAtual);
+            rotinasCache.sort((a,b) => converterMin(a.hora) - converterMin(b.hora));
+            
+            desenharPista(rotinasCache);
+        });
+    }
+
+    function desenharPista(lista) {
+        if(lista.length === 0) {
+            document.getElementById('mapa-container').style.display = 'none';
+            document.getElementById('telaDiaLivre').style.display = 'flex';
+            return;
+        } else {
+            document.getElementById('mapa-container').style.display = 'block';
+            document.getElementById('telaDiaLivre').style.display = 'none';
+        }
+
+        const conf = calcularConfiguracaoTela();
+        const dPath = criarCaminhoInfografico(lista.length, conf);
+        
+        const pathTrace = document.getElementById('pathTracejado');
+        pathTrace.setAttribute('d', dPath);
+        const totalLen = pathTrace.getTotalLength();
+
+        const grupoCores = document.getElementById('camada-cores'); grupoCores.innerHTML = "";
+        const coresClasses = ["c-1", "c-2", "c-3", "c-4", "c-5"];
+        const hexCores = ["#f6b93b", "#2ecc71", "#00cec9", "#0984e3", "#6c5ce7"];
+        const pedacoSize = totalLen / 5; 
+
+        for(let i=0; i<5; i++) {
+            const pathSeg = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pathSeg.setAttribute('d', dPath); pathSeg.setAttribute('class', `estrada-corpo ${coresClasses[i]}`);
+            pathSeg.style.strokeDasharray = `${pedacoSize + 10} ${totalLen}`; pathSeg.style.strokeDashoffset = -(i * pedacoSize);
+            grupoCores.appendChild(pathSeg);
+        }
+
+        const container = document.getElementById('cards-layer'); container.innerHTML = "";
+        
+        const minAtual = obterMinutosAtuais();
+        let indexAtual = -1;
+        
+        for(let i = 0; i < lista.length; i++) {
+            if (minAtual >= converterMin(lista[i].hora)) {
+                indexAtual = i; 
+            }
+        }
+
+        lista.forEach((rot, index) => {
+            const linhaAtual = Math.floor(index / conf.ITENS_POR_LINHA);
+            const posNaLinha = index % conf.ITENS_POR_LINHA; 
+            const yPos = 120 + (linhaAtual * H_ROW);
+            const larguraUtil = conf.W - (2 * conf.MARGEM_X);
+            const stepX = larguraUtil / (conf.ITENS_POR_LINHA - 1 || 1);
+
+            let xPos = (linhaAtual % 2 === 0) ? conf.MARGEM_X + (posNaLinha * stepX) : (conf.W - conf.MARGEM_X) - (posNaLinha * stepX);
+
+            const percentTotal = index / lista.length;
+            const indiceCor = Math.floor(percentTotal * 4.99);
+            const corAtual = hexCores[indiceCor % 5];
+
+            const div = document.createElement('div');
+            const classeTexto = (linhaAtual % 2 === 0) ? 'texto-cima' : 'texto-baixo';
+            div.className = `marcador ${classeTexto}`;
+            div.style.left = xPos + "px"; 
+            div.style.top = yPos + "px";
+
+            if(index < indexAtual) {
+                div.classList.add('passado');
+            }
+            else if(index === indexAtual) {
+                div.classList.add('agora');
+                if(conf.W > 800) {
+                   setTimeout(() => document.getElementById('app-scroll-wrapper').scrollTo({top: yPos - 300, behavior:'smooth'}), 500); 
+                }
+            }
+
+            const acaoLimpa = (rot.acao || "").trim().toLowerCase();
+            const atvBanco = cacheAtividades[acaoLimpa] || {};
+            let imagemFinal = atvBanco.imagem || rot.imagem || rot.foto || buscarIconeAcao(rot.acao);
+
+            // AÇÃO ONCLICK PARA ABRIR O MASCOTE
+            div.innerHTML = `
+                <div class="icone-circulo" style="border-color:${corAtual}" onclick="abrirDica('${rot.acao}')">
+                    <img src="${imagemFinal}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1048/1048953.png'">
+                </div>
+                <div class="textos">
+                    <span class="badge-hora" style="background:${corAtual}">${rot.hora}</span>
+                    <span class="acao">${rot.acao}</span>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+
+        let lengthPassado = 0;
+        if (indexAtual >= 0) {
+            const compReta = conf.W - (2 * conf.MARGEM_X);
+            const compCurva = Math.PI * (H_ROW / 2);
+            const pedacoReta = compReta / (conf.ITENS_POR_LINHA - 1 || 1);
+            const linhaDoAtual = Math.floor(indexAtual / conf.ITENS_POR_LINHA);
+            const posicaoNaLinha = indexAtual % conf.ITENS_POR_LINHA;
+            lengthPassado = (linhaDoAtual * (compReta + compCurva)) + (posicaoNaLinha * pedacoReta);
+        }
+
+        const caminhoCinza = document.getElementById('pathCinzaPassado');
+        caminhoCinza.setAttribute('d', dPath);
+        caminhoCinza.style.strokeDasharray = totalLen;
+        caminhoCinza.style.strokeDashoffset = totalLen - lengthPassado; 
+    }
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => desenharPista(rotinasCache), 300);
+    });
+
+    async function heartbeat() { if(caminho_dados) setDoc(doc(db, `${caminho_dados}/dispositivos/tablet_amigo`), { nome: "Tablet "+nome_crianca, online: serverTimestamp() }, {merge:true}); }
+</script>
+</body>
+</html>
