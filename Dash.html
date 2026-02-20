@@ -330,22 +330,34 @@
         "respirar": "Puxe o ar como se cheirasse uma flor, solte como se soprasse uma vela. Isso traz muita paz."
     };
 
-
-    window.abrirDica = (acaoTexto) => {
+    window.abrirDica = (acaoTexto, descricaoPersonalizada) => {
         const modal = document.getElementById('modalDica');
         const titulo = document.getElementById('dicaTitulo');
         const texto = document.getElementById('dicaTexto');
         
-        let palavraChave = acaoTexto.trim().toLowerCase();
-        let mensagemEncontrada = null;
+        let mensagemEncontrada = "";
 
-        for (const [palavra, dica] of Object.entries(dicasMascote)) {
-            if (palavraChave.includes(palavra)) {
-                mensagemEncontrada = dica;
-                break;
+        // 1ª PRIORIDADE: Lê o texto do painel
+        if (descricaoPersonalizada && descricaoPersonalizada.trim() !== "" && descricaoPersonalizada !== "undefined") {
+            mensagemEncontrada = descricaoPersonalizada;
+        } 
+        // 2ª PRIORIDADE: Procura no cérebro IGNORANDO ACENTOS E LETRAS MAIÚSCULAS
+        else {
+            // Essa mágica limpa os acentos do que você digitou no painel (Ex: "Água" vira "agua")
+            let palavraChave = acaoTexto.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            
+            for (const [palavra, dica] of Object.entries(dicasMascote)) {
+                // Também limpa os acentos do dicionário (Ex: "liçã" vira "lica")
+                let palavraLimpa = palavra.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+                
+                if (palavraChave.includes(palavraLimpa)) {
+                    mensagemEncontrada = dica;
+                    break;
+                }
             }
         }
 
+        // 3ª PRIORIDADE: Frase genérica
         if (!mensagemEncontrada) {
             mensagemEncontrada = "Cada atividade que você faz é um passo para um dia incrível. Continue assim!";
         }
@@ -356,6 +368,7 @@
         modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('ativo'), 10);
     };
+
 
     window.fecharDica = () => {
         const modal = document.getElementById('modalDica');
