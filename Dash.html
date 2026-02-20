@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Amigo Virtual - Gamificado</title>
+    <link rel="manifest" href="manifest-dash.json">
+    <meta name="theme-color" content="#93C49D">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Amigo Virtual">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/4712/4712010.png">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --cor-primaria: #93C49D; --cor-secundaria: #F4D03F; --cor-texto: #5A5A5A; --fundo-base: #F7F5F0; }
@@ -554,5 +561,14 @@ window.avaliar = async (qtd) => {
     window.addEventListener('resize', () => { setTimeout(() => desenharPista(rotinasCache), 300); });
     async function heartbeat() { if(caminho_dados) setDoc(doc(db, `${caminho_dados}/dispositivos/tablet_amigo`), { nome: "Tablet", online: serverTimestamp() }, {merge:true}); }
 </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw-dash.js')
+                    .then(reg => console.log('PWA do Dash ativado!', reg.scope))
+                    .catch(err => console.error('Erro no PWA:', err));
+            });
+        }
+    </script>
 </body>
 </html>
