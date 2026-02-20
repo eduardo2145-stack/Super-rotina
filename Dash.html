@@ -14,9 +14,18 @@
         #app-scroll-wrapper::-webkit-scrollbar { display: none; } 
         #app-scroll-wrapper { -ms-overflow-style: none; scrollbar-width: none; } 
 
-        #placar-estrelas { position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(255, 255, 255, 0.95); border: 2px solid #F4D03F; padding: 10px 20px; border-radius: 30px; font-size: 22px; font-weight: 900; color: #D4AC0D; box-shadow: 0 5px 15px rgba(244, 208, 63, 0.3); backdrop-filter: blur(5px); display: none; align-items: center; gap: 8px; transition: 0.3s; }
+        /* --- PLACAR E MENU DE ESTATÍSTICAS --- */
+        #placar-estrelas { position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(255, 255, 255, 0.95); border: 2px solid #F4D03F; padding: 10px 20px; border-radius: 30px; font-size: 22px; font-weight: 900; color: #D4AC0D; box-shadow: 0 5px 15px rgba(244, 208, 63, 0.3); backdrop-filter: blur(5px); display: none; align-items: center; gap: 8px; transition: 0.3s; cursor: pointer; user-select: none; }
         .placar-animado { transform: scale(1.2); color: #F1C40F !important; }
-
+        
+        #menu-estatisticas { position: absolute; top: 120%; right: 0; background: white; border: 2px solid #F0F0F0; border-radius: 16px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; flex-direction: column; gap: 10px; min-width: 170px; cursor: default; }
+        #placar-estrelas.aberto #menu-estatisticas { display: flex; animation: desceMenu 0.3s ease; }
+        
+        .stat-item { display: flex; justify-content: space-between; align-items: center; font-size: 15px; color: var(--cor-texto); font-weight: 600; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
+        .stat-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .stat-item b { color: #F4D03F; font-size: 18px; text-shadow: 0 1px 2px rgba(244, 208, 63, 0.4); }
+        
+        @keyframes desceMenu { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .tela-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(247, 245, 240, 0.92); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; }
         .box-auth { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-align: center; max-width: 350px; width: 90%; border: 2px solid #EBEBEB; }
         .box-auth h1 { margin-top: 0; color: var(--cor-texto); font-size: 24px; }
@@ -34,8 +43,8 @@
         #lista-criancas { background: white; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); display: none; padding: 8px; border: 1px solid #EBEBEB; margin-top: 8px; min-width: 160px; }
         .opcao-crianca { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #F0F0F0; font-size: 15px; border-radius: 10px; font-weight: 600; color: var(--cor-texto);}
 
-        #telaDiaLivre { display: none; flex-direction: column; align-items: center; justify-content: center; height: 90vh; text-align: center; color: var(--cor-texto); background: rgba(255,255,255,0.7); border-radius: 30px; margin: 20px; }
-        #telaDiaLivre img { width: 120px; opacity: 0.6; margin-bottom: 20px; }
+       #telaDiaLivre { display: none; flex-direction: column; align-items: center; justify-content: center; height: 90vh; text-align: center; color: var(--cor-texto); background: transparent; } 
+       #telaDiaLivre img { width: 120px; opacity: 0.6; margin-bottom: 20px; }
 
         /* --- MODAIS (MASCOTE E AVALIAÇÃO) --- */
         #modalDica, #modalAvaliacao { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(247, 245, 240, 0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 0.3s ease; }
@@ -68,14 +77,22 @@
         .box-avaliacao h2 { color: var(--cor-texto); }
         .box-avaliacao p.sub { color: #888; font-size: 15px; margin-bottom: 25px; }
         .botoes-estrelas { display: flex; flex-direction: column; gap: 12px; }
-        .btn-star { background: #FFFDE7; border: 2px solid #F4D03F; padding: 15px; border-radius: 18px; font-size: 26px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; gap: 5px; }
-        .btn-star:active { transform: scale(0.95); }
-        .btn-nao-fez { background: transparent; color: #D98880; border: 2px dashed #D98880; padding: 12px; border-radius: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; font-size: 16px; }
+        .btn-star { 
+            background: #FFFDE7; border: 2px solid #F4D03F; padding: 15px; border-radius: 18px; 
+            font-size: 26px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; gap: 5px; 
+            color: #F4D03F; /* Deixa as estrelas dos botões amarelinhas! */
+            text-shadow: 0 1px 3px rgba(244, 208, 63, 0.4); /* Brilho suave */
+        }
+        .btn-star:active { transform: scale(0.95); }.btn-nao-fez { background: transparent; color: #D98880; border: 2px dashed #D98880; padding: 12px; border-radius: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; font-size: 16px; }
         #mensagem-feedback { font-size: 18px; font-weight: 800; margin-top: 20px; min-height: 25px; opacity: 0; transition: 0.3s; }
 
         /* --- ESTRADA E ÍCONES --- */
-        #mapa-container { position: relative; width: 100%; max-width: 1100px; margin: 150px auto 50px auto; padding-bottom: 80px; }
-        svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+        /* --- ESTRADA E ÍCONES --- */
+        #mapa-container { 
+            position: relative; width: 100%; 
+            max-width: 1600px; /* AUMENTADO PARA MONITORES 4K E ULTRAWIDE */
+            margin: 150px auto 50px auto; padding-bottom: 80px; 
+        } svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
         .estrada-corpo { fill: none; stroke-width: 45; stroke-linecap: round; opacity: 1; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.06)); }
         .estrada-tracejada { fill: none; stroke: rgba(255,255,255,0.8); stroke-width: 4; stroke-dasharray: 14,14; stroke-linecap: round; pointer-events: none; z-index: 3; }
         .c-1 { stroke: #E8B87D; } .c-2 { stroke: #93C49D; } .c-3 { stroke: #80C2D6; } .c-4 { stroke: #86A3D4; } .c-5 { stroke: #B4A3D6; } 
@@ -85,14 +102,38 @@
         .icone-circulo:active { transform: translate(-50%, -50%) scale(0.95); }
         .icone-circulo img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 
-        .textos { position: absolute; left: 0; bottom: -85px; transform: translateX(-50%); width: 220px; text-align: center; z-index: 5; pointer-events: none; display: flex; flex-direction: column; align-items: center; }
+       /* TEXTOS E HORA (FICAM ACIMA DA BOLINHA) */
+        .textos { position: absolute; left: 0; bottom: 50px; transform: translateX(-50%); width: 220px; text-align: center; z-index: 5; pointer-events: none; display: flex; flex-direction: column; align-items: center; }
         .badge-hora { display: inline-block; padding: 4px 16px; border-radius: 20px; color: white !important; font-size: 16px; font-weight: 800; border: 2px solid rgba(255,255,255,0.5); margin-bottom: 4px; }
         .textos .acao { display: block; font-size: 14px; font-weight: 700; color: var(--cor-texto) !important; text-transform: uppercase; text-shadow: 0 2px 5px #fff, 0 -2px 5px #fff, 2px 0 5px #fff, -2px 0 5px #fff; }
         
-        /* ESTRELAS AGORA FICAM EMBAIXO DA TAREFA */
-        .estrelas-ganhas { margin-top: 5px; font-size: 18px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); letter-spacing: 2px; }
-
-        .passado .icone-circulo { border-color: #D5D5D5 !important; opacity: 0.7; filter: grayscale(0.4) opacity(0.8); transform: translate(-50%, -50%) scale(0.95); box-shadow: none; }
+        /* ESTRELAS BONITAS (FICAM ABAIXO DA BOLINHA) */
+        .estrelas-ganhas {
+            position: absolute;
+            left: 0;
+            top: 48px; /* Subi um pouquinho para ficar mais perto da bolinha */
+            transform: translateX(-50%);
+            /* Ficaram maiores */
+            font-size: 24px;
+            /* Usando a cor amarela do tema */
+            color: var(--cor-secundaria); 
+            /* Mais espalhadas */
+            letter-spacing: 5px;
+            text-align: center;
+            width: 160px;
+            z-index: 5;
+            pointer-events: none;
+            /* O TRUQUE: Um brilho dourado suave em vez de sombra preta */
+            text-shadow: 0 0 8px rgba(244, 208, 63, 0.7), 0 2px 4px rgba(212, 172, 13, 0.4);
+            /* Animação suave de flutuar */
+            animation: flutuarEstrelas 2.5s ease-in-out infinite alternate;
+        }
+        /* Animação para as estrelas flutuarem suavemente */
+        @keyframes flutuarEstrelas {
+            from { transform: translateX(-50%) translateY(0px); }
+            to { transform: translateX(-50%) translateY(-4px); }
+        }
+         .passado .icone-circulo { border-color: #D5D5D5 !important; opacity: 0.7; filter: grayscale(0.4) opacity(0.8); transform: translate(-50%, -50%) scale(0.95); box-shadow: none; }
         .passado .textos { opacity: 0.6; }
         .agora { z-index: 100; }
         .agora .icone-circulo { border-color: var(--cor-primaria) !important; box-shadow: 0 0 0 4px rgba(147, 196, 157, 0.2), 0 15px 30px rgba(0,0,0,0.1); animation: respira 3s infinite alternate ease-in-out; }
@@ -105,8 +146,15 @@
 
     <div id="app-scroll-wrapper">
 
-        <div id="placar-estrelas">⭐ <span id="num-estrelas">0</span></div>
-
+       <div id="placar-estrelas" onclick="toggleEstatisticas(event)">
+            <div class="estrela-icone">★</div> <span id="num-estrelas">0</span>
+            <div id="menu-estatisticas" onclick="event.stopPropagation()">
+                <div class="stat-item"><span>Hoje:</span> <b id="stat-hoje">0</b></div>
+                <div class="stat-item"><span>Nesta Semana:</span> <b id="stat-semana">0</b></div>
+                <div class="stat-item"><span>Neste Mês:</span> <b id="stat-mes">0</b></div>
+                <div class="stat-item"><span>Neste Ano:</span> <b id="stat-ano">0</b></div>
+            </div>
+        </div>
         <div id="modalDica" onclick="fecharDica()">
             <div class="mascote-container" onclick="event.stopPropagation()">
                 <img src="https://cdn-icons-png.flaticon.com/512/4712/4712010.png" class="mascote-img" alt="Amigo Virtual">
@@ -115,7 +163,7 @@
                     <p id="dicaTexto">Mensagem do mascote...</p>
                     <div class="botoes-mascote">
                         <button class="btn-mascote-entendi" onclick="fecharDica()">Entendi!</button>
-                        <button class="btn-mascote-avaliar" onclick="irParaAvaliacao()">Avaliar ⭐</button>
+                        <button class="btn-mascote-avaliar" onclick="irParaAvaliacao()">Avaliar ★</button>
                     </div>
                 </div>
             </div>
@@ -126,9 +174,9 @@
                 <h2 id="titulo-aval">Atividade</h2>
                 <p class="sub">Como você se saiu nessa tarefa?</p>
                 <div class="botoes-estrelas">
-                    <button class="btn-star" onclick="avaliar(3)">⭐ ⭐ ⭐</button>
-                    <button class="btn-star" onclick="avaliar(2)">⭐ ⭐</button>
-                    <button class="btn-star" onclick="avaliar(1)">⭐</button>
+                    <button class="btn-star" onclick="avaliar(3)">★ ★ ★</button>
+                    <button class="btn-star" onclick="avaliar(2)">★ ★</button>
+                    <button class="btn-star" onclick="avaliar(1)">★</button>
                 </div>
                 <button class="btn-nao-fez" onclick="avaliar(0)">Não executei</button>
                 <div id="mensagem-feedback"></div>
@@ -159,9 +207,16 @@
                     <div class="opcao-crianca" style="color:#D98880; border-top: 1px solid #F0F0F0; text-align: center;" onclick="sairApp()">Sair</div>
                 </div>
             </div>
+            <div id="telaDiaLivre">
+                <img src="https://cdn-icons-png.flaticon.com/512/3082/3082025.png" alt="Dia Livre">
+                <h1 style="font-size: 30px; margin: 0; color: #93C49D; font-weight: 800;">Dia Livre!</h1>
+                <p>Nenhuma rotina cadastrada para hoje.</p>
+            </div>
+
             <div id="mapa-container">
                 <svg id="svgEstrada"><g id="camada-cores"></g><path id="pathCinzaPassado" class="estrada-corpo" style="stroke: #EAE6DF; opacity: 0.9; transition: stroke-dashoffset 1.5s ease-in-out; z-index: 2;" /><path id="pathTracejado" class="estrada-tracejada" /></svg>
                 <div id="cards-layer"></div>
+                
             </div>
         </div>
     </div>
@@ -214,8 +269,12 @@
         "brincar": "Use sua imaginação! Brincar é a melhor forma de aprender a ser feliz."
     };
 
-    function obterDataDeHoje() { const h = new Date(); return `${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,'0')}-${String(h.getDate()).padStart(2,'0')}`; }
-
+    // (BÔNUS: Arrumei a data para entender que a madrugada ainda faz parte do dia de ontem!)
+    function obterDataDeHoje() { 
+        const h = new Date(); 
+        if(h.getHours() < 5) h.setDate(h.getDate() - 1); 
+        return `${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,'0')}-${String(h.getDate()).padStart(2,'0')}`; 
+    }
     // NOVA PRIORIDADE: Cérebro primeiro, Descrição Customizada depois!
     window.abrirDica = (acaoTexto, descricaoPersonalizada, idRotina) => {
         rotinaAvaliacaoAtual = idRotina; 
@@ -262,7 +321,7 @@
 
     window.fecharAvaliacao = () => { const m = document.getElementById('modalAvaliacao'); m.classList.remove('ativo'); setTimeout(() => { m.style.display = 'none'; }, 300); };
 
-    window.avaliar = async (qtd) => {
+   window.avaliar = async (qtd) => {
         if(!rotinaAvaliacaoAtual) return;
         const feed = document.getElementById('mensagem-feedback');
         if(qtd === 3) { feed.innerText = "Parabéns! Você é incrível! 🚀"; feed.style.color = "#27AE60"; confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } }); } 
@@ -270,15 +329,68 @@
         else if (qtd === 1) { feed.innerText = "Muito bom, mas vamos melhorar! 💪"; feed.style.color = "#E67E22"; } 
         else { feed.innerText = "Tudo bem, tentaremos amanhã! 💙"; feed.style.color = "#D98880"; }
         feed.style.opacity = '1';
-        await updateDoc(doc(db, `${caminho_dados}/rotinas`, rotinaAvaliacaoAtual), { estrelas_ganhas: qtd, data_avaliacao: obterDataDeHoje() });
+
+        const dataHoje = obterDataDeHoje();
+        
+        // 1. Salva na rotina (Para aparecer na rua embaixo do boneco)
+        await updateDoc(doc(db, `${caminho_dados}/rotinas`, rotinaAvaliacaoAtual), { estrelas_ganhas: qtd, data_avaliacao: dataHoje });
+        
+        // 2. MÁGICA: Salva no Histórico Eterno (Para calcular o Menu!)
+        const idLog = dataHoje + "_" + rotinaAvaliacaoAtual;
+        await setDoc(doc(db, `${caminho_dados}/historico_estrelas`, idLog), { data: dataHoje, estrelas: qtd });
+
         setTimeout(() => { fecharAvaliacao(); }, 2500);
     };
+  // Abre e fecha o menu de estatísticas
+    window.toggleEstatisticas = (e) => {
+        if(e) e.stopPropagation();
+        document.getElementById('placar-estrelas').classList.toggle('aberto');
+    };
+    window.addEventListener('click', (e) => {
+        const placar = document.getElementById('placar-estrelas');
+        if (placar && !placar.contains(e.target)) placar.classList.remove('aberto');
+    });
 
-    function atualizarPlacarDeEstrelas(lista) {
-        let total = 0; const hoje = obterDataDeHoje();
-        lista.forEach(rot => { if (rot.data_avaliacao === hoje && typeof rot.estrelas_ganhas === 'number') total += rot.estrelas_ganhas; });
-        const pNum = document.getElementById('num-estrelas'); const pBox = document.getElementById('placar-estrelas');
-        if(pNum.innerText !== total.toString()) { pNum.innerText = total; pBox.classList.add('placar-animado'); setTimeout(() => pBox.classList.remove('placar-animado'), 300); }
+    // Calcula os totais de tempo real
+    function calcularEstatisticas(snap) {
+        let tHoje = 0, tSemana = 0, tMes = 0, tAno = 0;
+        const hojeObj = new Date();
+        if(hojeObj.getHours() < 5) hojeObj.setDate(hojeObj.getDate() - 1);
+        
+        const hojeStr = obterDataDeHoje();
+        const anoAtual = hojeObj.getFullYear();
+        const mesAtual = hojeObj.getMonth() + 1;
+        
+        const inicioSemana = new Date(hojeObj);
+        inicioSemana.setDate(hojeObj.getDate() - hojeObj.getDay()); // Domingo como início
+        inicioSemana.setHours(0,0,0,0);
+
+        snap.forEach(doc => {
+            const log = doc.data();
+            if(!log.data || typeof log.estrelas !== 'number') return;
+            
+            const [a, m, d] = log.data.split('-').map(Number);
+            const dataLog = new Date(a, m - 1, d);
+
+            if (log.data === hojeStr) tHoje += log.estrelas;
+            if (dataLog >= inicioSemana) tSemana += log.estrelas;
+            if (a === anoAtual && m === mesAtual) tMes += log.estrelas;
+            if (a === anoAtual) tAno += log.estrelas;
+        });
+
+        // Atualiza os números no HTML
+        document.getElementById('stat-hoje').innerText = tHoje;
+        document.getElementById('stat-semana').innerText = tSemana;
+        document.getElementById('stat-mes').innerText = tMes;
+        document.getElementById('stat-ano').innerText = tAno;
+
+        const pNum = document.getElementById('num-estrelas');
+        if(pNum.innerText !== tHoje.toString()) {
+            pNum.innerText = tHoje;
+            const pBox = document.getElementById('placar-estrelas');
+            pBox.classList.add('placar-animado');
+            setTimeout(() => pBox.classList.remove('placar-animado'), 300);
+        }
     }
 
     onAuthStateChanged(auth, (user) => {
@@ -304,7 +416,10 @@
         const pts = caminho_dados.split('/'); const pU = `${pts[0]}/${pts[1]}`; const pI = `${pts[0]}/${pts[1]}/${pts[2]}`;
         onSnapshot(collection(db, `${pU}/atividades`), pCache); onSnapshot(collection(db, `${caminho_dados}/atividades`), pCache);
         onSnapshot(collection(db, pI), (s) => { const menu = document.getElementById('menu-filhos-items'); menu.innerHTML = ""; s.forEach(d => { menu.innerHTML += `<div class="opcao-crianca" onclick="selecionarCrianca('${pI}/${d.id}', '${d.data().nome}')">${d.data().nome}</div>`; }); });
+      // Liga o cérebro do menu para observar o histórico
+        onSnapshot(collection(db, `${caminho_dados}/historico_estrelas`), calcularEstatisticas);
         carregarRotinasDoBanco(); setInterval(heartbeat, 30000); setInterval(() => desenharPista(rotinasCache), 60000);
+      
     }
 
     function pCache(snap) { snap.forEach(doc => { const d = doc.data(); const id = doc.id.trim().toLowerCase(); const n = (d.nome || "").trim().toLowerCase(); const a = (d.acao || "").trim().toLowerCase(); cacheAtividades[id] = d; if(n) cacheAtividades[n] = d; if(a) cacheAtividades[a] = d; }); if(rotinasCache.length > 0) desenharPista(rotinasCache); }
@@ -315,8 +430,18 @@
     function buscarIconeAcao(acaoTexto) { return 'https://cdn-icons-png.flaticon.com/512/1048/1048953.png'; }
 
     const H_ROW = 240; 
-    function calcularConfiguracaoTela() { const W = document.getElementById('mapa-container').clientWidth; let it = 5, mX = 140; if (W < 550) { it = 2; mX = 90; } else if (W < 800) { it = 3; mX = 110; } else if (W < 1000) { it = 4; mX = 130; } return { W, ITENS_POR_LINHA: it, MARGEM_X: mX }; }
+   function calcularConfiguracaoTela() { 
+        const W = document.getElementById('mapa-container').clientWidth; 
+        let it = 5, mX = 140; 
+        
+        if (W < 550) { it = 2; mX = 90; } 
+        else if (W < 800) { it = 3; mX = 110; } 
+        else if (W < 1100) { it = 4; mX = 130; } 
+        else if (W < 1400) { it = 5; mX = 150; }
+        else { it = 7; mX = 180; } // NOVA REGRA: Telas gigantes agora mostram 6 itens por linha e esticam mais!
 
+        return { W, ITENS_POR_LINHA: it, MARGEM_X: mX }; 
+    }
     function criarCaminhoInfografico(total, conf) {
         if (total === 0) return "";
         const uIdx = Math.floor((total - 1) / conf.ITENS_POR_LINHA);
@@ -344,12 +469,19 @@
             const lista = []; snap.forEach(d => { let r = d.data(); r.id = d.id; lista.push(r); });
             rotinasCache = lista.filter(r => !r.dia_semana || r.dia_semana === 'todos' || r.dia_semana === hoje);
             rotinasCache.sort((a,b) => converterMin(a.hora) - converterMin(b.hora));
-            atualizarPlacarDeEstrelas(rotinasCache); desenharPista(rotinasCache);
+            desenharPista(rotinasCache);
         });
     }
 
     function desenharPista(lista) {
-        if(lista.length === 0) return;
+       if(lista.length === 0) {
+            document.getElementById('mapa-container').style.display = 'none';
+            document.getElementById('telaDiaLivre').style.display = 'flex';
+            return;
+        } else {
+            document.getElementById('mapa-container').style.display = 'block';
+            document.getElementById('telaDiaLivre').style.display = 'none';
+        }
         const conf = calcularConfiguracaoTela();
         const dPath = criarCaminhoInfografico(lista.length, conf);
         document.getElementById('pathTracejado').setAttribute('d', dPath);
@@ -386,19 +518,20 @@
 
             let estrelasHTML = "";
             if (rot.data_avaliacao === hoje && typeof rot.estrelas_ganhas === 'number' && rot.estrelas_ganhas > 0) {
-                estrelasHTML = `<div class="estrelas-ganhas" style="color:#F4D03F;">${"⭐".repeat(rot.estrelas_ganhas)}</div>`;
+                // Trocamos o emoji pelo caractere limpo de estrela: ★
+                estrelasHTML = `<div class="estrelas-ganhas">${"★".repeat(rot.estrelas_ganhas)}</div>`;
             }
 
-            // AQUI AS ESTRELAS ENTRAM EMBAIXO DO TEXTO
+            // NOVA MONTAGEM: Textos em cima, Círculo no meio, Estrelas embaixo!
             div.innerHTML = `
-                <div class="icone-circulo" style="border-color:${corAtual}" onclick="abrirDica('${acaoSegura}', '${txt}', '${rot.id}')">
-                    <img src="${img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1048/1048953.png'">
-                </div>
                 <div class="textos">
                     <span class="badge-hora" style="background:${corAtual}">${rot.hora}</span>
                     <span class="acao">${rot.acao}</span>
-                    ${estrelasHTML}
                 </div>
+                <div class="icone-circulo" style="border-color:${corAtual}" onclick="abrirDica('${acaoSegura}', '${txt}', '${rot.id}')">
+                    <img src="${img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1048/1048953.png'">
+                </div>
+                ${estrelasHTML}
             `;
             container.appendChild(div);
         });
