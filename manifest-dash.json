@@ -1,8 +1,9 @@
 {
- "id": "/dash-criancas",
+"id": "app-criancas-dash",
   "name": "Meu Amigo Virtual",
   "short_name": "Meu Amigo",
-  "start_url": "./Dash.html",
+  "start_url": "./dash.html?app=kids",
+  "scope": "./dash.html",
   "display": "fullscreen",
   "background_color": "#F7F5F0",
   "theme_color": "#93C49D",
