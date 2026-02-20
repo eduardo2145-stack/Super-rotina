@@ -147,11 +147,38 @@
             0% { transform: translate(-50%, -50%) scale(1); } 
             100% { transform: translate(-50%, -50%) scale(1.04); box-shadow: 0 0 0 8px rgba(147, 196, 157, 0.1), 0 20px 40px rgba(0,0,0,0.15); } 
         }
+                /* --- ESTRELINHAS EM CIMA DA AÇÃO E BOTÃO DO MASCOTE --- */
+        .estrelas-ganhas {
+            position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
+            font-size: 18px; white-space: nowrap; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            z-index: 10; letter-spacing: 2px;
+        }
+        .botoes-mascote { display: flex; gap: 10px; margin-top: 15px; width: 100%; }
+        .btn-mascote-entendi { flex: 1; }
+        .btn-mascote-avaliar { 
+            flex: 1; background: #FFFDE7 !important; color: #D4AC0D !important; 
+            border: 2px solid #F4D03F !important; box-shadow: 0 4px 10px rgba(244, 208, 63, 0.2) !important; 
+        }
+
     </style>
 </head>
 <body>
 
     <div id="app-scroll-wrapper">
+    <div id="modalDica" onclick="fecharDica()">
+        <div class="mascote-container" onclick="event.stopPropagation()">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712010.png" class="mascote-img" alt="Amigo Virtual">
+            <div class="balao-fala">
+                <h2 id="dicaTitulo">Hora da Ação!</h2>
+                <p id="dicaTexto">Mensagem do mascote aqui...</p>
+                
+                <div class="botoes-mascote">
+                    <button class="btn-mascote-entendi" onclick="fecharDica()">Entendi!</button>
+                    <button class="btn-mascote-avaliar" onclick="irParaAvaliacao()">Avaliar ⭐</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
         <div id="placar-estrelas">
             ⭐ <span id="num-estrelas">0</span>
@@ -239,8 +266,7 @@
         return `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-${String(hoje.getDate()).padStart(2,'0')}`;
     }
 
-    window.abrirModalAvaliacao = (idRotina, nomeAcao) => {
-        rotinaAvaliacaoAtual = idRotina;
+        window.abrirModalAvaliacao = (nomeAcao) => {
         document.getElementById('titulo-aval').innerText = nomeAcao;
         document.getElementById('mensagem-feedback').style.opacity = '0';
         
@@ -248,6 +274,15 @@
         modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('ativo'), 10);
     };
+
+    window.irParaAvaliacao = () => {
+        fecharDica(); // Fecha o mascote primeiro
+        const tituloAtual = document.getElementById('dicaTitulo').innerText;
+        setTimeout(() => {
+            abrirModalAvaliacao(tituloAtual); // Abre as estrelas depois
+        }, 350); 
+    };
+
 
     window.fecharAvaliacao = () => {
         const modal = document.getElementById('modalAvaliacao');
@@ -344,6 +379,38 @@
         localStorage.removeItem('caminho_dados');
         localStorage.removeItem('nome_crianca');
         signOut(auth);
+    };
+    window.abrirDica = (acaoTexto, descricaoPersonalizada, idRotina) => {
+        rotinaAvaliacaoAtual = idRotina; // Salva qual rotina vai ser avaliada!
+        
+        const modal = document.getElementById('modalDica');
+        const titulo = document.getElementById('dicaTitulo');
+        const texto = document.getElementById('dicaTexto');
+        
+        let mensagemEncontrada = "";
+
+        if (descricaoPersonalizada && descricaoPersonalizada.trim() !== "" && descricaoPersonalizada !== "undefined") {
+            mensagemEncontrada = descricaoPersonalizada;
+        } else {
+            let palavraChave = acaoTexto.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            for (const [palavra, dica] of Object.entries(dicasMascote)) {
+                let palavraLimpa = palavra.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+                if (palavraChave.includes(palavraLimpa)) {
+                    mensagemEncontrada = dica;
+                    break;
+                }
+            }
+        }
+
+        if (!mensagemEncontrada) {
+            mensagemEncontrada = "Cada atividade que você faz é um passo para um dia incrível. Continue assim!";
+        }
+
+        titulo.innerText = acaoTexto;
+        texto.innerText = mensagemEncontrada;
+        
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('ativo'), 10);
     };
 
     function mostrarTelaSelecaoFilho() {
@@ -474,7 +541,7 @@
         });
     }
 
-    function desenharPista(lista) {
+        function desenharPista(lista) {
         if(lista.length === 0) return;
         const conf = calcularConfiguracaoTela();
         const dPath = criarCaminhoInfografico(lista.length, conf);
@@ -498,6 +565,8 @@
         const minAtual = obterMinutosAtuais();
         let indexAtual = -1;
         for(let i = 0; i < lista.length; i++) { if (minAtual >= converterMin(lista[i].hora)) indexAtual = i; }
+        
+        const hoje = obterDataDeHoje();
 
         lista.forEach((rot, index) => {
             const linhaAtual = Math.floor(index / conf.ITENS_POR_LINHA);
@@ -515,11 +584,21 @@
             const acaoLimpa = (rot.acao || "").trim().toLowerCase();
             const atv = cacheAtividades[acaoLimpa] || {};
             let imagemFinal = atv.imagem || rot.imagem || rot.foto || buscarIconeAcao(rot.acao);
-            let acaoSegura = rot.acao.replace(/'/g, "\\'");
+            
+            let textoMascote = rot.descricao || atv.texto || atv.descricao || "";
+            textoMascote = textoMascote.replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
+            let acaoSegura = rot.acao.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
-            // O ONCLICK AGORA ABRE A TELA DE ESTRELAS E PASSA O ID DA ROTINA!
+            // Verifica se a rotina já foi avaliada HOJE para mostrar as estrelas
+            let estrelasHTML = "";
+            if (rot.data_avaliacao === hoje && typeof rot.estrelas_ganhas === 'number' && rot.estrelas_ganhas > 0) {
+                estrelasHTML = `<div class="estrelas-ganhas">${"⭐".repeat(rot.estrelas_ganhas)}</div>`;
+            }
+
+            // O ONCLICK AGORA ABRE A DICA E PASSA O ID DA ROTINA!
             div.innerHTML = `
-                <div class="icone-circulo" style="border-color:${corAtual}" onclick="abrirModalAvaliacao('${rot.id}', '${acaoSegura}')">
+                ${estrelasHTML}
+                <div class="icone-circulo" style="border-color:${corAtual}" onclick="abrirDica('${acaoSegura}', '${textoMascote}', '${rot.id}')">
                     <img src="${imagemFinal}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1048/1048953.png'">
                 </div>
                 <div class="textos">
@@ -542,6 +621,7 @@
         caminhoCinza.style.strokeDasharray = totalLen;
         caminhoCinza.style.strokeDashoffset = totalLen - lengthPassado; 
     }
+
 
     window.addEventListener('resize', () => { setTimeout(() => desenharPista(rotinasCache), 300); });
     async function heartbeat() { if(caminho_dados) setDoc(doc(db, `${caminho_dados}/dispositivos/tablet_amigo`), { nome: "Tablet", online: serverTimestamp() }, {merge:true}); }
