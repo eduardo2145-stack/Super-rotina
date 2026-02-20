@@ -1,6 +1,7 @@
 {
-  "name": "Amigo Virtual - Rotinas",
-  "short_name": "Amigo Virtual - Rotinas",
+ "id": "/dash-criancas",
+  "name": "Meu Amigo Virtual",
+  "short_name": "Meu Amigo",
   "start_url": "./Dash.html",
   "display": "fullscreen",
   "background_color": "#F7F5F0",
