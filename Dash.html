@@ -4,52 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Amigo Virtual - Gamificado</title>
-    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
     <style>
-        :root { 
-            --cor-primaria: #93C49D; 
-            --cor-secundaria: #F4D03F; 
-            --cor-texto: #5A5A5A; 
-            --fundo-base: #F7F5F0; 
-        }
-        
+        :root { --cor-primaria: #93C49D; --cor-secundaria: #F4D03F; --cor-texto: #5A5A5A; --fundo-base: #F7F5F0; }
         * { box-sizing: border-box; }
-
-        html, body { 
-            margin: 0; padding: 0; width: 100vw; height: 100vh; 
-            overflow: hidden !important; overscroll-behavior: none; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: var(--fundo-base);
-        }
-
-        body {
-            background: linear-gradient(to bottom, #EBF4F6 0%, #F7F5F0 50%, #E9F0E6 100%);
-            background-image: url('IMG/bg.jpg'); 
-            background-size: cover; background-position: center;
-            background-attachment: fixed; background-blend-mode: overlay; 
-        }
-
-        #app-scroll-wrapper {
-            width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden !important; 
-            -webkit-overflow-scrolling: touch; position: relative;
-        }
-
+        html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden !important; overscroll-behavior: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--fundo-base); }
+        body { background: linear-gradient(to bottom, #EBF4F6 0%, #F7F5F0 50%, #E9F0E6 100%); background-image: url('IMG/bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; background-blend-mode: overlay; }
+        #app-scroll-wrapper { width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden !important; -webkit-overflow-scrolling: touch; position: relative; }
         #app-scroll-wrapper::-webkit-scrollbar { display: none; } 
         #app-scroll-wrapper { -ms-overflow-style: none; scrollbar-width: none; } 
 
-        /* --- PLACAR DE ESTRELAS NO TOPO DIREITO --- */
-        #placar-estrelas {
-            position: fixed; top: 20px; right: 20px; z-index: 1000;
-            background: rgba(255, 255, 255, 0.95); border: 2px solid #F4D03F; padding: 10px 20px;
-            border-radius: 30px; font-size: 22px; font-weight: 900; color: #D4AC0D;
-            box-shadow: 0 5px 15px rgba(244, 208, 63, 0.3); backdrop-filter: blur(5px);
-            display: none; align-items: center; gap: 8px; transition: 0.3s;
-        }
+        #placar-estrelas { position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(255, 255, 255, 0.95); border: 2px solid #F4D03F; padding: 10px 20px; border-radius: 30px; font-size: 22px; font-weight: 900; color: #D4AC0D; box-shadow: 0 5px 15px rgba(244, 208, 63, 0.3); backdrop-filter: blur(5px); display: none; align-items: center; gap: 8px; transition: 0.3s; }
         .placar-animado { transform: scale(1.2); color: #F1C40F !important; }
 
-        /* --- MENUS E LOGIN --- */
         .tela-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(247, 245, 240, 0.92); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; }
         .box-auth { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-align: center; max-width: 350px; width: 90%; border: 2px solid #EBEBEB; }
         .box-auth h1 { margin-top: 0; color: var(--cor-texto); font-size: 24px; }
@@ -70,39 +37,18 @@
         #telaDiaLivre { display: none; flex-direction: column; align-items: center; justify-content: center; height: 90vh; text-align: center; color: var(--cor-texto); background: rgba(255,255,255,0.7); border-radius: 30px; margin: 20px; }
         #telaDiaLivre img { width: 120px; opacity: 0.6; margin-bottom: 20px; }
 
-        /* --- MODAL DO MASCOTE COM AVALIAÇÃO --- */
-        #modalDica, #modalAvaliacao { 
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            background: rgba(247, 245, 240, 0.85); backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center; z-index: 9999;
-            opacity: 0; transition: opacity 0.3s ease;
-        }
-        
-        .mascote-container, .box-avaliacao {
-            transform: translateY(30px); transition: transform 0.4s ease;
-            max-width: 90%;
-        }
-        
+        /* --- MODAIS (MASCOTE E AVALIAÇÃO) --- */
+        #modalDica, #modalAvaliacao { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(247, 245, 240, 0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 0.3s ease; }
+        .mascote-container, .box-avaliacao { transform: translateY(30px); transition: transform 0.4s ease; max-width: 90%; }
         .mascote-container { display: flex; align-items: flex-end; gap: 20px; }
         .mascote-img { width: 150px; height: auto; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.1)); }
-
-        .balao-fala, .box-avaliacao {
-            background: white; padding: 25px 30px; border-radius: 28px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; max-width: 380px; border: 2px solid #F0F0F0;
-        }
-        
-        .balao-fala::before {
-            content: ""; position: absolute; bottom: -2px; left: -18px;
-            width: 0; height: 0; border-right: 20px solid white; border-top: 20px solid transparent; border-bottom: 0px solid transparent;
-        }
-
+        .balao-fala, .box-avaliacao { background: white; padding: 25px 30px; border-radius: 28px; border-bottom-left-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; max-width: 400px; border: 2px solid #F0F0F0; }
+        .balao-fala::before { content: ""; position: absolute; bottom: -2px; left: -18px; width: 0; height: 0; border-right: 20px solid white; border-top: 20px solid transparent; border-bottom: 0px solid transparent; }
         .balao-fala h2, .box-avaliacao h2 { margin: 0 0 12px 0; color: var(--cor-primaria); font-size: 22px; text-transform: uppercase; }
-        .balao-fala p { margin: 0 0 24px 0; font-size: 17px; color: var(--cor-texto); line-height: 1.5; font-weight: 500; }
+        .balao-fala p { margin: 0 0 24px 0; font-size: 17px; color: var(--cor-texto); line-height: 1.4; font-weight: 500; }
         
         .botoes-mascote { display: flex; gap: 10px; margin-top: 15px; width: 100%; }
-        .botoes-mascote button {
-            border: none; padding: 14px 15px; border-radius: 14px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s;
-        }
+        .botoes-mascote button { border: none; padding: 14px 15px; border-radius: 14px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-mascote-entendi { flex: 1; background: var(--cor-primaria); color: white; box-shadow: 0 4px 12px rgba(147, 196, 157, 0.3); }
         .btn-mascote-avaliar { flex: 1; background: #FFFDE7; color: #D4AC0D; border: 2px solid #F4D03F; box-shadow: 0 4px 10px rgba(244, 208, 63, 0.2); }
         .botoes-mascote button:active { transform: scale(0.95); }
@@ -110,64 +56,49 @@
         #modalDica.ativo, #modalAvaliacao.ativo { opacity: 1; display: flex; }
         #modalDica.ativo .mascote-container, #modalAvaliacao.ativo .box-avaliacao { transform: translateY(0); }
 
-        /* --- TELA DE AVALIAÇÃO --- */
-        .box-avaliacao { text-align: center; }
+        /* MÁGICA DO CELULAR: Reorganiza o robô para caber na tela! */
+        @media (max-width: 600px) {
+            .mascote-container { flex-direction: column; align-items: center; text-align: center; }
+            .mascote-img { width: 110px; z-index: 2; margin-bottom: -15px; }
+            .balao-fala { border-top-left-radius: 28px; width: 100%; }
+            .balao-fala::before { top: -15px; left: 50%; bottom: auto; transform: translateX(-50%); border-bottom: 20px solid white; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: none; }
+        }
+
+        .box-avaliacao { text-align: center; border-bottom-left-radius: 28px;}
         .box-avaliacao h2 { color: var(--cor-texto); }
         .box-avaliacao p.sub { color: #888; font-size: 15px; margin-bottom: 25px; }
         .botoes-estrelas { display: flex; flex-direction: column; gap: 12px; }
-        .btn-star {
-            background: #FFFDE7; border: 2px solid #F4D03F; padding: 15px; border-radius: 18px;
-            font-size: 26px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; gap: 5px;
-        }
-        .btn-star:hover { background: #FCF3CF; transform: scale(1.03); }
-        .btn-nao-fez {
-            background: transparent; color: #D98880; border: 2px dashed #D98880; padding: 12px;
-            border-radius: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; font-size: 16px;
-        }
+        .btn-star { background: #FFFDE7; border: 2px solid #F4D03F; padding: 15px; border-radius: 18px; font-size: 26px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; gap: 5px; }
+        .btn-star:active { transform: scale(0.95); }
+        .btn-nao-fez { background: transparent; color: #D98880; border: 2px dashed #D98880; padding: 12px; border-radius: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; font-size: 16px; }
         #mensagem-feedback { font-size: 18px; font-weight: 800; margin-top: 20px; min-height: 25px; opacity: 0; transition: 0.3s; }
 
         /* --- ESTRADA E ÍCONES --- */
         #mapa-container { position: relative; width: 100%; max-width: 1100px; margin: 150px auto 50px auto; padding-bottom: 80px; }
         svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
-        
         .estrada-corpo { fill: none; stroke-width: 45; stroke-linecap: round; opacity: 1; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.06)); }
         .estrada-tracejada { fill: none; stroke: rgba(255,255,255,0.8); stroke-width: 4; stroke-dasharray: 14,14; stroke-linecap: round; pointer-events: none; z-index: 3; }
-        
         .c-1 { stroke: #E8B87D; } .c-2 { stroke: #93C49D; } .c-3 { stroke: #80C2D6; } .c-4 { stroke: #86A3D4; } .c-5 { stroke: #B4A3D6; } 
 
         .marcador { position: absolute; width: 0; height: 0; z-index: 10; transition: all 0.6s ease; }
-
-        .icone-circulo {
-            position: absolute; left: 0; top: 0; transform: translate(-50%, -50%);
-            width: 82px; height: 82px; background: white; border-radius: 50%; border: 5px solid #ccc;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center;
-            overflow: hidden; z-index: 3; transition: 0.3s; cursor: pointer;
-        }
+        .icone-circulo { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); width: 82px; height: 82px; background: white; border-radius: 50%; border: 5px solid #ccc; box-shadow: 0 8px 20px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 3; transition: 0.3s; cursor: pointer; }
         .icone-circulo:active { transform: translate(-50%, -50%) scale(0.95); }
         .icone-circulo img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 
-        /* Estrelas flutuantes corrigidas para ficarem ACIMA do ícone */
-        .estrelas-ganhas {
-            position: absolute; top: -65px; left: 50%; transform: translateX(-50%);
-            font-size: 22px; white-space: nowrap; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-            z-index: 20; letter-spacing: 2px;
-        }
-
-        .textos { position: absolute; left: 0; bottom: 55px; transform: translateX(-50%); width: 220px; text-align: center; z-index: 5; pointer-events: none; }
-        .badge-hora { display: inline-block; padding: 4px 16px; border-radius: 20px; color: white !important; font-size: 16px; font-weight: 800; border: 2px solid rgba(255,255,255,0.5); margin-bottom: 6px; }
+        .textos { position: absolute; left: 0; bottom: -85px; transform: translateX(-50%); width: 220px; text-align: center; z-index: 5; pointer-events: none; display: flex; flex-direction: column; align-items: center; }
+        .badge-hora { display: inline-block; padding: 4px 16px; border-radius: 20px; color: white !important; font-size: 16px; font-weight: 800; border: 2px solid rgba(255,255,255,0.5); margin-bottom: 4px; }
         .textos .acao { display: block; font-size: 14px; font-weight: 700; color: var(--cor-texto) !important; text-transform: uppercase; text-shadow: 0 2px 5px #fff, 0 -2px 5px #fff, 2px 0 5px #fff, -2px 0 5px #fff; }
+        
+        /* ESTRELAS AGORA FICAM EMBAIXO DA TAREFA */
+        .estrelas-ganhas { margin-top: 5px; font-size: 18px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); letter-spacing: 2px; }
 
         .passado .icone-circulo { border-color: #D5D5D5 !important; opacity: 0.7; filter: grayscale(0.4) opacity(0.8); transform: translate(-50%, -50%) scale(0.95); box-shadow: none; }
         .passado .textos { opacity: 0.6; }
-        
         .agora { z-index: 100; }
         .agora .icone-circulo { border-color: var(--cor-primaria) !important; box-shadow: 0 0 0 4px rgba(147, 196, 157, 0.2), 0 15px 30px rgba(0,0,0,0.1); animation: respira 3s infinite alternate ease-in-out; }
         .agora .badge-hora { transform: scale(1.05); background: var(--cor-primaria) !important; }
 
-        @keyframes respira { 
-            0% { transform: translate(-50%, -50%) scale(1); } 
-            100% { transform: translate(-50%, -50%) scale(1.04); box-shadow: 0 0 0 8px rgba(147, 196, 157, 0.1), 0 20px 40px rgba(0,0,0,0.15); } 
-        }
+        @keyframes respira { 0% { transform: translate(-50%, -50%) scale(1); } 100% { transform: translate(-50%, -50%) scale(1.04); box-shadow: 0 0 0 8px rgba(147, 196, 157, 0.1), 0 20px 40px rgba(0,0,0,0.15); } }
     </style>
 </head>
 <body>
@@ -228,17 +159,11 @@
                     <div class="opcao-crianca" style="color:#D98880; border-top: 1px solid #F0F0F0; text-align: center;" onclick="sairApp()">Sair</div>
                 </div>
             </div>
-
             <div id="mapa-container">
-                <svg id="svgEstrada">
-                    <g id="camada-cores"></g>
-                    <path id="pathCinzaPassado" class="estrada-corpo" style="stroke: #EAE6DF; opacity: 0.9; transition: stroke-dashoffset 1.5s ease-in-out; z-index: 2;" />
-                    <path id="pathTracejado" class="estrada-tracejada" />
-                </svg>
+                <svg id="svgEstrada"><g id="camada-cores"></g><path id="pathCinzaPassado" class="estrada-corpo" style="stroke: #EAE6DF; opacity: 0.9; transition: stroke-dashoffset 1.5s ease-in-out; z-index: 2;" /><path id="pathTracejado" class="estrada-tracejada" /></svg>
                 <div id="cards-layer"></div>
             </div>
         </div>
-
     </div>
 
 <script type="module">
@@ -251,14 +176,10 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
     
-    let id_usuario_pai = null; 
-    let caminho_dados = localStorage.getItem('caminho_dados');
-    let nome_crianca = localStorage.getItem('nome_crianca');
-    let cacheAtividades = {};
-    let rotinasCache = [];
-    let rotinaAvaliacaoAtual = null; 
+    let id_usuario_pai = null; let caminho_dados = localStorage.getItem('caminho_dados'); let nome_crianca = localStorage.getItem('nome_crianca');
+    let cacheAtividades = {}; let rotinasCache = []; let rotinaAvaliacaoAtual = null; 
 
-    // O CÉREBRO DO MASCOTE 
+    // O CÉREBRO DO MASCOTE (Completo e Organizado)
     const dicasMascote = {
         "comer": "O alimento é a energia mágica que faz você crescer forte e esperto. Bom apetite!",
         "almoç": "Pausa para reabastecer! O almoço deixa seu corpo preparado para as aventuras da tarde.",
@@ -273,7 +194,7 @@
         "banho": "Água quentinha e sabonete! O banho relaxa o corpo e manda as sujeirinhas pelo ralo.",
         "dente": "Sua escova é uma varinha mágica que deixa os dentes brilhantes e fortes!",
         "mão": "Lavar as mãos manda os bichinhos invisíveis embora. Chuá, chuá, tchau sujeira!",
-        "banheiro": "Muito bem! Usar o banheiro e lavar as mãos depois mostra como você já está grande.",
+        "banheiro": "Muito bem! Usar o banheiro e lavar as mãos mostra como você já está grande.",
         "xixi": "Sinal verde para o banheiro! Fazer xixi alivia a barriguinha.",
         "cocô": "Hora de ir ao trono! O corpo fica levinho e muito feliz depois de usar o banheiro.",
         "dormir": "Hora de descansar. Enquanto você dorme, seu cérebro guarda tudo de legal que você aprendeu.",
@@ -293,28 +214,30 @@
         "brincar": "Use sua imaginação! Brincar é a melhor forma de aprender a ser feliz."
     };
 
-    function obterDataDeHoje() {
-        const h = new Date();
-        return `${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,'0')}-${String(h.getDate()).padStart(2,'0')}`;
-    }
+    function obterDataDeHoje() { const h = new Date(); return `${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,'0')}-${String(h.getDate()).padStart(2,'0')}`; }
 
+    // NOVA PRIORIDADE: Cérebro primeiro, Descrição Customizada depois!
     window.abrirDica = (acaoTexto, descricaoPersonalizada, idRotina) => {
         rotinaAvaliacaoAtual = idRotina; 
-        
         const modal = document.getElementById('modalDica');
         const titulo = document.getElementById('dicaTitulo');
         const texto = document.getElementById('dicaTexto');
         
         let msg = "";
-        if (descricaoPersonalizada && descricaoPersonalizada.trim() !== "" && descricaoPersonalizada !== "undefined") {
-            msg = descricaoPersonalizada;
-        } else {
-            let chave = acaoTexto.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-            for (const [palavra, dica] of Object.entries(dicasMascote)) {
-                let pLimpa = palavra.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-                if (chave.includes(pLimpa)) { msg = dica; break; }
-            }
+        
+        // 1º Tenta achar no Cérebro do Mascote ignorando acentos
+        let chave = acaoTexto.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+        for (const [palavra, dica] of Object.entries(dicasMascote)) {
+            let pLimpa = palavra.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            if (chave.includes(pLimpa)) { msg = dica; break; }
         }
+
+        // 2º Se o Cérebro não souber, usa a descrição que o Pai digitou no painel
+        if (!msg && descricaoPersonalizada && descricaoPersonalizada.trim() !== "" && descricaoPersonalizada !== "undefined") {
+            msg = descricaoPersonalizada;
+        }
+
+        // 3º Frase padrão caso não ache nada
         if (!msg) msg = "Cada atividade que você faz é um passo para um dia incrível. Continue assim!";
 
         titulo.innerText = acaoTexto; texto.innerText = msg;
@@ -322,147 +245,81 @@
         setTimeout(() => modal.classList.add('ativo'), 10);
     };
 
-    window.fecharDica = () => {
-        const modal = document.getElementById('modalDica');
-        modal.classList.remove('ativo');
-        setTimeout(() => modal.style.display = 'none', 300);
-    };
-
+    window.fecharDica = () => { const m = document.getElementById('modalDica'); m.classList.remove('ativo'); setTimeout(() => m.style.display = 'none', 300); };
+    
     window.irParaAvaliacao = () => {
         fecharDica();
-        const tituloAtual = document.getElementById('dicaTitulo').innerText;
-        setTimeout(() => { abrirModalAvaliacao(tituloAtual); }, 350); 
+        const t = document.getElementById('dicaTitulo').innerText;
+        setTimeout(() => { abrirModalAvaliacao(t); }, 350); 
     };
 
     window.abrirModalAvaliacao = (nomeAcao) => {
         document.getElementById('titulo-aval').innerText = nomeAcao;
         document.getElementById('mensagem-feedback').style.opacity = '0';
-        const modal = document.getElementById('modalAvaliacao');
-        modal.style.display = 'flex';
-        setTimeout(() => modal.classList.add('ativo'), 10);
+        const m = document.getElementById('modalAvaliacao');
+        m.style.display = 'flex'; setTimeout(() => m.classList.add('ativo'), 10);
     };
 
-    window.fecharAvaliacao = () => {
-        const modal = document.getElementById('modalAvaliacao');
-        modal.classList.remove('ativo');
-        setTimeout(() => { modal.style.display = 'none'; rotinaAvaliacaoAtual = null; }, 300); 
-    };
+    window.fecharAvaliacao = () => { const m = document.getElementById('modalAvaliacao'); m.classList.remove('ativo'); setTimeout(() => { m.style.display = 'none'; }, 300); };
 
     window.avaliar = async (qtd) => {
         if(!rotinaAvaliacaoAtual) return;
         const feed = document.getElementById('mensagem-feedback');
-        
-        if(qtd === 3) {
-            feed.innerText = "Parabéns! Você é incrível! 🚀"; feed.style.color = "#27AE60";
-            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-        } else if (qtd === 2) {
-            feed.innerText = "Continue assim, você chega lá! 👍"; feed.style.color = "#F39C12";
-        } else if (qtd === 1) {
-            feed.innerText = "Muito bom, mas vamos melhorar! 💪"; feed.style.color = "#E67E22";
-        } else {
-            feed.innerText = "Tudo bem, tentaremos amanhã! 💙"; feed.style.color = "#D98880";
-        }
+        if(qtd === 3) { feed.innerText = "Parabéns! Você é incrível! 🚀"; feed.style.color = "#27AE60"; confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } }); } 
+        else if (qtd === 2) { feed.innerText = "Continue assim, você chega lá! 👍"; feed.style.color = "#F39C12"; } 
+        else if (qtd === 1) { feed.innerText = "Muito bom, mas vamos melhorar! 💪"; feed.style.color = "#E67E22"; } 
+        else { feed.innerText = "Tudo bem, tentaremos amanhã! 💙"; feed.style.color = "#D98880"; }
         feed.style.opacity = '1';
-
-        const rotinaRef = doc(db, `${caminho_dados}/rotinas`, rotinaAvaliacaoAtual);
-        await updateDoc(rotinaRef, { estrelas_ganhas: qtd, data_avaliacao: obterDataDeHoje() });
+        await updateDoc(doc(db, `${caminho_dados}/rotinas`, rotinaAvaliacaoAtual), { estrelas_ganhas: qtd, data_avaliacao: obterDataDeHoje() });
         setTimeout(() => { fecharAvaliacao(); }, 2500);
     };
 
     function atualizarPlacarDeEstrelas(lista) {
         let total = 0; const hoje = obterDataDeHoje();
         lista.forEach(rot => { if (rot.data_avaliacao === hoje && typeof rot.estrelas_ganhas === 'number') total += rot.estrelas_ganhas; });
-        const pNum = document.getElementById('num-estrelas');
-        const pBox = document.getElementById('placar-estrelas');
-        if(pNum.innerText !== total.toString()) {
-            pNum.innerText = total;
-            pBox.classList.add('placar-animado');
-            setTimeout(() => pBox.classList.remove('placar-animado'), 300);
-        }
+        const pNum = document.getElementById('num-estrelas'); const pBox = document.getElementById('placar-estrelas');
+        if(pNum.innerText !== total.toString()) { pNum.innerText = total; pBox.classList.add('placar-animado'); setTimeout(() => pBox.classList.remove('placar-animado'), 300); }
     }
 
     onAuthStateChanged(auth, (user) => {
-        if (user) {
-            id_usuario_pai = user.uid;
-            if (caminho_dados && caminho_dados.includes(user.uid)) iniciarApp();
-            else mostrarTelaSelecaoFilho();
-        } else {
-            document.getElementById('telaLogin').style.display = 'flex';
-            document.getElementById('telaSelecionarFilho').style.display = 'none';
-            document.getElementById('telaMapa').style.display = 'none';
-            document.getElementById('placar-estrelas').style.display = 'none';
-        }
+        if (user) { id_usuario_pai = user.uid; if (caminho_dados && caminho_dados.includes(user.uid)) iniciarApp(); else mostrarTelaSelecaoFilho(); } 
+        else { document.getElementById('telaLogin').style.display = 'flex'; document.getElementById('telaSelecionarFilho').style.display = 'none'; document.getElementById('telaMapa').style.display = 'none'; document.getElementById('placar-estrelas').style.display = 'none'; }
     });
 
-    window.fazerLogin = () => {
-        const e = document.getElementById('inputEmail').value, s = document.getElementById('inputSenha').value;
-        if(!e || !s) return alert("Preencha e-mail e senha!");
-        signInWithEmailAndPassword(auth, e, s).catch(() => alert("Erro! Verifique as credenciais."));
-    };
+    window.fazerLogin = () => { const e = document.getElementById('inputEmail').value, s = document.getElementById('inputSenha').value; if(!e || !s) return alert("Preencha e-mail e senha!"); signInWithEmailAndPassword(auth, e, s).catch(() => alert("Erro!")); };
     window.sairApp = () => { localStorage.removeItem('caminho_dados'); localStorage.removeItem('nome_crianca'); signOut(auth); };
 
     function mostrarTelaSelecaoFilho() {
-        document.getElementById('telaLogin').style.display = 'none';
-        document.getElementById('telaMapa').style.display = 'none';
-        document.getElementById('telaSelecionarFilho').style.display = 'flex';
+        document.getElementById('telaLogin').style.display = 'none'; document.getElementById('telaMapa').style.display = 'none'; document.getElementById('telaSelecionarFilho').style.display = 'flex';
         onSnapshot(collection(db, `usuarios/${id_usuario_pai}/filhos`), (snap) => {
             const grid = document.getElementById('grid-filhos'); grid.innerHTML = "";
-            snap.forEach(d => {
-                const info = d.data();
-                grid.innerHTML += `<button class="btn-filho" onclick="selecionarCrianca('usuarios/${id_usuario_pai}/filhos/${d.id}', '${info.nome}')">${info.nome}</button>`;
-            });
+            snap.forEach(d => { grid.innerHTML += `<button class="btn-filho" onclick="selecionarCrianca('usuarios/${id_usuario_pai}/filhos/${d.id}', '${d.data().nome}')">${d.data().nome}</button>`; });
         });
     }
 
     window.selecionarCrianca = (caminho, nome) => { localStorage.setItem('caminho_dados', caminho); localStorage.setItem('nome_crianca', nome); window.location.reload(true); };
 
     function iniciarApp() {
-        document.getElementById('telaLogin').style.display = 'none'; 
-        document.getElementById('telaSelecionarFilho').style.display = 'none'; 
-        document.getElementById('telaMapa').style.display = 'block'; 
-        document.getElementById('placar-estrelas').style.display = 'flex'; 
-        document.getElementById('nome-atual').innerText = nome_crianca;
-        
-        const partes = caminho_dados.split('/'); 
-        const pastaU = `${partes[0]}/${partes[1]}`; const pastaI = `${partes[0]}/${partes[1]}/${partes[2]}`;
-
-        onSnapshot(collection(db, `${pastaU}/atividades`), pCache);
-        onSnapshot(collection(db, `${caminho_dados}/atividades`), pCache);
-
-        onSnapshot(collection(db, pastaI), (snap) => {
-            const menu = document.getElementById('menu-filhos-items'); menu.innerHTML = "";
-            snap.forEach(d => { menu.innerHTML += `<div class="opcao-crianca" onclick="selecionarCrianca('${pastaI}/${d.id}', '${d.data().nome}')">${d.data().nome}</div>`; });
-        });
-        carregarRotinasDoBanco();
-        setInterval(heartbeat, 30000); setInterval(() => desenharPista(rotinasCache), 60000);
+        document.getElementById('telaLogin').style.display = 'none'; document.getElementById('telaSelecionarFilho').style.display = 'none'; document.getElementById('telaMapa').style.display = 'block'; document.getElementById('placar-estrelas').style.display = 'flex'; document.getElementById('nome-atual').innerText = nome_crianca;
+        const pts = caminho_dados.split('/'); const pU = `${pts[0]}/${pts[1]}`; const pI = `${pts[0]}/${pts[1]}/${pts[2]}`;
+        onSnapshot(collection(db, `${pU}/atividades`), pCache); onSnapshot(collection(db, `${caminho_dados}/atividades`), pCache);
+        onSnapshot(collection(db, pI), (s) => { const menu = document.getElementById('menu-filhos-items'); menu.innerHTML = ""; s.forEach(d => { menu.innerHTML += `<div class="opcao-crianca" onclick="selecionarCrianca('${pI}/${d.id}', '${d.data().nome}')">${d.data().nome}</div>`; }); });
+        carregarRotinasDoBanco(); setInterval(heartbeat, 30000); setInterval(() => desenharPista(rotinasCache), 60000);
     }
 
-    function pCache(snap) {
-        snap.forEach(doc => {
-            const data = doc.data(); const id = doc.id.trim().toLowerCase();
-            const n = (data.nome || "").trim().toLowerCase(), a = (data.acao || "").trim().toLowerCase();
-            cacheAtividades[id] = data; if(n) cacheAtividades[n] = data; if(a) cacheAtividades[a] = data;
-        });
-        if(rotinasCache.length > 0) desenharPista(rotinasCache);
-    }
+    function pCache(snap) { snap.forEach(doc => { const d = doc.data(); const id = doc.id.trim().toLowerCase(); const n = (d.nome || "").trim().toLowerCase(); const a = (d.acao || "").trim().toLowerCase(); cacheAtividades[id] = d; if(n) cacheAtividades[n] = d; if(a) cacheAtividades[a] = d; }); if(rotinasCache.length > 0) desenharPista(rotinasCache); }
     
     window.toggleMenu = () => { const m = document.getElementById('lista-criancas'); m.style.display = m.style.display==='block'?'none':'block'; };
-    
     function converterMin(h) { let [hr, mn] = h.split(':').map(Number); if(hr < 5) hr += 24; return hr * 60 + mn; }
     function obterMinutosAtuais() { const agora = new Date(); let hrSys = agora.getHours(); if(hrSys < 5) hrSys += 24; return hrSys * 60 + agora.getMinutes(); }
     function buscarIconeAcao(acaoTexto) { return 'https://cdn-icons-png.flaticon.com/512/1048/1048953.png'; }
 
     const H_ROW = 240; 
-    function calcularConfiguracaoTela() {
-        const W = document.getElementById('mapa-container').clientWidth;
-        let itens = 5, margem = 140; 
-        if (W < 550) { itens = 2; margem = 90; } else if (W < 800) { itens = 3; margem = 110; } else if (W < 1000) { itens = 4; margem = 130; }
-        return { W, ITENS_POR_LINHA: itens, MARGEM_X: margem };
-    }
+    function calcularConfiguracaoTela() { const W = document.getElementById('mapa-container').clientWidth; let it = 5, mX = 140; if (W < 550) { it = 2; mX = 90; } else if (W < 800) { it = 3; mX = 110; } else if (W < 1000) { it = 4; mX = 130; } return { W, ITENS_POR_LINHA: it, MARGEM_X: mX }; }
 
-    function criarCaminhoInfografico(totalRotinas, conf) {
-        if (totalRotinas === 0) return "";
-        const uIdx = Math.floor((totalRotinas - 1) / conf.ITENS_POR_LINHA);
+    function criarCaminhoInfografico(total, conf) {
+        if (total === 0) return "";
+        const uIdx = Math.floor((total - 1) / conf.ITENS_POR_LINHA);
         document.getElementById('mapa-container').style.height = ((uIdx * H_ROW) + 200) + "px";
         let d = `M ${conf.MARGEM_X},120 `; let y = 120;
         const stepX = (conf.W - (2 * conf.MARGEM_X)) / (conf.ITENS_POR_LINHA - 1 || 1);
@@ -473,7 +330,7 @@
                 d += `L ${nextX},${y} A ${H_ROW/2} ${H_ROW/2} 0 0 ${(i % 2 === 0) ? 1 : 0} ${nextX} ${y + H_ROW} `; 
                 y += H_ROW;
             } else {
-                let pos = (totalRotinas - 1) % conf.ITENS_POR_LINHA;
+                let pos = (total - 1) % conf.ITENS_POR_LINHA;
                 let endX = (i % 2 === 0) ? conf.MARGEM_X + (pos * stepX) : (conf.W - conf.MARGEM_X) - (pos * stepX);
                 d += `L ${endX},${y} `;
             }
@@ -484,12 +341,10 @@
     function carregarRotinasDoBanco() {
         const hoje = new Date().getDay().toString();
         onSnapshot(query(collection(db, `${caminho_dados}/rotinas`), orderBy("hora")), (snap) => {
-            const listaBruta = []; 
-            snap.forEach(d => { let r = d.data(); r.id = d.id; listaBruta.push(r); });
-            rotinasCache = listaBruta.filter(r => !r.dia_semana || r.dia_semana === 'todos' || r.dia_semana === hoje);
+            const lista = []; snap.forEach(d => { let r = d.data(); r.id = d.id; lista.push(r); });
+            rotinasCache = lista.filter(r => !r.dia_semana || r.dia_semana === 'todos' || r.dia_semana === hoje);
             rotinasCache.sort((a,b) => converterMin(a.hora) - converterMin(b.hora));
-            atualizarPlacarDeEstrelas(rotinasCache); 
-            desenharPista(rotinasCache);
+            atualizarPlacarDeEstrelas(rotinasCache); desenharPista(rotinasCache);
         });
     }
 
@@ -497,19 +352,12 @@
         if(lista.length === 0) return;
         const conf = calcularConfiguracaoTela();
         const dPath = criarCaminhoInfografico(lista.length, conf);
-        
         document.getElementById('pathTracejado').setAttribute('d', dPath);
         const totalLen = document.getElementById('pathTracejado').getTotalLength();
         const grupoCores = document.getElementById('camada-cores'); grupoCores.innerHTML = "";
         const cores = ["#E8B87D", "#93C49D", "#80C2D6", "#86A3D4", "#B4A3D6"];
-        const pedacoSize = totalLen / 5; 
-
-        for(let i=0; i<5; i++) {
-            const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            p.setAttribute('d', dPath); p.setAttribute('class', `estrada-corpo c-${i+1}`);
-            p.style.strokeDasharray = `${pedacoSize + 10} ${totalLen}`; p.style.strokeDashoffset = -(i * pedacoSize);
-            grupoCores.appendChild(p);
-        }
+        const pSize = totalLen / 5; 
+        for(let i=0; i<5; i++) { const p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute('d', dPath); p.setAttribute('class', `estrada-corpo c-${i+1}`); p.style.strokeDasharray = `${pSize + 10} ${totalLen}`; p.style.strokeDashoffset = -(i * pSize); grupoCores.appendChild(p); }
 
         const container = document.getElementById('cards-layer'); container.innerHTML = "";
         const minAtual = obterMinutosAtuais(); let indexAtual = -1;
@@ -538,15 +386,19 @@
 
             let estrelasHTML = "";
             if (rot.data_avaliacao === hoje && typeof rot.estrelas_ganhas === 'number' && rot.estrelas_ganhas > 0) {
-                estrelasHTML = `<div class="estrelas-ganhas">${"⭐".repeat(rot.estrelas_ganhas)}</div>`;
+                estrelasHTML = `<div class="estrelas-ganhas" style="color:#F4D03F;">${"⭐".repeat(rot.estrelas_ganhas)}</div>`;
             }
 
+            // AQUI AS ESTRELAS ENTRAM EMBAIXO DO TEXTO
             div.innerHTML = `
-                ${estrelasHTML}
                 <div class="icone-circulo" style="border-color:${corAtual}" onclick="abrirDica('${acaoSegura}', '${txt}', '${rot.id}')">
                     <img src="${img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1048/1048953.png'">
                 </div>
-                <div class="textos"><span class="badge-hora" style="background:${corAtual}">${rot.hora}</span><span class="acao">${rot.acao}</span></div>
+                <div class="textos">
+                    <span class="badge-hora" style="background:${corAtual}">${rot.hora}</span>
+                    <span class="acao">${rot.acao}</span>
+                    ${estrelasHTML}
+                </div>
             `;
             container.appendChild(div);
         });
