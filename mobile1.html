@@ -124,6 +124,7 @@
         .seta-final { position: absolute; width: 0; height: 0; border-top: 48px solid transparent; border-bottom: 48px solid transparent; z-index: 2; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.08)); transition: left 0.5s; }
         .seta-dir { border-left: 68px solid #B4A3D6; transform: translate(0, -50%); }
         .seta-esq { border-right: 68px solid #B4A3D6; transform: translate(-100%, -50%); }
+        .seta-baixo { border-top: 55px solid #B4A3D6; border-left: 40px solid transparent; border-right: 40px solid transparent; transform: translate(-50%, 0); }
 
         /* --- MARCADORES --- */
         .marcador { position: absolute; width: 0; height: 0; z-index: 10; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -309,34 +310,31 @@
         "respirar": "Puxe o ar como se cheirasse uma flor, solte como se soprasse uma vela. Isso traz muita paz."
     };
 
-    window.abrirDica = (acaoTexto, descricaoPersonalizada) => {
+        window.abrirDica = (acaoTexto, descricaoPersonalizada) => {
         const modal = document.getElementById('modalDica');
         const titulo = document.getElementById('dicaTitulo');
         const texto = document.getElementById('dicaTexto');
         
-        let mensagemEncontrada = "";
-
-        // 1ª Prioridade: A descrição que você escreveu no painel web
-        if (descricaoPersonalizada && descricaoPersonalizada.trim() !== "" && descricaoPersonalizada !== "undefined") {
-            mensagemEncontrada = descricaoPersonalizada;
-        } 
-        // 2ª Prioridade: O Super Cérebro ignorando acentos
-        else {
-            // Remove acentos e joga pra minúsculo do que foi clicado
-            let palavraChave = acaoTexto.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-            
-            for (const [palavra, dica] of Object.entries(dicasMascote)) {
-                // Remove acentos e joga pra minúsculo do dicionário
-                let palavraLimpa = palavra.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-                
-                if (palavraChave.includes(palavraLimpa)) {
-                    mensagemEncontrada = dica;
-                    break;
-                }
+        let mensagemEncontrada = null;
+        
+        // Remove acentos da palavra clicada ("Água" vira "agua")
+        let palavraChave = acaoTexto.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+        
+        // 1ª PRIORIDADE: O Super Cérebro do Mascote! 
+        for (const [palavra, dica] of Object.entries(dicasMascote)) {
+            let palavraLimpa = palavra.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            if (palavraChave.includes(palavraLimpa)) {
+                mensagemEncontrada = dica;
+                break; // Achou a palavra! Para de procurar.
             }
         }
 
-        // 3ª Prioridade: Frase de backup padrão
+        // 2ª PRIORIDADE: Se o mascote não souber o que é, ele lê o que o pai escreveu no Painel
+        if (!mensagemEncontrada && descricaoPersonalizada && descricaoPersonalizada.trim() !== "" && descricaoPersonalizada !== "undefined") {
+            mensagemEncontrada = descricaoPersonalizada;
+        } 
+
+        // 3ª PRIORIDADE: Frase de backup padrão de incentivo
         if (!mensagemEncontrada) {
             mensagemEncontrada = "Cada atividade que você faz é um passo para um dia incrível. Continue assim!";
         }
@@ -347,6 +345,7 @@
         modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('ativo'), 10);
     };
+
 
     window.fecharDica = () => {
         const modal = document.getElementById('modalDica');
@@ -497,12 +496,11 @@
         else { itensPorLinha = 5; margemX = 150; }
 
         return { W, ITENS_POR_LINHA: itensPorLinha, MARGEM_X: margemX };
-    }
-
-        function criarCaminhoInfografico(totalRotinas, conf) {
+    }    function criarCaminhoInfografico(totalRotinas, conf) {
         const container = document.getElementById('mapa-container');
         const linhas = Math.max(1, Math.ceil(totalRotinas / conf.ITENS_POR_LINHA));
-        container.style.height = ((linhas * H_ROW) + 150) + "px";
+        // Aumentei o espaço no fundo para caber a reta final
+        container.style.height = ((linhas * H_ROW) + 180) + "px"; 
         
         let d = `M ${conf.MARGEM_X},120 `;
         let y = 120;
@@ -519,25 +517,20 @@
             }
         }
         
-        // ==========================================
-        // SOLUÇÃO: O "PUXADINHO" DA SETA
-        // Estica a última linha em 65px para a seta sair debaixo do círculo
-        // ==========================================
-        const extensaoFinal = 65; 
-        let pontaFinalX = (linhas % 2 === 1) ? (conf.W - conf.MARGEM_X) + extensaoFinal : conf.MARGEM_X - extensaoFinal;
-
-        // Adiciona a extensão extra no desenho da linha SVG
-        d += ` L ${pontaFinalX},${y} `;
+        // --- A MÁGICA DA NOVA SETA ---
+        // Desce uma reta vertical de 50px no final para não sair da tela!
+        let pontaFinalX = (linhas % 2 === 1) ? (conf.W - conf.MARGEM_X) : conf.MARGEM_X;
+        let pontaFinalY = y + 50;
+        d += ` L ${pontaFinalX},${pontaFinalY} `; // Adiciona a descida no SVG
         
         const setaContainer = document.getElementById('seta-final-container');
-        const direcaoSeta = (linhas % 2 === 1) ? 'seta-dir' : 'seta-esq';
-        const ajusteX = (linhas % 2 === 1) ? -5 : 5;
         
-        // Agora a seta é posicionada na ponta da extensão, e não mais debaixo do círculo!
-        setaContainer.innerHTML = `<div class="seta-final ${direcaoSeta}" style="left: ${pontaFinalX + ajusteX}px; top: ${y}px;"></div>`;
+        // Usa a nossa nova seta apontada para baixo
+        setaContainer.innerHTML = `<div class="seta-final seta-baixo" style="left: ${pontaFinalX}px; top: ${pontaFinalY}px;"></div>`;
 
         return d;
     }
+
 
 
     function carregarRotinasDoBanco() {
