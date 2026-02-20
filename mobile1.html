@@ -496,37 +496,52 @@
         else { itensPorLinha = 5; margemX = 150; }
 
         return { W, ITENS_POR_LINHA: itensPorLinha, MARGEM_X: margemX };
-    }    function criarCaminhoInfografico(totalRotinas, conf) {
+    }     
+    
+    
+    function criarCaminhoInfografico(totalRotinas, conf) {
         const container = document.getElementById('mapa-container');
-        const linhas = Math.max(1, Math.ceil(totalRotinas / conf.ITENS_POR_LINHA));
-        // Aumentei o espaço no fundo para caber a reta final
-        container.style.height = ((linhas * H_ROW) + 180) + "px"; 
         
-        let d = `M ${conf.MARGEM_X},120 `;
+        // Se não tiver rotina, não desenha nada
+        if (totalRotinas === 0) return "";
+
+        // Descobre quantas linhas a estrada vai ter baseada na quantidade de itens
+        const ultimaLinhaIndex = Math.floor((totalRotinas - 1) / conf.ITENS_POR_LINHA);
+        
+        // Ajusta a altura da tela exata para não sobrar espaço em branco
+        container.style.height = ((ultimaLinhaIndex * H_ROW) + 200) + "px";
+        
+        let d = `M ${conf.MARGEM_X},120 `; // Ponto de partida inicial (1º círculo)
         let y = 120;
 
-        for (let i = 0; i < linhas; i++) {
-            let nextX = (i % 2 === 0) ? (conf.W - conf.MARGEM_X) : conf.MARGEM_X;
-            d += `L ${nextX},${y} `; 
-            if (i < linhas - 1) {
+        const larguraUtil = conf.W - (2 * conf.MARGEM_X);
+        const stepX = larguraUtil / (conf.ITENS_POR_LINHA - 1 || 1);
+
+        for (let i = 0; i <= ultimaLinhaIndex; i++) {
+            if (i < ultimaLinhaIndex) {
+                // Se NÃO for a última linha, desenha ela inteira até o final e faz a curva
+                let nextX = (i % 2 === 0) ? (conf.W - conf.MARGEM_X) : conf.MARGEM_X;
+                d += `L ${nextX},${y} `; 
+                
                 let arcY = y + H_ROW;
                 let raio = H_ROW / 2;
                 let direcaoArco = (i % 2 === 0) ? 1 : 0;
                 d += `A ${raio} ${raio} 0 0 ${direcaoArco} ${nextX} ${arcY} `; 
                 y = arcY;
+            } else {
+                // MÁGICA AQUI: Se for a última linha, calcula onde é a última bolinha e para a linha NELA!
+                let posNaLinha = (totalRotinas - 1) % conf.ITENS_POR_LINHA;
+                let endX = (i % 2 === 0) 
+                    ? conf.MARGEM_X + (posNaLinha * stepX) 
+                    : (conf.W - conf.MARGEM_X) - (posNaLinha * stepX);
+                
+                d += `L ${endX},${y} `;
             }
         }
         
-        // --- A MÁGICA DA NOVA SETA ---
-        // Desce uma reta vertical de 50px no final para não sair da tela!
-        let pontaFinalX = (linhas % 2 === 1) ? (conf.W - conf.MARGEM_X) : conf.MARGEM_X;
-        let pontaFinalY = y + 50;
-        d += ` L ${pontaFinalX},${pontaFinalY} `; // Adiciona a descida no SVG
-        
+        // Remove a seta do mapa de vez!
         const setaContainer = document.getElementById('seta-final-container');
-        
-        // Usa a nossa nova seta apontada para baixo
-        setaContainer.innerHTML = `<div class="seta-final seta-baixo" style="left: ${pontaFinalX}px; top: ${pontaFinalY}px;"></div>`;
+        if(setaContainer) setaContainer.innerHTML = "";
 
         return d;
     }
