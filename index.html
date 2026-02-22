@@ -343,25 +343,7 @@
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
         let usuarioAtual, filhoAtualId, cacheAtividades={}, cacheRotinas={}, unsubscribeAtividades, unsubscribeRotinas, unsubscribeDispositivos, unsubscribeHistorico;
 
-        // --- LÓGICA DA GALERIA ---
-        const listaGifs = ["ARRUMANDO_CAMA.gif", "BANHO.gif", "BOCEJANDO.gif", "COMER.gif", "DESLIGAR-PC.gif", "ESCOVANDO_DENTES.gif", "LIGAR-PC.gif"];
-
-        function montarGaleria() {
-            const container = document.getElementById('galVisual');
-            container.innerHTML = "";
-            listaGifs.forEach(nome => {
-                const img = document.createElement('img');
-                img.src = `IMG/${nome}`;
-                img.className = 'img-sel';
-                img.onclick = () => {
-                    document.querySelectorAll('.img-sel').forEach(i => i.classList.remove('ativa'));
-                    img.classList.add('ativa');
-                    document.getElementById('imgAtividade').value = `IMG/${nome}`;
-                    window.atualizarPreview();
-                };
-                container.appendChild(img);
-            });
-        }
+       
 
         window.fazerLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert(e.message)} };
         window.criarConta = async () => { try { await createUserWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert(e.message)} };
@@ -499,8 +481,7 @@
             });
         }
 
-// Chama automaticamente ao abrir o painel
-// No seu onAuthStateChanged, adicione: varrerPastaServidor();      };
+
   
         window.carregarEdicaoAtividade = (id) => { const d = cacheAtividades[id]; if(!d) return; document.getElementById('idAtividade').value = id; document.getElementById('idAtividade').disabled = true; document.getElementById('editIdAtividade').value = id; document.getElementById('txtAtividade').value = d.texto||""; document.getElementById('imgAtividade').value = d.imagem||""; document.getElementById('tempoAtividade').value = d.tempo_personalizado||""; document.getElementById('rangeTamanho').value = d.tamanho_avatar||"150"; atualizarPreview(); document.getElementById('txt5min').value = d.texto_5min||""; document.getElementById('txt3min').value = d.texto_3min||""; document.getElementById('posAtividade').value = d.posicao_especifica||""; document.getElementById('checkVoz').checked = (d.falar_texto!==false); document.getElementById('checkBlock').checked = (d.bloquear_tela===true); };
         window.limparFormAtividade = () => { document.getElementById('idAtividade').disabled = false; document.getElementById('idAtividade').value = ""; document.getElementById('editIdAtividade').value = ""; document.querySelectorAll('input[type=text], input[type=number]').forEach(i=>i.value=""); document.getElementById('rangeTamanho').value="150"; atualizarPreview(); };
@@ -512,29 +493,45 @@
         window.apagarDispositivo = async(id) => { if(confirm("Remover este computador?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/dispositivos`, id)); };
         window.abrirDicas = () => document.getElementById('modalDicas').classList.add('aberta');
         window.fecharDicas = () => document.getElementById('modalDicas').classList.remove('aberta');
-function montarGaleriaInfinita() {
+
+        function montarGaleriaInfinita() {
     const container = document.getElementById('galVisual');
-    container.innerHTML = ""; 
+    if(!container) return; 
+    container.innerHTML = "";
+    
+    // Lista de nomes base
+    const nomes = ["ARRUMANDO_CAMA", "BANHO", "BOCEJANDO", "COMER", "DESLIGAR-PC", "LIGAR-PC", "ESCOVANDO_DENTES"];
+    // Adiciona números de 1 a 50
+    for(let i=1; i<=50; i++) nomes.push(`${i}`); 
 
-    // Ele vai tentar testar do arquivo 1 até o 50 automaticamente
-    for (let i = 1; i <= 50; i++) {
-        const img = new Image();
-        const nomeArquivo = `${i}.gif`; // Exige que você nomeie como 1.gif, 2.gif...
-        img.src = `IMG/${nomeArquivo}`;
-        img.className = 'img-sel';
-        
-        img.onload = () => {
-            img.classList.add('visivel');
-            container.appendChild(img);
-        };
+    nomes.forEach(nomeBase => {
+        // Tenta todas as extensões possíveis
+        [".gif", ".png", ".jpg", ".GIF", ".PNG", ".JPG"].forEach(ext => {
+            
+            const nomeArq = nomeBase.includes('.') ? nomeBase : nomeBase + ext;
+            const img = new Image();
+            img.src = `IMG/${nomeArq}`;
+            img.className = 'img-sel';
+            
+            // Colocamos uma etiqueta única na imagem
+            img.setAttribute('data-id', nomeBase); 
 
-        img.onclick = () => {
-            document.querySelectorAll('.img-sel').forEach(el => el.classList.remove('ativa'));
-            img.classList.add('ativa');
-            document.getElementById('imgAtividade').value = `IMG/${nomeArquivo}`;
-            window.atualizarPreview();
-        };
-    }
+            img.onload = () => { 
+                // Verificamos se já existe alguém com essa ETIQUETA EXATA
+                if(!container.querySelector(`img[data-id="${nomeBase}"]`)) { 
+                    img.classList.add('visivel'); 
+                    container.appendChild(img); 
+                }
+            };
+
+            img.onclick = () => {
+                document.querySelectorAll('.img-sel').forEach(i => i.classList.remove('ativa'));
+                img.classList.add('ativa'); 
+                document.getElementById('imgAtividade').value = img.src; 
+                window.atualizarPreview();
+            };
+        });
+    });
 }
 // Função para mostrar o aviso flutuante
     window.mostrarAviso = (mensagem) => {
