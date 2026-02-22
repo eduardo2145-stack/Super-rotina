@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amigo Virtual | Rotina Infantil Divertida</title>
+    
+    <link rel="icon" href="icon.ico" type="image/x-icon">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cor-fundo: #F7F5F0;
+            --cor-primaria: #93C49D;
+            --cor-secundaria: #FF9F43;
+            --cor-texto: #4A4A4A;
+            --cor-titulo: #2D3436;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Nunito', sans-serif; }
+        body { background-color: var(--cor-fundo); color: var(--cor-texto); line-height: 1.6; }
+
+        /* --- BARRA DE NAVEGAÇÃO (LOGO) --- */
+        .navbar {
+            display: flex;
+            align-items: center;
+            padding: 20px 10%;
+            background-color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        .navbar img { width: 40px; height: 40px; margin-right: 15px; }
+        .navbar h2 { font-size: 24px; color: var(--cor-primaria); font-weight: 900; }
+
+        /* --- BOTÕES --- */
+        .btn {
+            display: inline-block;
+            background-color: var(--cor-secundaria);
+            color: white;
+            padding: 15px 35px;
+            font-size: 20px;
+            font-weight: 900;
+            text-decoration: none;
+            border-radius: 50px;
+            box-shadow: 0 8px 15px rgba(255, 159, 67, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(255, 159, 67, 0.4); }
+        
+        /* Botão específico do WhatsApp (Verde) */
+        .btn-whats { background-color: #25D366; box-shadow: 0 8px 15px rgba(37, 211, 102, 0.3); }
+        .btn-whats:hover { box-shadow: 0 12px 20px rgba(37, 211, 102, 0.4); }
+
+        /* --- SEÇÃO 1: HERO --- */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 60px 10%;
+            background-color: white;
+   
+        }
+        .hero-text { max-width: 50%; }
+        .hero-text h1 { font-size: 48px; color: var(--cor-titulo); line-height: 1.1; margin-bottom: 20px; }
+        .hero-text h1 span { color: var(--cor-primaria); }
+        .hero-text p { font-size: 20px; margin-bottom: 30px; color: #666; }
+        .hero-img img { width: 100%; height: auto; display: block; }
+
+        /* --- SEÇÃO 2: O MASCOTE EXPLICANDO (NOVIDADE!) --- */
+        .mascote-explica {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 10%;
+            gap: 40px;
+        }
+        .mascote-img { width: 250px; animation: flutuar 3s ease-in-out infinite; }
+        .balao-fala {
+            background-color: white;
+            padding: 30px;
+            border-radius: 30px;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 10px 25px rgba(147, 196, 157, 0.2);
+            max-width: 500px;
+            font-size: 22px;
+            color: var(--cor-primaria);
+            font-weight: 700;
+            position: relative;
+        }
+        @keyframes flutuar {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* --- SEÇÃO 3: AS SOLUÇÕES --- */
+        .features { display: flex; justify-content: space-around; padding: 20px 10% 80px; gap: 30px; flex-wrap: wrap; }
+        .card { background: white; padding: 40px 30px; border-radius: 20px; width: 30%; min-width: 300px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: transform 0.3s; }
+        .card:hover { transform: translateY(-10px); }
+        .card img { width: 80px; margin-bottom: 20px; }
+        .card h3 { color: var(--cor-primaria); font-size: 24px; margin-bottom: 15px; }
+        .card p { font-size: 16px; }
+
+        /* --- SEÇÃO 4: CTA FINAL --- */
+        .cta-final { text-align: center; padding: 80px 10%; background-color: var(--cor-primaria); color: white; }
+        .cta-final h2 { font-size: 40px; margin-bottom: 20px; color: white; }
+        .cta-final p { font-size: 20px; margin-bottom: 40px; }
+
+        footer { text-align: center; padding: 30px; background-color: #2D3436; color: white; font-size: 14px; }
+
+        @media (max-width: 768px) {
+            .hero, .mascote-explica { flex-direction: column; text-align: center; padding: 40px 5%; }
+            .hero-text { max-width: 100%; margin-bottom: 40px; }
+            .hero-text h1 { font-size: 36px; }
+            .hero-img { width: 100%; }
+            .balao-fala { border-bottom-left-radius: 30px; border-top-right-radius: 5px; margin-top: 20px; }
+            .card { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <img src="icon.ico" alt="Logo Amigo Virtual">
+        <h2>Amigo Virtual</h2>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Transforme a Rotina do seu filho em um <span>Jogo Divertido</span></h1>
+            <p>O aplicativo interativo que acaba com as brigas na hora do banho, das telas e de dormir. Previsibilidade e autonomia de forma visual e recompensadora.</p>
+            
+            <a href="https://wa.me/5500000000000?text=Olá!%20Gostaria%20de%20testar%20o%20Amigo%20Virtual%20por%207%20dias." class="btn btn-whats" target="_blank">
+                Falar no WhatsApp e Testar
+            </a>
+        </div>
+        <div class="hero-img">
+            <img src="IMG/banner.png" alt="Criança usando tablet feliz">
+        </div>
+    </section>
+
+    <section class="mascote-explica">
+        <img src="IMG/avatar.png" alt="Mascote Robô" class="mascote-img">
+        <div class="balao-fala">
+            "Olá, mamãe e papai! Eu sou o Amigo Virtual da sua família. Vou ajudar seu filho a lembrar de escovar os dentes, guardar os brinquedos e dar muitas estrelinhas quando ele mandar bem!"
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="card">
+            <img src="https://cdn-icons-png.flaticon.com/512/8204/8204680.png" alt="Rotina Visual">
+            <h3>Rotina Visual Clara</h3>
+            <p>Uma "estradinha" com os passos do dia. A criança sabe exatamente o que esperar. Perfeito para reduzir a ansiedade (ideal para TEA/TDAH).</p>
+        </div>
+
+        <div class="card">
+            <img src="https://cdn-icons-png.flaticon.com/512/3063/3063822.png" alt="Gamificação">
+            <h3>Gamificação Mágica</h3>
+            <p>Cada tarefa cumprida gera confetes na tela e estrelinhas douradas. Eles vão querer completar as atividades para bater o recorde!</p>
+        </div>
+
+        <div class="card">
+            <img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png" alt="Modo Foco PC">
+            <h3>Bloqueador de Tela PC</h3>
+            <p>A hora da tela acabou? Nosso sistema bloqueia o computador automaticamente mostrando a próxima tarefa. Fim das negociações difíceis.</p>
+        </div>
+    </section>
+
+    <section class="cta-final">
+        <h2>Pronto para ter mais paz na sua casa?</h2>
+        <p>Me chame no WhatsApp. Eu vou te ajudar pessoalmente a configurar o tablet do seu filho e liberar 7 dias gratuitos para vocês testarem.</p>
+        
+        <a href="https://wa.me/5500000000000?text=Olá!%20Vim%20pelo%20site%20e%20quero%20testar%20o%20Amigo%20Virtual." class="btn btn-whats" style="background-color: white; color: #25D366;" target="_blank">
+            Quero meu acesso VIP no WhatsApp
+        </a>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Meu Amigo Virtual. Todos os direitos reservados.</p>
+    </footer>
+
+</body>
+</html>
