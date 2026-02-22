@@ -485,6 +485,28 @@
   
         window.carregarEdicaoAtividade = (id) => { const d = cacheAtividades[id]; if(!d) return; document.getElementById('idAtividade').value = id; document.getElementById('idAtividade').disabled = true; document.getElementById('editIdAtividade').value = id; document.getElementById('txtAtividade').value = d.texto||""; document.getElementById('imgAtividade').value = d.imagem||""; document.getElementById('tempoAtividade').value = d.tempo_personalizado||""; document.getElementById('rangeTamanho').value = d.tamanho_avatar||"150"; atualizarPreview(); document.getElementById('txt5min').value = d.texto_5min||""; document.getElementById('txt3min').value = d.texto_3min||""; document.getElementById('posAtividade').value = d.posicao_especifica||""; document.getElementById('checkVoz').checked = (d.falar_texto!==false); document.getElementById('checkBlock').checked = (d.bloquear_tela===true); };
         window.limparFormAtividade = () => { document.getElementById('idAtividade').disabled = false; document.getElementById('idAtividade').value = ""; document.getElementById('editIdAtividade').value = ""; document.querySelectorAll('input[type=text], input[type=number]').forEach(i=>i.value=""); document.getElementById('rangeTamanho').value="150"; atualizarPreview(); };
+      // --- FUNÇÃO DE SALVAR ATIVIDADE (QUE ESTAVA FALTANDO) ---
+        window.salvarAtividade = async () => { 
+            const id = document.getElementById('idAtividade').value.toLowerCase().replace(/\s/g,''); 
+            if(!id) return alert("Por favor, preencha o ID (Nome Curto) da atividade."); 
+            
+            await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id), { 
+                texto: document.getElementById('txtAtividade').value, 
+                imagem: document.getElementById('imgAtividade').value, 
+                tempo_personalizado: document.getElementById('tempoAtividade').value, 
+                tamanho_avatar: document.getElementById('rangeTamanho').value, 
+                texto_5min: document.getElementById('txt5min').value, 
+                texto_3min: document.getElementById('txt3min').value, 
+                imagem_5min: document.getElementById('img5min').value, 
+                imagem_3min: document.getElementById('img3min').value, 
+                posicao_especifica: document.getElementById('posAtividade').value, 
+                falar_texto: document.getElementById('checkVoz').checked, 
+                bloquear_tela: document.getElementById('checkBlock').checked 
+            }); 
+            
+            alert("✅ Atividade salva com sucesso!"); 
+            limparFormAtividade(); 
+        };
         window.salvarRotina = async () => { const h=document.getElementById('horaRotina').value; const id=document.getElementById('editIdRotina').value; if(!h)return; const d={hora:h, dia_semana:document.getElementById('diaRotina').value, acao:document.getElementById('selectAtividadeRotina').value}; if(id) await updateDoc(doc(db,`usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`,id),d); else await addDoc(collection(db,`usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`),d); document.getElementById('editIdRotina').value=""; document.getElementById('horaRotina').value=""; };
         window.carregarEdicaoRotina = (id) => { const r=cacheRotinas[id]; if(!r)return; document.getElementById('editIdRotina').value=id; document.getElementById('horaRotina').value=r.hora; document.getElementById('diaRotina').value=r.dia_semana; document.getElementById('selectAtividadeRotina').value=r.acao; };
         window.apagarAtividade = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id)); };
