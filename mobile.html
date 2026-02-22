@@ -102,10 +102,38 @@
         .btn-acao img { width: 40px; height: 40px; object-fit: contain; margin-bottom: 5px; }
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; } .switch input { opacity: 0; width: 0; height: 0; } .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; } .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; } input:checked + .slider { background-color: #2ecc71; } input:checked + .slider:before { transform: translateX(20px); }
         .item-lista { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f5f5f5; }
-    </style>
+   /* --- ESTILO DA NOTIFICAÇÃO (TOAST) --- */
+        #toast-aviso {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: white;
+            color: #93C49D; /* Verde do seu tema */
+            text-align: center;
+            border: 2px solid #93C49D;
+            border-radius: 30px;
+            padding: 15px 20px;
+            position: fixed;
+            z-index: 99999;
+            left: 50%;
+            top: 20px; /* Começa lá embaixo */
+            transform: translateX(-50%);
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(147, 196, 157, 0.3);
+            opacity: 0;
+            transition: opacity 0.4s, bottom 0.4s;
+        }
+
+        /* Classe que o Javascript vai adicionar para fazer ele aparecer e subir */
+        #toast-aviso.mostrar {
+            visibility: visible;
+            opacity: 1;
+            top: 50px; /* Sobe um pouquinho na animação */
+        }
+   </style>
 </head>
 <body>
-
+<div id="toast-aviso">🤖 Ação enviada para o dispositivo!</div>
     <div id="telaLogin" class="tela-login" style="display:flex;">
         <div style="width: 80%; max-width: 300px; text-align: center;">
             <h1 style="color:#3498db; margin-bottom: 30px;">🔐 Amigo Virtual</h1>
@@ -450,7 +478,7 @@
         window.salvarRotina = async () => { const id=document.getElementById('editIdRotina').value; const dados={ hora: document.getElementById('horaRotina').value, dia_semana: document.getElementById('diaRotina').value, acao: document.getElementById('selectAtividadeRotina').value }; if(!dados.hora) return alert("Hora?"); if(id) await updateDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`, id), dados); else await addDoc(collection(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`), dados); document.getElementById('editIdRotina').value=""; document.getElementById('horaRotina').value=""; };
         window.apagarAtividade = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id)); };
         window.apagarRotina = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`, id)); };
-        window.enviarAcao = async(a) => { await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/config/estado_atual`), {acao:a, timestamp:new Date()}, {merge:true}); };
+        window.enviarAcao = async(a) => { await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/config/estado_atual`), {acao:a, timestamp:new Date()}, {merge:true}); mostrarAviso();};
         
         window.carregarEdicaoAtividade = (id) => { 
             const d=cacheAtividades[id]; if(d) { 
@@ -477,7 +505,25 @@
         window.limparFormAtividade = () => { document.getElementById('idAtividade').value=""; document.getElementById('txtAtividade').value=""; document.getElementById('imgAtividade').value=""; document.getElementById('idAtividade').disabled=false; document.getElementById('previewAvatar').src=""; };
 
 
+// Função para mostrar o aviso flutuante
+    window.mostrarAviso = (mensagem) => {
+        const toast = document.getElementById("toast-aviso");
+        
+        // Se você quiser passar uma mensagem diferente, ele muda. Se não, usa a padrão.
+        if (mensagem) {
+            toast.innerText = "🤖 " + mensagem;
+        } else {
+            toast.innerText = "🤖 Ação enviada para o dispositivo!";
+        }
 
+        // Faz aparecer
+        toast.classList.add("mostrar");
+
+        // Conta 3 segundos (3000 milissegundos) e faz sumir sozinho
+        setTimeout(() => {
+            toast.classList.remove("mostrar");
+        }, 3000);
+    };
 
 
 
@@ -499,7 +545,6 @@ if ("serviceWorker" in navigator) {
     </script>
 </body>
 </html>
-
 
 
 
