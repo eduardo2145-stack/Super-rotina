@@ -26,6 +26,16 @@
 <link rel="apple-touch-icon" href="icon.ico">
     <style>
         /* --- ESTILOS ORIGINAIS (MANTIDOS) --- */
+        /* Trava de segurança para impedir a barra de rolagem horizontal */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Garante que os paddings e bordas não aumentem o tamanho final das caixas */
+* {
+    box-sizing: border-box;
+}
         body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; margin: 0; color: #333; }
         .tela { display: none; padding: 20px; max-width: 1400px; margin: auto; }
         .tela.ativa { display: block; }
@@ -282,11 +292,45 @@
 .btn-voltar-home:hover svg {
     transform: translateX(-4px); /* A seta dá um pulinho pra esquerda */
 }
+/* O novo alinhamento para os botões duplos */
+.container-botoes-duplos {
+    display: flex;
+    gap: 15px; /* Espaço entre os botões */
+    width: 100%;
+    margin-top: 15px;
+}
+
+.container-botoes-duplos button {
+    flex: 1; /* Faz os botões dividirem o espaço igualmente */
+    width: 100%;
+    margin: 0 !important; /* Remove as margens antigas que quebravam o layout */
+    white-space: nowrap; /* Impede o texto do botão de quebrar em duas linhas */
+}
+/* 1. A Mágica do Flexbox APENAS para as colunas do painel (Ignora o login) */
+/* 1. A Regra de Ouro (Isso é o que garante que o lado direito do painel NUNCA vaze do monitor) */
+* {
+    min-width: 0;
+}
+
+/* 2. Cria a barrinha de rolagem apenas dentro dos cartões que precisam (Ex: Agendar Rotina) */
+.card, .box, .caixa {
+    max-width: 100%;
+    overflow-x: auto; 
+}
+
+/* 3. O Escudo da Tela de Login (Trava ela no tamanho perfeito e centraliza) */
+#telaLogin {
+    width: 100% !important;
+    max-width: 420px !important; /* Tamanho exato de uma caixa de login chique */
+    margin: 0 auto !important; /* Garante que fique no centro da tela */
+    overflow: visible !important;
+}
+
 
     </style>
 </head>
 <body>
-    <div class="menu-topo-login">
+<div class="menu-topo-login" id="btnVoltarParaSite">
     <a href="index.html" class="btn-voltar-home">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M15 19L8 12L15 5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -296,7 +340,7 @@
 </div>
 <div id="toast-aviso">🤖 Ação enviada para o dispositivo!</div>
    
-    <div id="telaLogin" class="tela ativa">
+    <div id="telaLogin" class="tela ativa ">
         <div class="box-login">
             <h1>🔐 Amigo Virtual</h1>
             <input type="email" id="emailInput" placeholder="Digite seu e-mail">
@@ -312,7 +356,7 @@
     <a href="#" id="btnEsqueciSenha" class="link-esqueci-senha">🤔 Esqueceu a senha? Clique aqui</a>
 </div>
             <button class="btn-blue" onclick="fazerLogin()">Entrar</button>
-            <button class="btn-green" onclick="criarConta()" style="margin-top:10px">Criar Nova Conta</button>
+            <button class="btn-green" onclick="criarNovaConta()" style="margin-top:10px">Criar Nova Conta</button>
         </div>
     </div>
 
@@ -380,9 +424,9 @@
 
     <div style="font-size:12px; font-weight:bold; color:#555">Bloquear? <label class="switch" style="vertical-align:middle; margin-left:5px"><input type="checkbox" id="checkBlock"><span class="slider"></span></label></div>
 </div>
-                    <div style="display:flex; gap:10px; margin-top:15px">
-                        <button class="btn-blue" onclick="salvarAtividade()">💾 Salvar Atividade</button>
-                        <button style="background:#95a5a6; color:white" onclick="limparFormAtividade()">Limpar</button>
+                    <div class="container-botoes-duplos">
+                        <button class="btn-salvar btn-blue" onclick="salvarAtividade()">💾 Salvar Atividade</button>
+                        <button class="btn-limpar btn-red" onclick="limparFormAtividade()">Limpar</button>
                     </div>
                     <div class="lista-container"><ul id="listaAtividades" style="padding:0; list-style:none"></ul></div>
                 </div>
@@ -425,9 +469,9 @@
                 <div class="card">
                     <h2>🎮 Ações Manuais</h2>
                     <div id="gridAcoes" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:10px"></div>
-                    <div style="display:flex; gap:10px; margin-top:15px;">
-                        <button onclick="enviarAcao('livre')" style="flex:1; background:#95a5a6;">🔓 LIBERAR</button>
-                        <button onclick="enviarAcao('bloqueio')" style="flex:1; background:#c0392b;">🔒 BLOQUEAR</button>
+                     <div class="container-botoes-duplos">
+                        <button onclick="enviarAcao('livre')" class="btn-liberar btn-blue">🔓 LIBERAR</button>
+                        <button onclick="enviarAcao('bloqueio')" class="btn-bloquear btn-red " >🔒 BLOQUEAR</button>
                     </div>
                 </div>
             </div>
@@ -501,6 +545,54 @@ window.fazerLogin = async function(event) {
         console.error("Detalhe do erro:", error);
     }
 };
+// FUNÇÃO DE CRIAR NOVA CONTA E DAR 7 DIAS GRÁTIS
+        window.criarNovaConta = async function() {
+            // Pegue os IDs exatos dos seus campos de email e senha do HTML
+            const email = document.getElementById('emailInput').value; 
+            const senha = document.getElementById('senhaInput').value;
+
+            if (!email || !senha) {
+                alert("Por favor, preencha o e-mail e a senha para criar a conta!");
+                return;
+            }
+
+            // Muda o texto do botão para mostrar que está carregando
+            const btn = document.querySelector('#telaLogin button:nth-of-type(2)');
+            const textoOriginal = btn.innerText;
+            btn.innerText = "⏳ Criando conta...";
+
+            try {
+                // 1. Cria a conta no Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+                const user = userCredential.user;
+
+                // 2. Calcula exatamente 7 dias a partir de agora
+                const hoje = new Date();
+                const seteDias = hoje.getTime() + (7 * 24 * 60 * 60 * 1000);
+
+                // 3. Salva a "Ficha" do cliente no banco de dados automaticamente
+                await setDoc(doc(db, "assinaturas", user.uid), {
+                    email: email,
+                    status: "ativo", // Já entra liberado para usar
+                    plano: "trial", // Marca que é período de testes
+                    vencimento: seteDias // Data em que o sistema vai bloquear ele
+                });
+
+                alert("🎉 Conta criada com sucesso! Você ganhou 7 dias de acesso Premium gratuito.");
+                // O sistema já vai logar a pessoa automaticamente e esconder a tela de login!
+
+            } catch (error) {
+                console.error("Erro ao criar conta:", error);
+                if (error.code === 'auth/email-already-in-use') {
+                    alert("Este e-mail já tem uma conta! Clique em Entrar.");
+                } else if (error.code === 'auth/weak-password') {
+                    alert("A senha é muito fraca. Use pelo menos 6 caracteres.");
+                } else {
+                    alert("Erro ao criar conta. Tente novamente.");
+                }
+                btn.innerText = textoOriginal;
+            }
+        };
 window.criarConta = async () => {
     // 1. Pega os valores dos inputs
     const email = document.getElementById('email').value;
@@ -538,28 +630,73 @@ onAuthStateChanged(auth, async (u) => {
         const db = getFirestore(app);
         const docRef = doc(db, "assinaturas", u.uid);
         
-        try {
+       try {
             const docSnap = await getDoc(docRef);
             
-            if (docSnap.exists() && docSnap.data().status === "ativo") {
-                // SUCESSO! Esconde o login e mostra o painel
-                document.getElementById('telaLogin').classList.remove('ativa'); 
+            if (docSnap.exists()) {
+                const dados = docSnap.data();
+                const hoje = new Date().getTime();
+
+                // 🛑 REGRA 1: Verifica se a data de acesso já venceu (Trial ou Premium)
+                if (dados.vencimento && hoje > dados.vencimento) {
+                    // Se venceu, bloqueia automaticamente no banco de dados!
+                    await updateDoc(docRef, { status: "bloqueado" });
+                    
+                    // Desloga e manda pra tela de cobrança
+                    await signOut(auth);
+                    window.location.replace("bloqueado.html");
+                    return; // Para o código aqui!
+                }
+
+                // 🛑 REGRA 2: Verifica se está bloqueado manualmente pelo Admin
+                if (dados.status !== "ativo") {
+                    await signOut(auth);
+                    window.location.replace("bloqueado.html");
+                    return; // Para o código aqui!
+                }
+
+                // ✅ SUCESSO! Se passou pelas duas regras, o caminho está livre!
+                document.getElementById('telaLogin').classList.remove('ativa');
                 document.getElementById('telaDashboard').classList.add('ativa'); 
-                
+                // ESCONDE O BOTÃO DE VOLTAR QUANDO ENTRA NO PAINEL 👇
+                document.getElementById('btnVoltarParaSite').style.display = 'none';
+                // --- OUVINTE DE AVISOS DO DONO ---
+                const avisoRef = doc(db, "configuracoes", "aviso_global");
+                onSnapshot(avisoRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const dadosAviso = docSnap.data();
+                        const avisoVisto = localStorage.getItem("ultimoAvisoVisto");
+
+                        // Se o pai nunca viu um aviso, ou se a hora desse aviso é mais NOVA que o último que ele viu...
+                        if (!avisoVisto || dadosAviso.timestamp > parseInt(avisoVisto)) {
+                            mostrarModalAviso(dadosAviso.mensagem, dadosAviso.tipo, dadosAviso.timestamp);
+                        }
+                    }
+                });
+                // ----------------------------------
                 carregarFilhos(); 
                 montarGaleriaInfinita(); 
             } else {
                 // BLOQUEADO! Desloga o usuário da memória do Firebase primeiro
                 await signOut(auth); 
-                
+                 // MOSTRA O BOTÃO DE VOLTAR QUANDO ESTÁ NA TELA DE LOGIN 👇
+                if(document.getElementById('btnVoltarParaSite')) {
+                     document.getElementById('btnVoltarParaSite').style.display = 'block';
+                }
                 // Agora sim, manda para a página de bloqueio
                 window.location.replace("bloqueado.html");
+               
             }
         } catch (erro) {
             console.error("Erro ao verificar o banco de dados:", erro);
             // Em caso de erro, também desloga por segurança
             await signOut(auth);
+            // MOSTRA O BOTÃO DE VOLTAR QUANDO ESTÁ NA TELA DE LOGIN 👇
+                if(document.getElementById('btnVoltarParaSite')) {
+                     document.getElementById('btnVoltarParaSite').style.display = 'block';
+                }
             window.location.replace("bloqueado.html");
+            
         }
 
     } else { 
@@ -835,7 +972,7 @@ document.getElementById('btnEsqueciSenha').addEventListener('click', function(ev
 
     // Pega o e-mail que o pai digitou na caixinha de login
     // ATENÇÃO: Troque 'id-do-seu-campo-email' pelo ID real que você usa no seu HTML
-    const emailDigitado = document.getElementById('emailInput').value;
+    const emailDigitado = document.getElementById('email').value;
 
     // Verifica se o campo está vazio
     if (!emailDigitado) {
@@ -875,8 +1012,36 @@ window.toggleSenha = function() {
         botaoOlhinho.innerText = '👁️'; // Ícone de olho aberto
     }
 };
+// AS FUNÇÕES DO AVISO GLOBAL
+        window.mostrarModalAviso = function(msg, tipo, timestamp) {
+            const modal = document.getElementById("modalAvisoGlobal");
+            const icone = document.getElementById("iconeAviso");
+            
+            // Troca o ícone dependendo da urgência
+            if(tipo === "alerta") icone.innerText = "⚠️";
+            else if(tipo === "urgente") icone.innerText = "🛑";
+            else icone.innerText = "📢";
+
+            document.getElementById("textoAvisoModal").innerText = msg;
+            modal.style.display = "flex"; // Mostra a caixa na tela
+
+            // Salva na memória do celular/PC que ele já viu ESSE aviso exato
+            localStorage.setItem("ultimoAvisoVisto", timestamp);
+        };
+
+        window.fecharAvisoGlobal = function() {
+            document.getElementById("modalAvisoGlobal").style.display = "none";
+        };
  </script>
+ <div id="modalAvisoGlobal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(3px);">
+    <div style="background: white; padding: 30px; border-radius: 16px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: fadeIn 0.3s;">
+        <div id="iconeAviso" style="font-size: 45px; margin-bottom: 15px;">📢</div>
+        <h3 style="margin-top: 0; color: #0f172a; font-size: 20px;">Mensagem da Administração</h3>
+        <p id="textoAvisoModal" style="color: #475569; font-size: 15px; line-height: 1.6; margin-bottom: 25px;"></p>
+        <button onclick="fecharAvisoGlobal()" style="background: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.2s;">
+            👍 Entendido
+        </button>
+    </div>
+</div>
 </body>
-
 </html>
-
