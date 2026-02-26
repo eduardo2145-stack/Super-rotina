@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Bloqueado - Amigo Virtual</title>
+    <link rel="icon" type="image/x-icon" href="icon.ico">
+
+<link rel="apple-touch-icon" href="icon.ico">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F4F9F5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 60px;
+            margin: 0 0 10px 0;
+        }
+        h2 {
+            color: #e74c3c; /* Vermelho para chamar atenção */
+            margin-bottom: 10px;
+        }
+        p {
+            color: #7f8c8d;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+        .btn-whatsapp {
+            display: inline-block;
+            width: 90%;
+            padding: 15px;
+            background-color: #25D366; /* Cor oficial do WhatsApp */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-bottom: 15px;
+        }
+        .btn-whatsapp:hover {
+            background-color: #1ebe57;
+        }
+        .btn-voltar {
+            display: inline-block;
+            color: #95a5a6;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .btn-voltar:hover {
+            color: #7f8c8d;
+            text-decoration: underline;
+        }
+          button { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; color: white; transition: 0.2s; margin-bottom: 10px;}
+       
+        .btn-blue { background: #3498db; }  
+        
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🔒</h1>
+        <h2>Acesso Bloqueado</h2>
+        <p>Ops! Parece que a sua assinatura do <strong>Amigo Virtual</strong> está inativa ou você ainda não realizou o pagamento.</p>
+        
+        <p>Para liberar o acesso ao painel de controle e continuar ajudando na rotina da sua criança, clique no botão abaixo e fale conosco.</p>
+
+        <a href="https://wa.me/55SEUNUMERODETEFONE?text=Olá! Gostaria de ativar minha assinatura do Amigo Virtual." target="_blank" class="btn-whatsapp">
+            📱 Liberar Acesso via WhatsApp
+        </a>
+
+        <br>
+       <button class="btn-blue" onclick="voltarParaLogin()">Voltar para o Login</button>
+    </div>
+<script>
+    function voltarParaLogin() {
+        // O detetive olha a identidade do navegador
+        const ehMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const telaPequena = window.innerWidth <= 768;
+
+        // Se for celular OU a tela for pequena...
+        if (ehMobile || telaPequena) {
+            // Manda para a página de login do CELULAR
+            window.location.replace("mobile.html"); 
+        } else {
+            // Se for computador, manda para a página de login do PC
+            // (Troque "index.html" pelo nome real da sua página principal de login do PC, se for outro)
+            window.location.replace("painel.html"); 
+        }
+    }
+</script>
+</body>
+</html>

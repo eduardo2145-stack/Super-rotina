@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Senha - Amigo Virtual</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F4F9F5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #2ECC71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: #27ae60; }
+        .logo { max-width: 150px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+             <img  src="icon.ico" style="width: 150px; transition: width 0.1s;">
+                       
+        <h2 style="color: #2C3E50;">Crie sua nova senha</h2>
+        <p style="color: #7f8c8d; font-size: 14px;">Digite abaixo a nova senha de acesso ao painel do Amigo Virtual.</p>
+
+        <input type="password" id="inputNovaSenha" placeholder="Digite a nova senha">
+        <button id="btnSalvarSenha">Salvar Nova Senha</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", storageBucket: "rotinaeduardo.firebasestorage.app", messagingSenderId: "210945268922", appId: "1:210945268922:web:ce9e585872090b378d7683" };
+    const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+
+
+        // A Mágica de ler o código secreto da URL
+        const parametrosURL = new URLSearchParams(window.location.search);
+        const codigoSecreto = parametrosURL.get('oobCode');
+
+        // Se a pessoa tentou abrir a página direto sem clicar no e-mail
+        if (!codigoSecreto) {
+            alert("Link inválido ou expirado. Por favor, solicite a redefinição de senha novamente.");
+            window.location.href = "index.html"; // Manda de volta pro login
+        }
+
+        // Quando clicar em Salvar
+        document.getElementById('btnSalvarSenha').addEventListener('click', () => {
+            const novaSenha = document.getElementById('inputNovaSenha').value;
+
+            if (novaSenha.length < 6) {
+                alert("A senha deve ter pelo menos 6 caracteres.");
+                return;
+            }
+
+            // Manda o código e a senha nova pro Firebase
+            confirmPasswordReset(auth, codigoSecreto, novaSenha)
+                .then(() => {
+                    alert("Senha alterada com sucesso! Você já pode fazer login.");
+                    window.location.href = "index.html"; // Manda de volta pro login
+                })
+                .catch((error) => {
+                    alert("Erro ao alterar a senha. O link pode ter expirado. Tente solicitar novamente. Erro: " + error.message);
+                });
+        });
+    </script>
+</body>
+</html>

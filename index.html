@@ -1,625 +1,260 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Rotina Pro</title>
-    <style>
-        /* --- ESTILOS ORIGINAIS (MANTIDOS) --- */
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; margin: 0; color: #333; }
-        .tela { display: none; padding: 20px; max-width: 1400px; margin: auto; }
-        .tela.ativa { display: block; }
-        .box-login { max-width: 400px; margin: 60px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
-        
-        .main-grid { display: grid; grid-template-columns: 450px 1fr; gap: 20px; }
-        @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
-        
-        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        h2 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 18px; color: #2c3e50; }
-        
-        .form-group { margin-bottom: 12px; }
-        label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; color: #7f8c8d; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; margin-bottom: 15px; }
-        
-        /* LISTA DE SELEÇÃO (CHECKBOXES) */
-        .devices-box { border: 1px solid #ddd; padding: 5px; border-radius: 6px; max-height: 150px; overflow-y: auto; background: #fff; }
-        .device-label { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.2s; width: 100%; box-sizing: border-box; }
-        .device-label:hover { background: #f9f9f9; }
-        .device-label input { width: 18px; height: 18px; margin: 0 10px 0 0; cursor: pointer; }
-        
-        /* MONITORAMENTO E GRÁFICO */
-        .pc-status-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .pc-info h3 { margin: 0; font-size: 16px; color: #2c3e50; }
-        .pc-badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-top: 5px; }
-        .badge-online { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .badge-offline { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .pc-timer { text-align: right;
-    margin-right: 15px;
-    min-width: 80px; /* Garante uma largura mínima para o texto não encavalar */
-    display: flex;
-    flex-direction: column;
-    justify-content: center; }
-        .pc-timer small { display: block; font-size: 10px; color: #6c757d; text-transform: uppercase; }
-        .pc-timer span { font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    font-family: monospace;
-    white-space: nowrap; /* Impede que o 'h' e 'm' fiquem em linhas diferentes */ }
-        .btn-del-device { background: transparent; color: #ccc; border: none; font-size: 16px; cursor: pointer; padding: 5px; transition: 0.2s; }
-        .btn-del-device:hover { color: #e74c3c; transform: scale(1.2); }
+  <meta charset="UTF-8">
+  <title>Amigo Virtual PC</title>
+  <style>
+    /* Estilos de tela e Reset */
+    html, body { width: 100vw !important; height: 100vh !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; background: transparent; font-family: 'Segoe UI', sans-serif; pointer-events: none; user-select: none; }
+    
+    /* Container do Avatar e Balão */
+    #container { position: fixed; bottom: 0; right: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; z-index: 2147483647; pointer-events: none; transition: opacity 0.5s ease; opacity: 0; }
+    
+    #balaoNormal { background: #ffffff; color: #333; padding: 15px 25px; border-radius: 20px; font-size: 20px; font-weight: bold; margin-bottom: 15px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: none; pointer-events: auto; max-width: 300px; text-align: center; }
+    #balaoNormal::after { content: ''; position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); border-width: 15px 15px 0; border-style: solid; border-color: #ffffff transparent transparent transparent; margin-top: -2px; }
+    
+    #avatar { display: block; height: auto; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); pointer-events: auto; width: 150px; }
+/* --- POSIÇÕES DINÂMICAS DO AVATAR --- */
+    #container.pos-center { top: 50% !important; left: 50% !important; bottom: auto !important; right: auto !important; transform: translate(-50%, -50%) !important; }
+    #container.pos-top-left { top: 30px !important; left: 30px !important; bottom: auto !important; right: auto !important; transform: none !important; }
+    #container.pos-top-center { top: 30px !important; left: 50% !important; bottom: auto !important; right: auto !important; transform: translateX(-50%) !important; }
+    #container.pos-top-right { top: 30px !important; right: 30px !important; left: auto !important; bottom: auto !important; transform: none !important; }
+    #container.pos-bottom-left { bottom: 10px !important; left: 30px !important; top: auto !important; right: auto !important; transform: none !important; }
+    #container.pos-bottom-center { bottom: 10px !important; left: 50% !important; top: auto !important; right: auto !important; transform: translateX(-50%) !important; }
+    #container.pos-bottom-right { bottom: 10px !important; right: 30px !important; top: auto !important; left: auto !important; transform: none !important; }
+    /* --- TELA DE BLOQUEIO ESTILIZADA --- */
+    #bloqueioTela { 
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+        background: rgba(0, 0, 0, 0.85); /* Fundo preto semi-transparente */
+        backdrop-filter: grayscale(1) blur(10px); /* TUDO ATRÁS FICA PRETO E BRANCO E DESFOCADO */
+        z-index: 2147483646; display: none; flex-direction: column; 
+        justify-content: center; align-items: center; pointer-events: auto !important; 
+    }
+    .icone-atencao { font-size: 80px; margin-bottom: 20px; animation: piscar 1.5s infinite; }
+    .titulo-bloqueio { color: #e74c3c; font-size: 42px; font-weight: 900; text-transform: uppercase; text-align: center; margin: 0; text-shadow: 0 0 20px rgba(231, 76, 60, 0.5); }
+    .subtitulo-bloqueio { color: white; font-size: 24px; font-weight: 400; margin-top: 10px; }
+    
+    .tempo-uso-badge { color: #8899ac; font-size: 14px; border: 1px solid #444; padding: 10px 20px; border-radius: 20px; background: rgba(255,255,255,0.05); font-family: monospace; margin-top: 40px; }
 
-        .grafico-container { display: flex; align-items: flex-end; gap: 10px; height: 120px; padding-top: 25px; overflow-x: auto; }
-        .barra-wrapper { display: flex; flex-direction: column; align-items: center; width: 40px; }
-        .barra { width: 20px; background: #3498db; border-radius: 4px 4px 0 0; transition: height 0.5s; }
-        .barra:hover { background: #2980b9; }
-        .barra-valor { font-size: 10px; font-weight: bold; margin-bottom: 2px; }
-        .barra-dia { font-size: 10px; color: #888; margin-top: 5px; }
+    @keyframes piscar { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
 
-        button { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; color: white; transition: 0.2s; margin-bottom: 10px;}
-        .btn-blue { background: #3498db; } .btn-green { background: #2ecc71; } 
-        .btn-red { background: #e74c3c; width: auto; padding: 4px 10px; font-size: 12px; }
-        .btn-trash { background: #c0392b; width: auto; padding: 8px 12px; margin-left: 5px; border-radius: 6px; }
-        .btn-edit { background: #f1c40f; width: auto; padding: 4px 10px; font-size: 12px; color: #333; margin-right: 5px; }
-        button:last-child {
-    margin-bottom: 0;
-}
-        .aviso-container { background: #f9fbfd; border: 1px solid #e1e8ed; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
-        .aviso-titulo { font-size: 12px; font-weight: bold; color: #3498db; margin-bottom: 5px; display: block; }
-        
-        .switch-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; background: #fff; padding: 8px; border: 1px solid #eee; border-radius: 6px; }
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #2ecc71; }
-        input:checked + .slider:before { transform: translateX(20px); }
-        
-        .lista-container { max-height: 300px; overflow-y: auto; margin-top: 10px; }
-        li { background: #fff; border-bottom: 1px solid #eee; padding: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .img-mini { width: 30px; height: 30px; object-fit: contain; margin-right: 10px; border-radius: 4px; border: 1px solid #eee; }
-        
-        .calendario-wrapper { overflow-x: auto; white-space: nowrap; margin-top: 10px; }
-        .dia-coluna { display: inline-block; width: 130px; vertical-align: top; background: #fff; margin-right: 8px; padding: 5px; border-radius: 8px; min-height: 150px; white-space: normal; border: 1px solid #eee; }
-        .card-rotina { background: #f0f8ff; border-left: 3px solid #3498db; padding: 6px; margin-bottom: 5px; border-radius: 4px; font-size: 12px; position: relative; }
-
-        .timeline-box { margin-top: 20px; padding: 10px; background: #fff; border-radius: 10px; border: 1px solid #e0e0e0; max-height: 500px; overflow-y: auto; }
-        .tl-item { display: flex; align-items: center; margin-bottom: 15px; position: relative; transition: all 0.3s; padding: 10px; border-radius: 8px; background: white; border: 1px solid #eee; }
-        .tl-item::before { content: ''; position: absolute; left: 35px; top: -15px; bottom: -15px; width: 2px; background: #ddd; z-index: 0; }
-        .tl-item:first-child::before { top: 50%; } .tl-item:last-child::before { bottom: 50%; }
-        .tl-time { width: 50px; text-align: center; background: #3498db; color: white; padding: 5px; border-radius: 12px; font-size: 12px; font-weight: bold; z-index: 1; margin-right: 15px; }
-        .tl-content { flex: 1; display: flex; align-items: center; z-index: 1; }
-        .tl-img { width: 40px; height: 40px; border-radius: 50%; object-fit: contain; margin-right: 10px; background: #f9f9f9; border: 1px solid #eee; }
-        .tl-text b { display: block; color: #444; font-size: 14px; }
-        .tl-text span { font-size: 12px; color: #888; }
-        .tl-item.passado { opacity: 0.5; filter: grayscale(100%); }
-        .tl-item.passado .tl-time { background: #95a5a6; }
-        .tl-item.proximo { border: 2px solid #e67e22; box-shadow: 0 4px 15px rgba(230, 126, 34, 0.2); animation: pulse 2s infinite; transform: scale(1.02); }
-        .tl-item.proximo .tl-time { background: #e67e22; font-size: 14px; padding: 8px; }
-        .tl-item.proximo b { color: #e67e22; font-size: 16px; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(230, 126, 34, 0); } 100% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0); } }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: none; justify-content: center; align-items: center; }
-        .modal-overlay.aberta { display: flex; }
-        .modal-content { background: white; width: 90%; max-width: 600px; max-height: 80vh; border-radius: 12px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow-y: auto; border-top: 5px solid #f1c40f; }
-        .dica-item { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        .dica-titulo { color: #2c3e50; font-size: 16px; font-weight: bold; display: flex; align-items: center; margin-bottom: 5px; }
-        .btn-fechar-modal { background: #eee; color: #333; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; float: right; }
-
-     /* Container da Galeria */
-.galeria-v { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); 
-    gap: 10px; 
-    background: #fff; 
-    border: 1px solid #ddd; 
-    padding: 12px; 
-    border-radius: 8px; 
-    max-height: 200px; 
-    overflow-y: auto; 
-}
-
-/* Estilo de cada ícone */
-.img-sel { 
-    width: 100%; 
-    aspect-ratio: 1; 
-    object-fit: contain; 
-    border: 2px solid #eee; 
-    border-radius: 8px; 
-    cursor: pointer; 
-    transition: 0.2s; 
-    display: none; /* Começa escondida para não mostrar erro */
-}
-
-/* Quando a imagem for encontrada, ela se torna visível */
-.img-sel.visivel { display: block; }
-
-/* Destaque ao clicar */
-.img-sel.ativa { border-color: #2ecc71; background: #eafaf1; box-shadow: 0 0 8px rgba(46, 204, 113, 0.3); }
-        @media (max-width: 768px) {
-            .main-grid { grid-template-columns: 1fr !important; gap: 15px; }
-            .box-login { margin: 20px auto; padding: 25px; width: 90%; }
-            #telaDashboard > div:first-child { flex-direction: column; align-items: flex-start; gap: 15px; }
-            #telaDashboard > div:first-child > div { width: 100%; justify-content: space-between; }
-            input, select, button { font-size: 16px !important; min-height: 45px; }
-            .btn-edit, .btn-red, .btn-trash { padding: 10px 15px; }
-            .device-label { padding: 12px; }
-            .calendario-wrapper { padding-bottom: 20px; -webkit-overflow-scrolling: touch; }
-            .dia-coluna { min-width: 160px; } 
-            .timeline-box { max-height: none; overflow: visible; }
-            .modal-content { width: 95%; max-height: 90vh; padding: 20px; }
-        }
-
-        /* Container dos controles do Filho */
-.grupo-filho {
-    display: flex;
-    align-items: center; /* Alinha verticalmente ao centro */
-    gap: 5px; /* Espaço entre os botões */
-}
-
-/* Força a altura e remove margens que atrapalham o alinhamento */
-.grupo-filho select,
-.grupo-filho button {
-    height: 38px !important; /* Altura fixa igual para todos */
-    margin: 0 !important;    /* Remove margens externas */
-    padding: 0 10px;         /* Espaçamento interno */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-}
-/* --- ESTILO DA NOTIFICAÇÃO (TOAST) --- */
-        #toast-aviso {
-            visibility: hidden;
-            min-width: 250px;
-            background-color: white;
-            color: #93C49D; /* Verde do seu tema */
-            text-align: center;
-            border: 2px solid #93C49D;
-            border-radius: 30px;
-            padding: 15px 20px;
-            position: fixed;
-            z-index: 99999;
-            left: 50%;
-            top: 20px; /* Começa lá embaixo */
-            transform: translateX(-50%);
-            font-size: 16px;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(147, 196, 157, 0.3);
-            opacity: 0;
-            transition: opacity 0.4s, bottom 0.4s;
-        }
-
-        /* Classe que o Javascript vai adicionar para fazer ele aparecer e subir */
-        #toast-aviso.mostrar {
-            visibility: visible;
-            opacity: 1;
-            top: 50px; /* Sobe um pouquinho na animação */
-        }
-/* Ajuste específico para o texto "Filho:" */
-.grupo-filho span {
-    margin-right: 5px;
-    font-weight: bold;
-    color: #555;
-}
-    </style>
+    /* Tela de Configuração Inicial */
+    #telaPareamento { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(240, 242, 245, 0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 30000; pointer-events: auto !important; }
+    .modal-config { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); width: 320px; text-align: center; }
+  </style>
 </head>
 <body>
-<div id="toast-aviso">🤖 Ação enviada para o dispositivo!</div>
-   
-    <div id="telaLogin" class="tela ativa">
-        <div class="box-login">
-            <h1>🔐 Super Rotina</h1>
-            <input type="email" id="email" placeholder="E-mail">
-            <input type="password" id="senha" placeholder="Senha">
-            <button class="btn-blue" onclick="fazerLogin()">Entrar</button>
-            <button class="btn-green" onclick="criarConta()" style="margin-top:10px">Criar Nova Conta</button>
-        </div>
-    </div>
 
-    <div id="telaDashboard" class="tela">
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px; background:white; padding:15px; border-radius:12px; align-items:center;">
-            <div class="grupo-filho">
-    <span>Filho:</span> 
-    <select id="selectFilho" onchange="mudarFilho()" style="width: 200px;"></select> 
-    <button onclick="novoFilho()" class="btn-green" title="Adicionar"style="width: 50px;">+</button>
-    <button onclick="excluirFilho()" class="btn-trash" title="Excluir"style="width: 50px;">🗑️</button>
-</div>
-            <div>
-                <button onclick="abrirDicas()" style="width:auto; background:#f1c40f; color:#333; padding:6px 15px; font-size:12px; margin-right:5px; font-weight:bold;">💡 Dicas para Pais</button>
-                <span style="background:#fffbe6; padding:6px 12px; border:1px solid #ffe58f; border-radius:20px; font-weight:bold; margin-right:10px; color:#d4ac0d">CÓDIGO: <span id="displayCodigo">...</span></span>
-                <button onclick="sair()" style="width:auto; background:#e74c3c; padding:6px 15px; font-size:12px">Sair</button>
-            </div>
-        </div>
+  <div id="telaPareamento">
+      <div class="modal-config">
+        <button onclick="window.close()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 20px; cursor: pointer; color: #95a5a6;">✕</button> 
+        <h2 style="color:#2c3e50; margin-bottom: 25px;">Configurar PC</h2>
+          <input type="text" id="inputNomeDevice" placeholder="Nome (Ex: PC Eduardo)" style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px; border:1px solid #ddd;">
+          <input type="text" id="inputCodigo" placeholder="CÓDIGO" style="width:100%; padding:12px; margin-bottom:20px; text-align:center; text-transform:uppercase; font-weight:bold; border-radius:10px; border:1px solid #ddd;">
+          <button id="btnConectar" style="width:100%; padding:15px; background:#3498db; color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">CONECTAR</button>
+      </div>
+  </div>
 
-        <div class="main-grid">
-            
-            <div>
-                <div class="card">
-                    <h2>🎨 Criar / Editar Atividade</h2>
-                    <input type="hidden" id="editIdAtividade">
-                    <div style="display:flex; gap:10px">
-                        <div class="form-group" style="flex:2"><label>ID (Nome Curto)</label><input type="text" id="idAtividade" placeholder="ex: banho"></div>
-                        <div class="form-group" style="flex:1"><label>Tempo (s)</label><input type="number" id="tempoAtividade" placeholder="15"></div>
-                    </div>
-                    <div class="form-group"><label>Texto Principal</label><input type="text" id="txtAtividade"></div>
-                    
-               <div class="form-group">
-    <label>🖼️ Escolha a Imagem </label>
-    <div id="galVisual" class="galeria-v"></div> <input type="text" id="imgAtividade" oninput="atualizarPreview()" placeholder="Caminho do arquivo">
-</div>
+  <div id="bloqueioTela">
+      <div class="icone-atencao">⚠️</div>
+      <h1 class="titulo-bloqueio">COMPUTADOR BLOQUEADO</h1>
+      <div class="subtitulo-bloqueio">Hora de descansar os olhos! 💤</div>
+      <div id="displayTempoUso" class="tempo-uso-badge">⏳ Calculando uso de hoje...</div>
+  </div>
 
-                    <div class="form-group" style="background:#fff; padding:15px; border:1px solid #ddd; border-radius:6px; text-align:center;">
-                        <label style="margin-bottom:10px; display:block; text-align:left">📐 Tamanho: <span id="labelTamanho" style="color:#2980b9; font-weight:bold">150px</span></label>
-                        <input type="range" id="rangeTamanho" min="50" max="500" value="150" oninput="atualizarPreview()" style="width:100%; cursor:pointer; margin-bottom:10px;">
-                        <div style="min-height: 100px; border: 1px dashed #ccc; background-image: radial-gradient(#eee 1px, transparent 1px); background-size: 10px 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 4px;">
-                            <img id="previewAvatar" src="" style="width: 150px; transition: width 0.1s;">
-                        </div>
-                    </div>
+  <div id="container">
+    <div id="balaoNormal">...</div>
+    <img src="" id="avatar">
+  </div>
 
-                    <div class="form-group">
-                        <label>📱 Onde exibir? (Online = 🟢)</label>
-                        <div class="devices-box" id="listaDispositivos"><div style="padding:10px; color:#999">Aguardando PC...</div></div>
-                    </div>
+  <script type="module">
+    const { ipcRenderer } = require('electron');
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-                    <div class="aviso-container"><span class="aviso-titulo">🕒 Aviso de 5 Minutos</span><input type="text" id="txt5min" placeholder="Texto" style="margin-bottom:5px"><input type="text" id="img5min" placeholder="Imagem"></div>
-                    <div class="aviso-container"><span class="aviso-titulo">🕒 Aviso de 3 Minutos</span><input type="text" id="txt3min" placeholder="Texto" style="margin-bottom:5px"><input type="text" id="img3min" placeholder="Imagem"></div>
+    const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", storageBucket: "rotinaeduardo.firebasestorage.app", messagingSenderId: "210945268922", appId: "1:210945268922:web:ce9e585872090b378d7683" };
+    const app = initializeApp(firebaseConfig); const db = getFirestore(app);
 
-                    <div class="form-group"><label>📍 Posição</label>
-                        <select id="posAtividade"><option value="">Padrão Geral</option><option value="top-left">↖ Topo Esquerda</option><option value="top-center">⬆ Topo Centro</option><option value="top-right">↗ Topo Direita</option><option value="center">⏺ Centro da Tela</option><option value="bottom-left">↙ Baixo Esquerda</option><option value="bottom-center">⬇ Baixo Centro</option><option value="bottom-right">↘ Baixo Direita</option></select>
-                    </div>
+    let CAMINHO_DADOS = localStorage.getItem('caminho_dados_filho');
+    let MEU_DEVICE_ID = localStorage.getItem('device_id') || 'dev_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('device_id', MEU_DEVICE_ID);
 
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; background:#f9f9f9; padding:10px; border-radius:10px; flex-wrap:wrap; gap:10px;">
-    <div style="font-size:12px; font-weight:bold; color:#555">Ler Voz? <label class="switch" style="vertical-align:middle; margin-left:5px"><input type="checkbox" id="checkVoz" checked><span class="slider"></span></label></div>
-    
-    <div style="font-size:12px; font-weight:bold; color:#555">Voz: 
-        <select id="generoVoz" style="padding:4px; border-radius:6px; border:1px solid #ddd; margin-left:5px;">
-            <option value="M">👦 Menino</option>
-            <option value="F">👧 Menina</option>
-        </select>
-    </div>
+    let atividadesMap = {};
+    let bloqueioAtivo = false;
+    // VARIÁVEIS PARA CONTROLAR A SOBREPOSIÇÃO
+    let timerOcultar;
+    let timerBloqueio;
+    let audioAtual = null;
+    let tempoEsperaAviso = 10000; // 10 segundos de aviso antes de bloquear
 
-    <div style="font-size:12px; font-weight:bold; color:#555">Bloquear? <label class="switch" style="vertical-align:middle; margin-left:5px"><input type="checkbox" id="checkBlock"><span class="slider"></span></label></div>
-</div>
-                    <div style="display:flex; gap:10px; margin-top:15px">
-                        <button class="btn-blue" onclick="salvarAtividade()">💾 Salvar Atividade</button>
-                        <button style="background:#95a5a6; color:white" onclick="limparFormAtividade()">Limpar</button>
-                    </div>
-                    <div class="lista-container"><ul id="listaAtividades" style="padding:0; list-style:none"></ul></div>
-                </div>
-            </div>
+    function dataHojeLocal() {
+        const agora = new Date();
+        const offset = agora.getTimezoneOffset() * 60000;
+        return new Date(agora.getTime() - offset).toISOString().split('T')[0];
+    }
 
-            <div>
-                <div class="card" style="border-top: 5px solid #27ae60;">
-                    <h2>🖥️ Computadores (Monitoramento)</h2>
-                    <div id="painelMonitoramento">
-                        <p style="text-align:center; color:#999; font-size:13px;">Carregando status...</p>
-                    </div>
-                </div>
-
-                <div class="card" style="border-top: 5px solid #3498db;">
-                    <h2 id="tituloHistorico">📊 Histórico de Uso</h2>
-                    <div id="graficoHistorico" class="grafico-container">
-                        <small style="color:#999">Aguardando dados...</small>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>📅 Agendar Rotina</h2>
-                    <input type="hidden" id="editIdRotina">
-                    <div style="background:#f0f4f8; padding:15px; border-radius:8px; display:flex; gap:5px; align-items:flex-end; flex-wrap:wrap">
-                        <div style="flex:1"><label>Hora</label><input type="time" id="horaRotina"></div>
-                        <div style="flex:1"><label>Dia</label><select id="diaRotina"><option value="todos">Todos</option><option value="1">Seg</option><option value="2">Ter</option><option value="3">Qua</option><option value="4">Qui</option><option value="5">Sex</option><option value="6">Sáb</option><option value="0">Dom</option></select></div>
-                        <div style="flex:2"><label>Atividade</label><select id="selectAtividadeRotina"></select></div>
-                        <div><button class="btn-green" style="padding:10px 20px; margin-bottom:1px" onclick="salvarRotina()">OK</button></div>
-                    </div>
-                    <div class="calendario-wrapper"><div id="calendarioContainer"></div></div>
-                </div>
-
-                <div class="card" style="border-top: 5px solid #8e44ad;">
-                    <h2>🗺️ Mapa do Dia (Hoje)</h2>
-                    <div id="timelineInteligente" class="timeline-box">
-                        <div style="text-align:center; color:#888;">Carregando roteiro...</div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>🎮 Ações Manuais</h2>
-                    <div id="gridAcoes" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:10px"></div>
-                    <div style="display:flex; gap:10px; margin-top:15px;">
-                        <button onclick="enviarAcao('livre')" style="flex:1; background:#95a5a6;">🔓 LIBERAR</button>
-                        <button onclick="enviarAcao('bloqueio')" style="flex:1; background:#c0392b;">🔒 BLOQUEAR</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="modalDicas" class="modal-overlay">
-        <div class="modal-content">
-            <h2 style="margin-top:0">💡 5 Pilares da Rotina no Autismo</h2>
-            <div class="dica-item"><div class="dica-titulo"><span class="dica-icone">🔮</span> 1. Antecipação</div><div class="dica-texto">Use os avisos de 5 e 3 minutos.</div></div>
-            <button class="btn-fechar-modal" onclick="fecharDicas()">Fechar</button>
-        </div>
-    </div>
-
-    <script type="module">
+   // CORREÇÃO DO MOUSE (SÓ CAPTURA SE ESTIVER VISÍVEL)
+    window.addEventListener('mousemove', (event) => {
+        const pareamentoVisivel = document.getElementById('telaPareamento').style.display === 'flex';
+        const containerAtivo = document.getElementById('container').style.opacity === "1";
         
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, deleteDoc, updateDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-
-        const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", storageBucket: "rotinaeduardo.firebasestorage.app", messagingSenderId: "210945268922", appId: "1:210945268922:web:ce9e585872090b378d7683", measurementId: "G-MDYWRH9RNP" };
-        const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
-        let usuarioAtual, filhoAtualId, cacheAtividades={}, cacheRotinas={}, unsubscribeAtividades, unsubscribeRotinas, unsubscribeDispositivos, unsubscribeHistorico;
-
-       
-
-        window.fazerLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert(e.message)} };
-        window.criarConta = async () => { try { await createUserWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert(e.message)} };
-        window.sair = () => signOut(auth);
-        
-        onAuthStateChanged(auth, (u) => { 
-            if(u) { usuarioAtual=u; document.getElementById('telaLogin').classList.remove('ativa'); document.getElementById('telaDashboard').classList.add('ativa'); carregarFilhos(); montarGaleriaInfinita(); } 
-            else { document.getElementById('telaLogin').classList.add('ativa'); document.getElementById('telaDashboard').classList.remove('ativa'); } 
-        
-        });
-        
-        window.atualizarPreview = () => { const range = document.getElementById('rangeTamanho').value; const url = document.getElementById('imgAtividade').value; const img = document.getElementById('previewAvatar'); document.getElementById('labelTamanho').innerText = range + "px"; img.style.width = range + "px"; if(url && url.length > 5) img.src = url; };
-        
-        function carregarFilhos() { const sel = document.getElementById('selectFilho'); onSnapshot(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), (s) => { sel.innerHTML=""; let tem=false; s.forEach(d=>{ tem=true; let o=document.createElement('option'); o.value=d.id; o.innerText=d.data().nome; sel.appendChild(o); }); if(!tem) novoFilho(); else { if(!filhoAtualId) filhoAtualId=sel.value; if(sel.querySelector(`option[value="${filhoAtualId}"]`)) sel.value=filhoAtualId; else { sel.value = sel.options[0].value; filhoAtualId = sel.value; } carregarDadosFilho(); } }); }
-        
-        window.novoFilho = async () => { const n = prompt("Nome do Filho:"); if(!n) return; const c = Math.random().toString(36).substring(2,8).toUpperCase(); const r = await addDoc(collection(db, `usuarios/${usuarioAtual.uid}/filhos`), { nome: n, codigo_pareamento: c }); await setDoc(doc(db, "conexoes", c), { caminho_dados: `usuarios/${usuarioAtual.uid}/filhos/${r.id}` }); mudarFilho(); };
-        window.excluirFilho = async () => { if(!filhoAtualId) return; if(confirm("Excluir perfil?")) { await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos`, filhoAtualId)); location.reload(); } };
-        window.mudarFilho = () => { filhoAtualId=document.getElementById('selectFilho').value; carregarDadosFilho(); };
-        
-        function carregarDadosFilho() {
-            if(!filhoAtualId) return;
-            const base = `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}`;
-            getDoc(doc(db, base)).then(d => { if(d.exists()) document.getElementById('displayCodigo').innerText=d.data().codigo_pareamento; });
-            
-            if(unsubscribeDispositivos) unsubscribeDispositivos();
-            if(unsubscribeAtividades) unsubscribeAtividades();
-            if(unsubscribeRotinas) unsubscribeRotinas();
-            if(unsubscribeHistorico) unsubscribeHistorico();
-
-            // 1. MONITORAMENTO (Tempo de Hoje Real)
-            unsubscribeDispositivos = onSnapshot(collection(db, `${base}/dispositivos`), (snap) => {
-                const boxSelect = document.getElementById('listaDispositivos');
-                const boxMonitor = document.getElementById('painelMonitoramento');
-                let htmlSelect = `<label class="device-label"><input type="checkbox" id="dev_todos" value="todos" checked> <b>Todos</b></label>`;
-                let htmlMonitor = "";
-                if(snap.empty) {
-                    htmlSelect += `<div style="padding:10px; color:#999; font-size:11px">Aguardando PC...</div>`;
-                    htmlMonitor = `<div style="padding:20px; text-align:center; color:#999">Nenhum computador conectado.</div>`;
-                } else {
-                    let devices = [];
-                    snap.forEach(d => { let obj = d.data(); obj.id = d.id; devices.push(obj); });
-                    devices.sort((a,b) => (b.online?.toDate() || 0) - (a.online?.toDate() || 0));
-                    devices.forEach(dev => {
-                        const isOnline = dev.online && (new Date() - dev.online.toDate() < 120000);
-                        const statusDot = isOnline ? "🟢" : "⚪";
-                        let tempoDiario = "--";
-                        if(dev.tempo_hoje_minutos !== undefined) {
-                            const h = Math.floor(dev.tempo_hoje_minutos / 60);
-                            const m = dev.tempo_hoje_minutos % 60;
-                            tempoDiario = `${h}h ${m}m`;
-                        }
-                        htmlSelect += `<label class="device-label"><input type="checkbox" name="dev_item" value="${dev.id}"> ${statusDot} ${dev.nome || "PC"}</label>`;
-                        htmlMonitor += `<div class="pc-status-card" style="border-left: ${isOnline ? '3px solid #2ecc71' : '1px solid #ccc'}"><div class="pc-info"><h3>💻 ${dev.nome || "Computador"}</h3><span class="pc-badge ${isOnline ? 'badge-online' : 'badge-offline'}">${isOnline ? 'ONLINE' : 'OFFLINE'}</span></div><div style="display:flex; align-items:center;"><div class="pc-timer" style="margin-right:15px; text-align:right;"><small>USO NO DIA</small><span>${tempoDiario}</span></div><button class="btn-del-device" onclick="apagarDispositivo('${dev.id}')" title="Remover">🗑️</button></div></div>`;
-                    });
-                }
-                boxSelect.innerHTML = htmlSelect;
-                boxMonitor.innerHTML = htmlMonitor;
-            });
-
-            // 2. HISTÓRICO COM ACUMULADO MENSAL
-            const histRef = query(collection(db, `${base}/historico_uso`), orderBy("data", "desc"), limit(31));
-            unsubscribeHistorico = onSnapshot(histRef, (snap) => {
-                const box = document.getElementById('graficoHistorico');
-                if(snap.empty) { box.innerHTML = "<small>Sem histórico.</small>"; return; }
-                let dados = [];
-                let totalMinutosMes = 0;
-                const mesAtual = new Date().toISOString().slice(0, 7);
-                snap.forEach(d => {
-                    const dia = d.data();
-                    if(dia.data.startsWith(mesAtual)) totalMinutosMes += (dia.minutos || 0);
-                    dados.push(dia);
-                });
-                const hTotal = Math.floor(totalMinutosMes / 60);
-                const mTotal = totalMinutosMes % 60;
-                const metaInfo = `| Acumulado no Mês: ${hTotal}h ${mTotal}m`;
-                let html = "";
-                let dadosGrafico = dados.slice(0, 7).reverse();
-                let max = Math.max(...dadosGrafico.map(d => d.minutos), 1);
-                dadosGrafico.forEach(d => {
-                    const altura = Math.max(5, (d.minutos / max) * 100);
-                    const diaFormat = d.data.split('-')[2] + '/' + d.data.split('-')[1];
-                    const valorLabel = d.minutos > 60 ? (d.minutos / 60).toFixed(1) + 'h' : d.minutos + 'm';
-                    html += `<div class="barra-wrapper"><div class="barra-valor">${valorLabel}</div><div class="barra" style="height:${altura}px"></div><div class="barra-dia">${diaFormat}</div></div>`;
-                });
-                box.innerHTML = html;
-                const tituloHist = document.getElementById('tituloHistorico');
-                if(tituloHist) tituloHist.innerHTML = `📊 Histórico de Uso <small style="float:right; color:#3498db;">${metaInfo}</small>`;
-            });
-
-            // 3. ATIVIDADES
-            unsubscribeAtividades = onSnapshot(collection(db, `${base}/atividades`), (snap) => { 
-                const l=document.getElementById('listaAtividades'); const s=document.getElementById('selectAtividadeRotina'); const g=document.getElementById('gridAcoes'); 
-                l.innerHTML=""; s.innerHTML=""; g.innerHTML=""; cacheAtividades={}; 
-                snap.forEach(d => { 
-                    const dd=d.data(); cacheAtividades[d.id]=dd; 
-                    l.innerHTML+=`<li><div style="display:flex; align-items:center"><img src="${dd.imagem}" class="img-mini" onerror="this.style.display='none'"> <b>${d.id}</b></div><div><button class="btn-edit" onclick="carregarEdicaoAtividade('${d.id}')">✏️</button><button class="btn-red" onclick="apagarAtividade('${d.id}')">X</button></div></li>`; 
-                    let o=document.createElement('option'); o.value=d.id; o.innerText=d.id; s.appendChild(o); 
-                    g.innerHTML+=`<div style="text-align:center; border:1px solid #eee; padding:5px; border-radius:8px; cursor:pointer; background:#fdfdfd" onclick="enviarAcao('${d.id}')"><img src="${dd.imagem}" style="width:30px; height:30px; object-fit:contain; margin:0 auto"><br><small style="font-weight:bold">${d.id}</small></div>`; 
-                });
-                renderizarTimeline();
-            });
-
-            // 4. ROTINAS
-            unsubscribeRotinas = onSnapshot(collection(db, `${base}/rotinas`), (snap) => { 
-                const c=document.getElementById('calendarioContainer'); c.innerHTML=""; 
-                const dias=["DOM","SEG","TER","QUA","QUI","SEX","SÁB"]; 
-                for(let i=0; i<7; i++) c.innerHTML+=`<div class="dia-coluna" id="col-${i}"><div style="text-align:center; font-weight:bold; color:#3498db; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:5px">${dias[i]}</div></div>`; 
-                cacheRotinas = {}; 
-                snap.forEach(d => { 
-                    const r=d.data(); cacheRotinas[d.id]=r; 
-                    const h=`<div class="card-rotina"><b>${r.hora}</b> ${r.acao}<div style="text-align:right; margin-top:4px"><button class="btn-edit" onclick="carregarEdicaoRotina('${d.id}')">✏️</button><button class="btn-red" onclick="apagarRotina('${d.id}')">X</button></div></div>`; 
-                    if(r.dia_semana==='todos') { for(let i=0;i<7;i++) document.getElementById(`col-${i}`).innerHTML+=h; } 
-                    else { try{document.getElementById(`col-${r.dia_semana}`).innerHTML+=h}catch(e){} } 
-                });
-                renderizarTimeline(); 
-            });
+        if (pareamentoVisivel || bloqueioAtivo) {
+            ipcRenderer.send('set-ignore-mouse-events', false);
+            return;
         }
 
-        function renderizarTimeline() {
-            const container = document.getElementById('timelineInteligente');
-            if(!container) return;
-            container.innerHTML = "";
-            const hoje = new Date();
-            const diaSemana = hoje.getDay().toString();
-            const horaAtual = hoje.getHours() * 60 + hoje.getMinutes();
-            let rotinasHoje = Object.values(cacheRotinas).filter(r => r.dia_semana === 'todos' || r.dia_semana === diaSemana).sort((a,b) => a.hora.localeCompare(b.hora));
-            if(rotinasHoje.length === 0) { container.innerHTML = "<p style='color:#999; text-align:center'>Sem rotinas hoje.</p>"; return; }
-            let proxMarked = false;
-            rotinasHoje.forEach(r => {
-                const [h, m] = r.hora.split(':').map(Number);
-                const minutos = h * 60 + m;
-                let cl = minutos < horaAtual ? "passado" : (!proxMarked ? (proxMarked=true, "proximo") : "futuro");
-                const atv = cacheAtividades[r.acao] || {};
-                container.innerHTML += `<div class="tl-item ${cl}"><div class="tl-time">${r.hora}</div><div class="tl-content"><img src="${atv.imagem||''}" class="tl-img"><div class="tl-text"><b>${r.acao} <small>${cl==='proximo'?'⏳':''}</small></b><span>${atv.texto||''}</span></div></div></div>`;
-            });
-        }
-
-
-  
-        window.carregarEdicaoAtividade = (id) => { const d = cacheAtividades[id]; if(!d) return; document.getElementById('idAtividade').value = id; document.getElementById('idAtividade').disabled = true; document.getElementById('editIdAtividade').value = id; document.getElementById('txtAtividade').value = d.texto||""; document.getElementById('imgAtividade').value = d.imagem||""; document.getElementById('tempoAtividade').value = d.tempo_personalizado||""; document.getElementById('rangeTamanho').value = d.tamanho_avatar||"150"; atualizarPreview(); document.getElementById('txt5min').value = d.texto_5min||""; document.getElementById('txt3min').value = d.texto_3min||""; document.getElementById('posAtividade').value = d.posicao_especifica||""; document.getElementById('checkVoz').checked = (d.falar_texto!==false); document.getElementById('checkBlock').checked = (d.bloquear_tela===true); document.getElementById('generoVoz').value = d.genero_voz || "M";};
-        window.limparFormAtividade = () => { document.getElementById('idAtividade').disabled = false; document.getElementById('idAtividade').value = ""; document.getElementById('editIdAtividade').value = ""; document.querySelectorAll('input[type=text], input[type=number]').forEach(i=>i.value=""); document.getElementById('rangeTamanho').value="150"; atualizarPreview(); };
-      // --- FUNÇÃO DE SALVAR ATIVIDADE (QUE ESTAVA FALTANDO) ---
-     window.salvarAtividade = async () => { 
-    const id = document.getElementById('idAtividade').value.toLowerCase().replace(/\s/g,''); 
-    if(!id) return alert("Por favor, preencha o ID (Nome Curto) da atividade."); 
-    
-    const textoAviso = document.getElementById('txtAtividade').value;
-    const falarTexto = document.getElementById('checkVoz').checked;
-    const bloquearTela = document.getElementById('checkBlock').checked;
-    const genero = document.getElementById('generoVoz').value;
-
-    let audioGerado = ""; // Vai guardar o MP3
-
-    // SE O PAI QUER QUE FALE, GERAMOS O ÁUDIO AGORA NO GOOGLE!
-    if (falarTexto && textoAviso) {
-        const API_KEY = "AIzaSyBSvEoSv8FgmCfedisR2qAsQYdPq5ADQfI"; // SUA CHAVE ATIVA
-        const nomeVoz = (genero === 'M') ? 'pt-BR-Neural2-B' : 'pt-BR-Neural2-C';
-        const tomVoz = (genero === 'M') ? -1.0 : 2.0;
-
-        try {
-            const resposta = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    input: { text: textoAviso },
-                    voice: { languageCode: "pt-BR", name: nomeVoz },
-                    audioConfig: { audioEncoding: "MP3", pitch: tomVoz, speakingRate: 1.15 }
-                })
-            });
-            const dados = await resposta.json();
-            if (dados.audioContent) {
-                audioGerado = dados.audioContent; 
-            } else {
-                console.error("Resposta do Google sem áudio:", dados);
+        if (containerAtivo) {
+            let elem = document.elementFromPoint(event.clientX, event.clientY);
+            // Só clica se o mouse estiver exatamente em cima do balão ou do boneco
+            if (elem && (elem.id === 'avatar' || elem.id === 'balaoNormal')) {
+                ipcRenderer.send('set-ignore-mouse-events', false);
+                return;
             }
-        } catch(e) {
-            console.error("Erro ao gerar áudio:", e);
+        }
+        
+        // Se o boneco sumiu ou o mouse não está nele, ignora o mouse (atravessa)
+        ipcRenderer.send('set-ignore-mouse-events', true, { forward: true });
+    });
+
+    function iniciarOuvintes(caminho) {
+        onSnapshot(collection(db, `${caminho}/atividades`), (s) => { s.forEach(d => atividadesMap[d.id] = d.data()); });
+        onSnapshot(doc(db, `${caminho}/config/estado_atual`), (d) => { 
+            if(d.exists()) {
+                const acao = d.data().acao;
+                if (acao === 'bloqueio') { ativarBloqueioReal(); } 
+                else if (acao === 'livre') { esconderTudo(); } 
+                else { acionarAvisoComSequencia(acao); }
+            }
+        });
+        setInterval(contarMinuto, 60000); contarMinuto();
+    }
+
+    async function contarMinuto() {
+        if(!CAMINHO_DADOS) return;
+        const hoje = dataHojeLocal();
+        const refHist = doc(db, `${CAMINHO_DADOS}/historico_uso`, hoje);
+        await setDoc(refHist, { data: hoje, minutos: increment(1) }, { merge: true });
+        const snap = await getDoc(refHist);
+        if(snap.exists()) {
+            const min = snap.data().minutos || 0;
+            await setDoc(doc(db, `${CAMINHO_DADOS}/dispositivos`, MEU_DEVICE_ID), { 
+                nome: localStorage.getItem('nome_dispositivo') || 'PC', 
+                online: new Date(), 
+                tempo_hoje_minutos: min 
+            }, {merge: true});
+            document.getElementById('displayTempoUso').innerText = `⏳ Uso de Hoje: ${Math.floor(min/60)}h ${min%60}m`;
         }
     }
 
-    // SALVA NO FIREBASE (COM O ÁUDIO E O GÊNERO)
-    await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id), { 
-        texto: textoAviso, 
-        imagem: document.getElementById('imgAtividade').value, 
-        tempo_personalizado: document.getElementById('tempoAtividade').value, 
-        tamanho_avatar: document.getElementById('rangeTamanho').value, 
-        texto_5min: document.getElementById('txt5min').value, 
-        texto_3min: document.getElementById('txt3min').value, 
-        imagem_5min: document.getElementById('img5min').value, 
-        imagem_3min: document.getElementById('img3min').value, 
-        posicao_especifica: document.getElementById('posAtividade').value, 
-        falar_texto: falarTexto, 
-        bloquear_tela: bloquearTela,
-        genero_voz: genero,
-        audio_base64: audioGerado
-    }); 
-    
-    alert("✅ Salvo com sucesso!"); 
-    limparFormAtividade(); 
-};
-        window.salvarRotina = async () => { const h=document.getElementById('horaRotina').value; const id=document.getElementById('editIdRotina').value; if(!h)return; const d={hora:h, dia_semana:document.getElementById('diaRotina').value, acao:document.getElementById('selectAtividadeRotina').value}; if(id) await updateDoc(doc(db,`usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`,id),d); else await addDoc(collection(db,`usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`),d); document.getElementById('editIdRotina').value=""; document.getElementById('horaRotina').value=""; };
-        window.carregarEdicaoRotina = (id) => { const r=cacheRotinas[id]; if(!r)return; document.getElementById('editIdRotina').value=id; document.getElementById('horaRotina').value=r.hora; document.getElementById('diaRotina').value=r.dia_semana; document.getElementById('selectAtividadeRotina').value=r.acao; };
-        window.apagarAtividade = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id)); };
-        window.apagarRotina = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`, id)); };
-        window.enviarAcao = async(a) => { if(!filhoAtualId) return alert("Selecione um filho"); await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/config/estado_atual`), {acao:a, timestamp:new Date()}, {merge:true}); mostrarAviso(); };
-        window.apagarDispositivo = async(id) => { if(confirm("Remover este computador?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/dispositivos`, id)); };
-        window.abrirDicas = () => document.getElementById('modalDicas').classList.add('aberta');
-        window.fecharDicas = () => document.getElementById('modalDicas').classList.remove('aberta');
+  function acionarAvisoComSequencia(acaoID) {
+        let atv = atividadesMap[acaoID];
+        if (!atv) return;
 
-        function montarGaleriaInfinita() {
-    const container = document.getElementById('galVisual');
-    if(!container) return; 
-    container.innerHTML = "";
-    
-    // Lista de nomes base
-    const nomes = ["ARRUMANDO_CAMA", "BANHO", "BOCEJANDO", "COMER", "DESLIGAR-PC", "LIGAR-PC", "ESCOVANDO_DENTES"];
-    // Adiciona números de 1 a 50
-    for(let i=1; i<=50; i++) nomes.push(`${i}`); 
+        // 1. CANCELA OS CRONÔMETROS ANTIGOS PARA NÃO CORTAR O TEMPO DA NOVA AÇÃO!
+        clearTimeout(timerOcultar);
+        clearTimeout(timerBloqueio);
 
-    nomes.forEach(nomeBase => {
-        // Tenta todas as extensões possíveis
-        [".gif", ".png", ".jpg", ".GIF", ".PNG", ".JPG"].forEach(ext => {
-            
-            const nomeArq = nomeBase.includes('.') ? nomeBase : nomeBase + ext;
-            const img = new Image();
-            img.src = `IMG/${nomeArq}`;
-            img.className = 'img-sel';
-            
-            // Colocamos uma etiqueta única na imagem
-            img.setAttribute('data-id', nomeBase); 
+        const containerBoneco = document.getElementById('container');
+        const avatarImg = document.getElementById('avatar');
+        const balao = document.getElementById('balaoNormal');
 
-            img.onload = () => { 
-                // Verificamos se já existe alguém com essa ETIQUETA EXATA
-                if(!container.querySelector(`img[data-id="${nomeBase}"]`)) { 
-                    img.classList.add('visivel'); 
-                    container.appendChild(img); 
-                }
-            };
-
-            img.onclick = () => {
-                document.querySelectorAll('.img-sel').forEach(i => i.classList.remove('ativa'));
-                img.classList.add('ativa'); 
-                document.getElementById('imgAtividade').value = img.src; 
-                window.atualizarPreview();
-            };
-        });
-    });
-}
-// Função para mostrar o aviso flutuante
-    window.mostrarAviso = (mensagem) => {
-        const toast = document.getElementById("toast-aviso");
-        
-        // Se você quiser passar uma mensagem diferente, ele muda. Se não, usa a padrão.
-        if (mensagem) {
-            toast.innerText = "🤖 " + mensagem;
+        // 2. Limpa posições e aplica a nova
+        containerBoneco.classList.remove('pos-center', 'pos-top-left', 'pos-top-center', 'pos-top-right', 'pos-bottom-left', 'pos-bottom-center', 'pos-bottom-right');
+        if (atv.posicao_especifica) {
+            containerBoneco.classList.add('pos-' + atv.posicao_especifica);
         } else {
-            toast.innerText = "🤖 Ação enviada para o dispositivo!";
+            containerBoneco.classList.add('pos-center'); 
         }
 
-        // Faz aparecer
-        toast.classList.add("mostrar");
+        // 3. Monta a tela
+        avatarImg.style.width = (atv.tamanho_avatar || 150) + "px";
+        avatarImg.src = atv.imagem;
+        balao.innerText = atv.texto;
+        balao.style.display = atv.texto ? 'block' : 'none';
 
-        // Conta 3 segundos (3000 milissegundos) e faz sumir sozinho
-        setTimeout(() => {
-            toast.classList.remove("mostrar");
-        }, 3000);
-    };
- </script>
+        // 4. Faz aparecer e fala
+        containerBoneco.style.opacity = "1";
+        if (atv.falar_texto !== false) falar(atv);
+
+        // 5. CRIA OS NOVOS CRONÔMETROS LIMPOS
+        if (atv.bloquear_tela) {
+            timerBloqueio = setTimeout(() => {
+                containerBoneco.style.opacity = "0"; 
+                ativarBloqueioReal(); 
+            }, tempoEsperaAviso); 
+        } else {
+            // Se você definiu um tempo personalizado na atividade, ele usa. Se não, usa 15s padrão.
+            let tempoParaSumir = atv.tempo_personalizado ? (parseInt(atv.tempo_personalizado) * 1000) : 15000;
+            
+            timerOcultar = setTimeout(() => { 
+                containerBoneco.style.opacity = "0"; 
+            }, tempoParaSumir);
+        }
+    }
+
+    function ativarBloqueioReal() {
+        bloqueioAtivo = true;
+        document.getElementById('bloqueioTela').style.display = 'flex';
+        ipcRenderer.send('entrar-kiosk');
+    }
+
+   function falar(atv) { 
+        // 1. MATA QUALQUER ÁUDIO OU VOZ ANTIGA QUE ESTEJA TOCANDO
+        if (audioAtual) {
+            audioAtual.pause();
+            audioAtual.currentTime = 0;
+        }
+        window.speechSynthesis.cancel(); 
+
+        // 2. TOCA O NOVO
+        if (atv.audio_base64 && atv.audio_base64.length > 10) {
+            audioAtual = new Audio("data:audio/mp3;base64," + atv.audio_base64);
+            audioAtual.play();
+        } else if (atv.texto) {
+            const f = new SpeechSynthesisUtterance(atv.texto); 
+            f.lang = "pt-BR"; 
+            window.speechSynthesis.speak(f); 
+        }
+    }
+    function esconderTudo() { 
+        // QUANDO CLICA EM LIBERAR, CANCELA TUDO TAMBÉM
+        clearTimeout(timerOcultar);
+        clearTimeout(timerBloqueio);
+        if (audioAtual) audioAtual.pause();
+        window.speechSynthesis.cancel();
+
+        document.getElementById('container').style.opacity = "0"; 
+        document.getElementById('bloqueioTela').style.display = 'none'; 
+        ipcRenderer.send('sair-kiosk'); 
+        bloqueioAtivo = false; 
+    }
+
+   // --- NOVO CÓDIGO DE AUTENTICAÇÃO DO PC ---
+    const auth = getAuth(app);
+    
+    // O PC pega o "Crachá de Visitante" invisível
+    signInAnonymously(auth).then(() => {
+        console.log("PC Autenticado com sucesso!");
+        
+        // Só depois de pegar o crachá, ele tenta ler os dados
+        if (CAMINHO_DADOS) {
+            iniciarOuvintes(CAMINHO_DADOS);
+        } else {
+            document.getElementById('telaPareamento').style.display = 'flex';
+        }
+    }).catch((error) => {
+        console.error("Erro ao autenticar o PC:", error);
+    });
+    document.getElementById('btnConectar').addEventListener('click', async () => {
+        const cod = document.getElementById('inputCodigo').value.toUpperCase();
+        const snap = await getDoc(doc(db, "conexoes", cod));
+        if (snap.exists()) {
+            localStorage.setItem('caminho_dados_filho', snap.data().caminho_dados);
+            localStorage.setItem('nome_dispositivo', document.getElementById('inputNomeDevice').value || 'PC');
+            location.reload();
+        }
+    });
+  </script>
 </body>
 </html>

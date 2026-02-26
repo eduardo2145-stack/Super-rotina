@@ -8,6 +8,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes"> 
     <title>Amigo Virtual</title>
+    <link rel="icon" type="image/x-icon" href="icon.ico">
+
+<link rel="apple-touch-icon" href="icon.ico">
     <style>
         /* --- ESTILOS GERAIS --- */
         body { 
@@ -130,20 +133,48 @@
             opacity: 1;
             top: 50px; /* Sobe um pouquinho na animação */
         }
+        .container-esqueci-senha {
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+.link-esqueci-senha {
+    color: #7f8c8d; /* Cinza elegante */
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.link-esqueci-senha:hover {
+    color: #2ECC71; /* Fica da cor do seu tema ao passar o mouse */
+    text-decoration: underline;
+}
+
    </style>
 </head>
 <body>
 <div id="toast-aviso">🤖 Ação enviada para o dispositivo!</div>
-    <div id="telaLogin" class="tela-login" style="display:flex;">
+
+        <div id="telaLogin" class="tela-login" style="display:flex;">
         <div style="width: 80%; max-width: 300px; text-align: center;">
             <h1 style="color:#3498db; margin-bottom: 30px;">🔐 Amigo Virtual</h1>
-            <input type="email" id="email" placeholder="E-mail">
-            <input type="password" id="senha" placeholder="Senha">
-            <button class="btn-block btn-blue" onclick="fazerLogin()">Entrar</button>
-            <button class="btn-block btn-green" onclick="criarConta()">Criar Conta</button>
+            <input type="email" id="emailInput" placeholder="Digite seu e-mail">
+            <div style="position: relative; width: 100%;  display: block; margin-bottom: 15px;">
+             <input type="password" id="senhaInput" placeholder="Digite sua senha" style="width: 100%; box-sizing: border-box; padding-right: 45px;">
+             <button type="button" id="btnOlhinho" onclick="toggleSenha()" style=" position: absolute; right: 5%; top: 35%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; padding: 0; outline: none; z-index: 10;">👁️</button>
+           </div>
+            <div class="container-esqueci-senha">
+              <a href="#" id="btnEsqueciSenha" class="link-esqueci-senha">🤔 Esqueceu a senha? Clique aqui</a>
+           </div>
+            <button class="btn-blue" onclick="fazerLogin()">Entrar</button>
+            <button class="btn-green" onclick="criarConta()" style="margin-top:10px">Criar Nova Conta</button>
         </div>
     </div>
 
+    
     <div id="appHeader" class="app-header" style="display:none;">
         <div class="grupo-filho">
             <select id="selectFilho" onchange="mudarFilho()"></select>
@@ -294,14 +325,13 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, deleteDoc, updateDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", storageBucket: "rotinaeduardo.firebasestorage.app", messagingSenderId: "210945268922", appId: "1:210945268922:web:ce9e585872090b378d7683" };
+        const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", storageBucket: "rotinaeduardo.firebasestorage.app", messagingSenderId: "210945268922", appId: "1:210945268922:web:ce9e585872090b378d7683", measurementId: "G-MDYWRH9RNP" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
         let usuarioAtual, filhoAtualId, cacheAtividades={}, cacheRotinas={}, unsubs = [];
-
         window.mudarAba = (aba) => {
             document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('ativo'));
@@ -352,14 +382,134 @@
     });
 }
 
-        window.fazerLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert(e.message)} };
-        window.criarConta = async () => { try { await createUserWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('senha').value); } catch(e){alert(e.message)} };
-        window.sair = () => { signOut(auth); location.reload(); };
-        
-        onAuthStateChanged(auth, (u) => { 
-            if(u) { usuarioAtual=u; document.getElementById('telaLogin').style.display='none'; document.getElementById('appHeader').style.display='flex'; document.getElementById('bottomNav').style.display='flex'; document.getElementById('mainContent').style.display='block'; carregarFilhos(); montarGaleriaInfinita(); } 
-            else { document.getElementById('telaLogin').style.display='flex'; } 
+             // A função agora tem a palavra "async" na frente para o segurança poder aguardar a resposta do banco
+window.fazerLogin = async function(event) {
+    // 1. Trava a página para ela não dar aquele "piscar" e recarregar
+    if (event) event.preventDefault(); 
+
+    try {
+        // 2. O detector inteligente de caixinhas (pega o ID que você tiver usado)
+        const campoEmail = document.getElementById('emailInput') || document.getElementById('email');
+        const campoSenha = document.getElementById('senhaInput') || document.getElementById('senha');
+
+        // Se ele não achar a caixinha de jeito nenhum, ele te avisa na tela!
+        if (!campoEmail || !campoSenha) {
+            alert("ERRO NO HTML: O código não encontrou as caixinhas de e-mail e senha!");
+            return;
+        }
+
+        const email = campoEmail.value;
+        const senha = campoSenha.value;
+
+        // 3. Tenta fazer o login
+        const credenciais = await signInWithEmailAndPassword(auth, email, senha);
+        const user = credenciais.user;
+
+        // 4. O Segurança vai no Firestore
+        const db = getFirestore(app);
+        const docRef = doc(db, "assinaturas", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        // 5. Analisa a ficha e abre a catraca
+        if (docSnap.exists()) {
+            const statusAssinatura = docSnap.data().status;
+
+            if (statusAssinatura === "ativo") {
+                window.location.replace("mobile.html"); 
+            } else {
+                window.location.replace("bloqueado.html");
+            }
+        } else {
+            window.location.replace("bloqueado.html");
+        }
+
+    } catch (error) {
+        // Se a senha estiver errada ou der algum erro no Firebase, ele avisa aqui
+        alert("Erro ao entrar: Verifique seu e-mail e senha.");
+        console.error("Detalhe do erro:", error);
+    }
+};
+window.criarConta = async () => {
+    // 1. Pega os valores dos inputs
+    const email = document.getElementById('email').value;
+    const senha = document.getElementById('senha').value;
+
+    try {
+        // 2. Tenta criar o usuário
+       const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+        const user = userCredential.user;
+
+        // Isso aqui cria a "ficha" dele no banco automaticamente
+        const db = getFirestore(app);
+        await setDoc(doc(db, "assinaturas", user.uid), {
+            status: "bloqueado",
+            email: email
         });
+
+        window.location.replace("bloqueado.html");
+    } catch (e) {
+        // Se der erro (ex: e-mail já existe), avisa o usuário
+        console.error("Erro na criação:", e.code);
+        if (e.code === 'auth/email-already-in-use') {
+            alert("Este e-mail já está em uso. Tente fazer login.");
+        } else {
+            alert("Erro ao criar conta: " + e.message);
+        }
+    }
+}; 
+ window.sair = () => signOut(auth);
+ // O "Olho que tudo vê" agora também verifica o pagamento
+onAuthStateChanged(auth, async (u) => { 
+    if(u) { 
+        usuarioAtual = u; 
+        
+        const db = getFirestore(app);
+        const docRef = doc(db, "assinaturas", u.uid);
+        
+        try {
+            const docSnap = await getDoc(docRef);
+            
+if (docSnap.exists() && docSnap.data().status === "ativo") {
+                // SUCESSO! Esconde o login e mostra as peças do Mobile (COM PROTEÇÃO)
+                const tLogin = document.getElementById('telaLogin');
+                const tDash = document.getElementById('telaDashboard');
+                const aHeader = document.getElementById('appHeader');
+                const bNav = document.getElementById('bottomNav');
+                const mContent = document.getElementById('mainContent'); // <-- PEGA O MEIO
+
+                // Só tenta esconder/mostrar se a peça realmente existir no HTML
+                if (tLogin) tLogin.style.display = 'none'; 
+                if (tDash) tDash.style.display = 'block'; 
+                if (aHeader) aHeader.style.display = 'flex'; 
+                if (bNav) bNav.style.display = 'flex'; 
+                if (mContent) mContent.style.display = 'block'; // <-- LIGA O MEIO!
+                
+                carregarFilhos(); 
+                montarGaleriaInfinita(); 
+            } else {
+                await signOut(auth); 
+                window.location.replace("bloqueado.html");
+            }
+        } catch (erro) {
+            alert("ERRO INVISÍVEL NO MOBILE: " + erro); 
+            console.error(erro);
+            await signOut(auth);
+            window.location.replace("bloqueado.html");
+        }
+
+    } else { 
+        // USUÁRIO DESLOGADO! Mostra o login e esconde o resto (COM PROTEÇÃO)
+        const tLogin = document.getElementById('telaLogin');
+        const tDash = document.getElementById('telaDashboard');
+        const aHeader = document.getElementById('appHeader');
+        const bNav = document.getElementById('bottomNav');
+
+        if (tLogin) tLogin.style.display = 'flex'; 
+        if (tDash) tDash.style.display = 'none'; 
+        if (aHeader) aHeader.style.display = 'none'; 
+        if (bNav) bNav.style.display = 'none'; 
+    }
+});
 
         window.atualizarPreview = () => { const r = document.getElementById('rangeTamanho').value; const u = document.getElementById('imgAtividade').value; document.getElementById('labelTamanho').innerText = r + "px"; const i = document.getElementById('previewAvatar'); i.style.width = r + "px"; if(u) i.src = u; };
         
@@ -592,7 +742,52 @@ window.salvarRotina = async () => { const id=document.getElementById('editIdRoti
         }, 3000);
     };
 
+// Captura o clique no botão de Esqueci a Senha
+document.getElementById('btnEsqueciSenha').addEventListener('click', function(event) {
+    event.preventDefault(); // Evita que a página recarregue do zero
 
+    // Pega o e-mail que o pai digitou na caixinha de login
+    // ATENÇÃO: Troque 'id-do-seu-campo-email' pelo ID real que você usa no seu HTML
+   const emailDigitado = document.getElementById('emailInput').value;
+
+    // Verifica se o campo está vazio
+    if (!emailDigitado) {
+        alert("Por favor, digite o seu e-mail na caixinha acima para recuperar a senha!");
+        return;
+    }
+
+    // Pede para o Firebase mandar o e-mail mágico
+    sendPasswordResetEmail(auth, emailDigitado)
+        .then(() => {
+            // Deu certo!
+            alert("Sucesso! Um e-mail de recuperação foi enviado para: " + emailDigitado + "\n\nVerifique sua caixa de entrada (e também a pasta de Spam/Lixo Eletrônico).");
+        })
+        .catch((error) => {
+            // Deu erro (ex: e-mail não existe no banco de dados)
+            const codigoErro = error.code;
+            if (codigoErro === 'auth/user-not-found') {
+                alert("Nenhuma conta encontrada com este e-mail.");
+            } else if (codigoErro === 'auth/invalid-email') {
+                alert("Por favor, digite um e-mail válido.");
+            } else {
+                alert("Ocorreu um erro: " + error.message);
+            }
+        });
+});
+window.toggleSenha = function() {
+    const inputSenha = document.getElementById('senhaInput');
+    const botaoOlhinho = document.getElementById('btnOlhinho');
+
+    if (inputSenha.type === 'password') {
+        // Se está escondida, mostra o texto e troca o ícone
+        inputSenha.type = 'text';
+        botaoOlhinho.innerText = '🙈'; // Ícone de olho fechado ou macaco escondendo
+    } else {
+        // Se está aparecendo, volta a esconder
+        inputSenha.type = 'password';
+        botaoOlhinho.innerText = '👁️'; // Ícone de olho aberto
+    }
+};
 
 
     </script>
@@ -608,6 +803,7 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
+
 </script>
     </script>
 </body>

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Amigo Virtual - Gamificado</title>
+    <link rel="icon" type="image/x-icon" href="icon.ico">
+    <link rel="apple-touch-icon" href="icon.ico">
+    <link rel="manifest" href="manifest-dash.json">
+    <meta name="theme-color" content="#93C49D">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Amigo Virtual">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/4712/4712010.png">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { --cor-primaria: #93C49D; --cor-secundaria: #F4D03F; --cor-texto: #5A5A5A; --fundo-base: #F7F5F0; }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden !important; overscroll-behavior: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--fundo-base); }
+        body { background: linear-gradient(to bottom, #EBF4F6 0%, #F7F5F0 50%, #E9F0E6 100%); background-image: url('IMG/bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed; background-blend-mode: overlay; }
+        #app-scroll-wrapper { width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden !important; -webkit-overflow-scrolling: touch; position: relative; }
+        #app-scroll-wrapper::-webkit-scrollbar { display: none; } 
+        #app-scroll-wrapper { -ms-overflow-style: none; scrollbar-width: none; } 
+
+        /* --- PLACAR E MENU DE ESTATÍSTICAS --- */
+        #placar-estrelas { position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(255, 255, 255, 0.95); border: 2px solid #F4D03F; padding: 10px 20px; border-radius: 30px; font-size: 22px; font-weight: 900; color: #D4AC0D; box-shadow: 0 5px 15px rgba(244, 208, 63, 0.3); backdrop-filter: blur(5px); display: none; align-items: center; gap: 8px; transition: 0.3s; cursor: pointer; user-select: none; }
+        .placar-animado { transform: scale(1.2); color: #F1C40F !important; }
+        
+        #menu-estatisticas { position: absolute; top: 120%; right: 0; background: white; border: 2px solid #F0F0F0; border-radius: 16px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; flex-direction: column; gap: 10px; min-width: 170px; cursor: default; }
+        #placar-estrelas.aberto #menu-estatisticas { display: flex; animation: desceMenu 0.3s ease; }
+        
+        .stat-item { display: flex; justify-content: space-between; align-items: center; font-size: 15px; color: var(--cor-texto); font-weight: 600; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
+        .stat-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .stat-item b { color: #F4D03F; font-size: 18px; text-shadow: 0 1px 2px rgba(244, 208, 63, 0.4); }
+        
+        @keyframes desceMenu { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .tela-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(247, 245, 240, 0.92); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; }
+        .box-auth { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-align: center; max-width: 350px; width: 90%; border: 2px solid #EBEBEB; }
+        .box-auth h1 { margin-top: 0; color: var(--cor-texto); font-size: 24px; }
+        .box-auth input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 16px; outline: none; background: #FCFCFC; }
+        .box-auth input:focus { border-color: var(--cor-primaria); background: #FFF; }
+        .box-auth button { width: 100%; padding: 15px; background: var(--cor-primaria); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        
+        #grid-filhos { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; margin-top: 20px; }
+        .btn-filho { background: white; border: 2px solid var(--cor-primaria); padding: 18px; border-radius: 16px; font-size: 20px; font-weight: bold; color: var(--cor-texto); cursor: pointer; transition: 0.2s; }
+        .btn-filho:hover { background: var(--cor-primaria); color: white; transform: translateY(-2px); }
+        .btn-sair { background: transparent !important; color: #D98880 !important; border: 2px solid #D98880 !important; margin-top: 20px;}
+
+        #menu-container { position: fixed; top: 20px; left: 20px; z-index: 1000; }
+        #menu-btn { background: rgba(255,255,255,0.9); border: 2px solid #EBEBEB; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; font-size: 15px; display: flex; align-items: center; gap: 8px; color: var(--cor-texto); }
+        #lista-criancas { background: white; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); display: none; padding: 8px; border: 1px solid #EBEBEB; margin-top: 8px; min-width: 160px; }
+        .opcao-crianca { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #F0F0F0; font-size: 15px; border-radius: 10px; font-weight: 600; color: var(--cor-texto);}
+
+       #telaDiaLivre { display: none; flex-direction: column; align-items: center; justify-content: center; height: 90vh; text-align: center; color: var(--cor-texto); background: transparent; } 
+       #telaDiaLivre img { width: 120px; opacity: 0.6; margin-bottom: 20px; }
+
+        /* --- MODAIS (MASCOTE E AVALIAÇÃO) --- */
+        #modalDica, #modalAvaliacao { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(247, 245, 240, 0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 0.3s ease; }
+        .mascote-container, .box-avaliacao { transform: translateY(30px); transition: transform 0.4s ease; max-width: 90%; }
+        .mascote-container { display: flex; align-items: flex-end; gap: 20px; }
+        .mascote-img { width: 150px; height: auto; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.1)); }
+        .balao-fala, .box-avaliacao { background: white; padding: 25px 30px; border-radius: 28px; border-bottom-left-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: relative; max-width: 400px; border: 2px solid #F0F0F0; }
+        .balao-fala::before { content: ""; position: absolute; bottom: -2px; left: -18px; width: 0; height: 0; border-right: 20px solid white; border-top: 20px solid transparent; border-bottom: 0px solid transparent; }
+        .balao-fala h2, .box-avaliacao h2 { margin: 0 0 12px 0; color: var(--cor-primaria); font-size: 22px; text-transform: uppercase; }
+        .balao-fala p { margin: 0 0 24px 0; font-size: 17px; color: var(--cor-texto); line-height: 1.4; font-weight: 500; }
+        
+        .botoes-mascote { display: flex; gap: 10px; margin-top: 15px; width: 100%; }
+        .botoes-mascote button { border: none; padding: 14px 15px; border-radius: 14px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-mascote-entendi { flex: 1; background: var(--cor-primaria); color: white; box-shadow: 0 4px 12px rgba(147, 196, 157, 0.3); }
+        .btn-mascote-avaliar { flex: 1; background: #FFFDE7; color: #D4AC0D; border: 2px solid #F4D03F; box-shadow: 0 4px 10px rgba(244, 208, 63, 0.2); }
+        .botoes-mascote button:active { transform: scale(0.95); }
+
+        #modalDica.ativo, #modalAvaliacao.ativo { opacity: 1; display: flex; }
+        #modalDica.ativo .mascote-container, #modalAvaliacao.ativo .box-avaliacao { transform: translateY(0); }
+
+        /* MÁGICA DO CELULAR: Reorganiza o robô para caber na tela! */
+        @media (max-width: 600px) {
+            .mascote-container { flex-direction: column; align-items: center; text-align: center; }
+            .mascote-img { width: 110px; z-index: 2; margin-bottom: -15px; }
+            .balao-fala { border-top-left-radius: 28px; width: 100%; }
+            .balao-fala::before { top: -15px; left: 50%; bottom: auto; transform: translateX(-50%); border-bottom: 20px solid white; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: none; }
+        }
+
+        .box-avaliacao { text-align: center; border-bottom-left-radius: 28px;}
+        .box-avaliacao h2 { color: var(--cor-texto); }
+        .box-avaliacao p.sub { color: #888; font-size: 15px; margin-bottom: 25px; }
+        .botoes-estrelas { display: flex; flex-direction: column; gap: 12px; }
+        .btn-star { 
+            background: #FFFDE7; border: 2px solid #F4D03F; padding: 15px; border-radius: 18px; 
+            font-size: 26px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; gap: 5px; 
+            color: #F4D03F; /* Deixa as estrelas dos botões amarelinhas! */
+            text-shadow: 0 1px 3px rgba(244, 208, 63, 0.4); /* Brilho suave */
+        }
+        .btn-star:active { transform: scale(0.95); }.btn-nao-fez { background: transparent; color: #D98880; border: 2px dashed #D98880; padding: 12px; border-radius: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; font-size: 16px; }
+        #mensagem-feedback { font-size: 18px; font-weight: 800; margin-top: 20px; min-height: 25px; opacity: 0; transition: 0.3s; }
+
+        /* --- ESTRADA E ÍCONES --- */
+        /* --- ESTRADA E ÍCONES --- */
+        #mapa-container { 
+            position: relative; width: 100%; 
+            max-width: 1600px; /* AUMENTADO PARA MONITORES 4K E ULTRAWIDE */
+            margin: 150px auto 50px auto; padding-bottom: 80px; 
+        } svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+        .estrada-corpo { fill: none; stroke-width: 45; stroke-linecap: round; opacity: 1; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.06)); }
+        .estrada-tracejada { fill: none; stroke: rgba(255,255,255,0.8); stroke-width: 4; stroke-dasharray: 14,14; stroke-linecap: round; pointer-events: none; z-index: 3; }
+        .c-1 { stroke: #E8B87D; } .c-2 { stroke: #93C49D; } .c-3 { stroke: #80C2D6; } .c-4 { stroke: #86A3D4; } .c-5 { stroke: #B4A3D6; } 
+
+        .marcador { position: absolute; width: 0; height: 0; z-index: 10; transition: all 0.6s ease; }
+        .icone-circulo { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); width: 82px; height: 82px; background: white; border-radius: 50%; border: 5px solid #ccc; box-shadow: 0 8px 20px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 3; transition: 0.3s; cursor: pointer; }
+        .icone-circulo:active { transform: translate(-50%, -50%) scale(0.95); }
+        .icone-circulo img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+       /* TEXTOS E HORA (FICAM ACIMA DA BOLINHA) */
+        .textos { position: absolute; left: 0; bottom: 50px; transform: translateX(-50%); width: 220px; text-align: center; z-index: 5; pointer-events: none; display: flex; flex-direction: column; align-items: center; }
+        .badge-hora { display: inline-block; padding: 4px 16px; border-radius: 20px; color: white !important; font-size: 16px; font-weight: 800; border: 2px solid rgba(255,255,255,0.5); margin-bottom: 4px; }
+        .textos .acao { display: block; font-size: 14px; font-weight: 700; color: var(--cor-texto) !important; text-transform: uppercase; text-shadow: 0 2px 5px #fff, 0 -2px 5px #fff, 2px 0 5px #fff, -2px 0 5px #fff; }
+        
+        /* ESTRELAS BONITAS (FICAM ABAIXO DA BOLINHA) */
+        .estrelas-ganhas {
+            position: absolute;
+            left: 0;
+            top: 48px; /* Subi um pouquinho para ficar mais perto da bolinha */
+            transform: translateX(-50%);
+            /* Ficaram maiores */
+            font-size: 24px;
+            /* Usando a cor amarela do tema */
+            color: var(--cor-secundaria); 
+            /* Mais espalhadas */
+            letter-spacing: 5px;
+            text-align: center;
+            width: 160px;
+            z-index: 5;
+            pointer-events: none;
+            /* O TRUQUE: Um brilho dourado suave em vez de sombra preta */
+            text-shadow: 0 0 8px rgba(244, 208, 63, 0.7), 0 2px 4px rgba(212, 172, 13, 0.4);
+            /* Animação suave de flutuar */
+            animation: flutuarEstrelas 2.5s ease-in-out infinite alternate;
+        }
+        /* Animação para as estrelas flutuarem suavemente */
+        @keyframes flutuarEstrelas {
+            from { transform: translateX(-50%) translateY(0px); }
+            to { transform: translateX(-50%) translateY(-4px); }
+        }
+         .passado .icone-circulo { border-color: #D5D5D5 !important; opacity: 0.7; filter: grayscale(0.4) opacity(0.8); transform: translate(-50%, -50%) scale(0.95); box-shadow: none; }
+        .passado .textos { opacity: 0.6; }
+        .agora { z-index: 100; }
+        .agora .icone-circulo { border-color: var(--cor-primaria) !important; box-shadow: 0 0 0 4px rgba(147, 196, 157, 0.2), 0 15px 30px rgba(0,0,0,0.1); animation: respira 3s infinite alternate ease-in-out; }
+        .agora .badge-hora { transform: scale(1.05); background: var(--cor-primaria) !important; }
+
+        @keyframes respira { 0% { transform: translate(-50%, -50%) scale(1); } 100% { transform: translate(-50%, -50%) scale(1.04); box-shadow: 0 0 0 8px rgba(147, 196, 157, 0.1), 0 20px 40px rgba(0,0,0,0.15); } }
+    </style>
+</head>
+<body>
+
+    <div id="app-scroll-wrapper">
+
+       <div id="placar-estrelas" onclick="toggleEstatisticas(event)">
+            <div class="estrela-icone">★</div> <span id="num-estrelas">0</span>
+            <div id="menu-estatisticas" onclick="event.stopPropagation()">
+                <div class="stat-item"><span>Hoje:</span> <b id="stat-hoje">0</b></div>
+                <div class="stat-item"><span>Nesta Semana:</span> <b id="stat-semana">0</b></div>
+                <div class="stat-item"><span>Neste Mês:</span> <b id="stat-mes">0</b></div>
+                <div class="stat-item"><span>Neste Ano:</span> <b id="stat-ano">0</b></div>
+            </div>
+        </div>
+        <div id="modalDica" onclick="fecharDica()">
+            <div class="mascote-container" onclick="event.stopPropagation()">
+                <img src="https://cdn-icons-png.flaticon.com/512/4712/4712010.png" class="mascote-img" alt="Amigo Virtual">
+                <div class="balao-fala">
+                    <h2 id="dicaTitulo">Hora da Ação!</h2>
+                    <p id="dicaTexto">Mensagem do mascote...</p>
+                    <div class="botoes-mascote">
+                        <button class="btn-mascote-entendi" onclick="fecharDica()">Entendi!</button>
+                        <button class="btn-mascote-avaliar" onclick="irParaAvaliacao()">Avaliar ★</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalAvaliacao" onclick="fecharAvaliacao()">
+            <div class="box-avaliacao" onclick="event.stopPropagation()">
+                <h2 id="titulo-aval">Atividade</h2>
+                <p class="sub">Como você se saiu nessa tarefa?</p>
+                <div class="botoes-estrelas">
+                    <button class="btn-star" onclick="avaliar(3)">★ ★ ★</button>
+                    <button class="btn-star" onclick="avaliar(2)">★ ★</button>
+                    <button class="btn-star" onclick="avaliar(1)">★</button>
+                </div>
+                <button class="btn-nao-fez" onclick="avaliar(0)">Não executei</button>
+                <div id="mensagem-feedback"></div>
+            </div>
+        </div>
+
+        <div id="telaLogin" class="tela-overlay" style="display: flex;">
+            <div class="box-auth">
+                <h1>Login Amigo Virtual</h1>
+                <p style="color:#888; margin-bottom: 20px; font-size: 14px;">Use a mesma conta</p>
+                <input type="email" id="inputEmail" placeholder="Seu E-mail">
+                <input type="password" id="inputSenha" placeholder="Sua Senha">
+                <button onclick="fazerLogin()">ENTRAR NO PAINEL</button>
+            </div>
+        </div>
+
+        <div id="telaSelecionarFilho" class="tela-overlay" style="display: none;">
+            <h1 style="color: var(--cor-texto); font-size: 28px;">Quem está usando?</h1>
+            <div id="grid-filhos"></div>
+            <button class="btn-filho btn-sair" onclick="sairApp()">Sair da Conta</button>
+        </div>
+
+        <div id="telaMapa" style="display: none;">
+            <div id="menu-container">
+                <button id="menu-btn" onclick="toggleMenu()">🤖 <span id="nome-atual">...</span> ▾</button>
+                <div id="lista-criancas">
+                    <div id="menu-filhos-items"></div>
+                    <div class="opcao-crianca" style="color:#D98880; border-top: 1px solid #F0F0F0; text-align: center;" onclick="sairApp()">Sair</div>
+                </div>
+            </div>
+            <div id="telaDiaLivre">
+                <img src="https://cdn-icons-png.flaticon.com/512/3082/3082025.png" alt="Dia Livre">
+                <h1 style="font-size: 30px; margin: 0; color: #93C49D; font-weight: 800;">Dia Livre!</h1>
+                <p>Nenhuma rotina cadastrada para hoje.</p>
+            </div>
+
+            <div id="mapa-container">
+                <svg id="svgEstrada"><g id="camada-cores"></g><path id="pathCinzaPassado" class="estrada-corpo" style="stroke: #EAE6DF; opacity: 0.9; transition: stroke-dashoffset 1.5s ease-in-out; z-index: 2;" /><path id="pathTracejado" class="estrada-tracejada" /></svg>
+                <div id="cards-layer"></div>
+                
+            </div>
+        </div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyAh3J8bp7xvNGct8k4TfAoCcIpVRoWjBYI", authDomain: "rotinaeduardo.firebaseapp.com", projectId: "rotinaeduardo", appId: "1:210945268922:web:ce9e585872090b378d7683" };
+    const app = initializeApp(firebaseConfig); 
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    
+    let id_usuario_pai = null; let caminho_dados = localStorage.getItem('caminho_dados'); let nome_crianca = localStorage.getItem('nome_crianca');
+    let cacheAtividades = {}; let rotinasCache = []; let rotinaAvaliacaoAtual = null; 
+
+    // O CÉREBRO DO MASCOTE (Completo e Organizado)
+    const dicasMascote = {
+        "comer": "O alimento é a energia mágica que faz você crescer forte e esperto. Bom apetite!",
+        "almoç": "Pausa para reabastecer! O almoço deixa seu corpo preparado para as aventuras da tarde.",
+        "jant": "O jantar ajuda sua barriguinha a ficar tranquila para você ter sonhos felizes.",
+        "café": "O café da manhã liga o motor do seu corpo para começar o dia com tudo!",
+        "lanch": "Hora do lanchinho! Uma pausa gostosa para encher a barriga e voltar a brincar.",
+        "frut": "Frutas são doces da natureza! Elas têm vitaminas que são como escudos protetores.",
+        "maçã": "A maçã é crocante e faz um barulhinho super legal! E ainda deixa seus dentes fortes.",
+        "banana": "Sabia que a banana é a fruta dos campeões? Ela dá muita força para os músculos!",
+        "morango": "Vermelhinho e docinho! O morango é cheio de superpoderes para a sua saúde.",
+        "água": "Glub, glub! Beber água refresca e ajuda o seu cérebro a pensar bem rapidinho.",
+        "banho": "Água quentinha e sabonete! O banho relaxa o corpo e manda as sujeirinhas pelo ralo.",
+        "dente": "Sua escova é uma varinha mágica que deixa os dentes brilhantes e fortes!",
+        "mão": "Lavar as mãos manda os bichinhos invisíveis embora. Chuá, chuá, tchau sujeira!",
+        "banheiro": "Muito bem! Usar o banheiro e lavar as mãos mostra como você já está grande.",
+        "xixi": "Sinal verde para o banheiro! Fazer xixi alivia a barriguinha.",
+        "cocô": "Hora de ir ao trono! O corpo fica levinho e muito feliz depois de usar o banheiro.",
+        "dormir": "Hora de descansar. Enquanto você dorme, seu cérebro guarda tudo de legal que você aprendeu.",
+        "acordar": "Bom dia! Espreguice o corpo como um gatinho e dê boas-vindas a um novo dia.",
+        "soneca": "Uma pausa para os olhinhos descansarem. A soneca recarrega a sua bateria!",
+        "escola": "A escola é um lugar cheio de descobertas e amigos novos. Aproveite bastante!",
+        "estud": "Aprender coisas novas deixa sua mente super poderosa. Você consegue!",
+        "tarefa": "Fazer a tarefa é como um treino de herói: deixa seu cérebro cada vez mais forte!",
+        "liçã": "Fazer a lição é como montar um quebra-cabeça. Um passinho de cada vez e você termina!",
+        "ler": "Ler um livro é como viajar para um mundo mágico sem sair do lugar.",
+        "terapia": "Hora de treinar habilidades novas e super legais! Você vai se divertir muito.",
+        "guardar": "Guardar os brinquedos é como colocar cada coisa na sua caminha.",
+        "brinquedo": "Guardar os brinquedos é como colocar cada coisa na sua caminha.",
+        "arrumar": "Um ambiente arrumado deixa a cabeça tranquila. Obrigado por ser um super ajudante!",
+        "pc": "Telinhas são divertidas, mas não esqueça de piscar os olhos e espreguiçar o corpo!",
+        "celular": "A telinha diverte, mas lembre-se que o mundo real também está cheio de brincadeiras.",
+        "brincar": "Use sua imaginação! Brincar é a melhor forma de aprender a ser feliz."
+    };
+
+    // (BÔNUS: Arrumei a data para entender que a madrugada ainda faz parte do dia de ontem!)
+    function obterDataDeHoje() { 
+        const h = new Date(); 
+        if(h.getHours() < 5) h.setDate(h.getDate() - 1); 
+        return `${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,'0')}-${String(h.getDate()).padStart(2,'0')}`; 
+    }
+    // NOVA PRIORIDADE: Cérebro primeiro, Descrição Customizada depois!
+    window.abrirDica = (acaoTexto, descricaoPersonalizada, idRotina) => {
+        rotinaAvaliacaoAtual = idRotina; 
+        const modal = document.getElementById('modalDica');
+        const titulo = document.getElementById('dicaTitulo');
+        const texto = document.getElementById('dicaTexto');
+        
+        let msg = "";
+        
+        // 1º Tenta achar no Cérebro do Mascote ignorando acentos
+        let chave = acaoTexto.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+        for (const [palavra, dica] of Object.entries(dicasMascote)) {
+            let pLimpa = palavra.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            if (chave.includes(pLimpa)) { msg = dica; break; }
+        }
+
+        // 2º Se o Cérebro não souber, usa a descrição que o Pai digitou no painel
+        if (!msg && descricaoPersonalizada && descricaoPersonalizada.trim() !== "" && descricaoPersonalizada !== "undefined") {
+            msg = descricaoPersonalizada;
+        }
+
+        // 3º Frase padrão caso não ache nada
+        if (!msg) msg = "Cada atividade que você faz é um passo para um dia incrível. Continue assim!";
+
+        titulo.innerText = acaoTexto; texto.innerText = msg;
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('ativo'), 10);
+    };
+
+    window.fecharDica = () => { const m = document.getElementById('modalDica'); m.classList.remove('ativo'); setTimeout(() => m.style.display = 'none', 300); };
+    
+    window.irParaAvaliacao = () => {
+        fecharDica();
+        const t = document.getElementById('dicaTitulo').innerText;
+        setTimeout(() => { abrirModalAvaliacao(t); }, 350); 
+    };
+
+    window.abrirModalAvaliacao = (nomeAcao) => {
+        document.getElementById('titulo-aval').innerText = nomeAcao;
+        document.getElementById('mensagem-feedback').style.opacity = '0';
+        const m = document.getElementById('modalAvaliacao');
+        m.style.display = 'flex'; setTimeout(() => m.classList.add('ativo'), 10);
+    };
+
+    window.fecharAvaliacao = () => { const m = document.getElementById('modalAvaliacao'); m.classList.remove('ativo'); setTimeout(() => { m.style.display = 'none'; }, 300); };
+
+window.avaliar = async (qtd) => {
+        if(!rotinaAvaliacaoAtual) return;
+        const feed = document.getElementById('mensagem-feedback');
+        
+        if(qtd === 3) { 
+            feed.innerText = "Parabéns! Você é incrível! 🚀"; 
+            feed.style.color = "#27AE60"; 
+            
+            // MÁGICA AQUI: zIndex: 10000 faz o confete explodir na FRENTE de tudo!
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 10000 }); 
+        } 
+        else if (qtd === 2) { feed.innerText = "Continue assim, você chega lá! 👍"; feed.style.color = "#F39C12"; } 
+        else if (qtd === 1) { feed.innerText = "Muito bom, mas vamos melhorar! 💪"; feed.style.color = "#E67E22"; } 
+        else { feed.innerText = "Tudo bem, tentaremos amanhã! 💙"; feed.style.color = "#D98880"; }
+        
+        feed.style.opacity = '1';
+
+        const dataHoje = obterDataDeHoje();
+        
+        await updateDoc(doc(db, `${caminho_dados}/rotinas`, rotinaAvaliacaoAtual), { estrelas_ganhas: qtd, data_avaliacao: dataHoje });
+        
+        const idLog = dataHoje + "_" + rotinaAvaliacaoAtual;
+        await setDoc(doc(db, `${caminho_dados}/historico_estrelas`, idLog), { data: dataHoje, estrelas: qtd });
+
+        setTimeout(() => { fecharAvaliacao(); }, 2500);
+    };
+  // Abre e fecha o menu de estatísticas
+    window.toggleEstatisticas = (e) => {
+        if(e) e.stopPropagation();
+        document.getElementById('placar-estrelas').classList.toggle('aberto');
+    };
+    window.addEventListener('click', (e) => {
+        const placar = document.getElementById('placar-estrelas');
+        if (placar && !placar.contains(e.target)) placar.classList.remove('aberto');
+    });
+
+    // Calcula os totais de tempo real
+    function calcularEstatisticas(snap) {
+        let tHoje = 0, tSemana = 0, tMes = 0, tAno = 0;
+        const hojeObj = new Date();
+        if(hojeObj.getHours() < 5) hojeObj.setDate(hojeObj.getDate() - 1);
+        
+        const hojeStr = obterDataDeHoje();
+        const anoAtual = hojeObj.getFullYear();
+        const mesAtual = hojeObj.getMonth() + 1;
+        
+        const inicioSemana = new Date(hojeObj);
+        inicioSemana.setDate(hojeObj.getDate() - hojeObj.getDay()); // Domingo como início
+        inicioSemana.setHours(0,0,0,0);
+
+        snap.forEach(doc => {
+            const log = doc.data();
+            if(!log.data || typeof log.estrelas !== 'number') return;
+            
+            const [a, m, d] = log.data.split('-').map(Number);
+            const dataLog = new Date(a, m - 1, d);
+
+            if (log.data === hojeStr) tHoje += log.estrelas;
+            if (dataLog >= inicioSemana) tSemana += log.estrelas;
+            if (a === anoAtual && m === mesAtual) tMes += log.estrelas;
+            if (a === anoAtual) tAno += log.estrelas;
+        });
+
+        // Atualiza os números no HTML
+        document.getElementById('stat-hoje').innerText = tHoje;
+        document.getElementById('stat-semana').innerText = tSemana;
+        document.getElementById('stat-mes').innerText = tMes;
+        document.getElementById('stat-ano').innerText = tAno;
+
+        const pNum = document.getElementById('num-estrelas');
+        if(pNum.innerText !== tHoje.toString()) {
+            pNum.innerText = tHoje;
+            const pBox = document.getElementById('placar-estrelas');
+            pBox.classList.add('placar-animado');
+            setTimeout(() => pBox.classList.remove('placar-animado'), 300);
+        }
+    }
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) { id_usuario_pai = user.uid; if (caminho_dados && caminho_dados.includes(user.uid)) iniciarApp(); else mostrarTelaSelecaoFilho(); } 
+        else { document.getElementById('telaLogin').style.display = 'flex'; document.getElementById('telaSelecionarFilho').style.display = 'none'; document.getElementById('telaMapa').style.display = 'none'; document.getElementById('placar-estrelas').style.display = 'none'; }
+    });
+
+    window.fazerLogin = () => { const e = document.getElementById('inputEmail').value, s = document.getElementById('inputSenha').value; if(!e || !s) return alert("Preencha e-mail e senha!"); signInWithEmailAndPassword(auth, e, s).catch(() => alert("Erro!")); };
+    window.sairApp = () => { localStorage.removeItem('caminho_dados'); localStorage.removeItem('nome_crianca'); signOut(auth); };
+
+    function mostrarTelaSelecaoFilho() {
+        document.getElementById('telaLogin').style.display = 'none'; document.getElementById('telaMapa').style.display = 'none'; document.getElementById('telaSelecionarFilho').style.display = 'flex';
+        onSnapshot(collection(db, `usuarios/${id_usuario_pai}/filhos`), (snap) => {
+            const grid = document.getElementById('grid-filhos'); grid.innerHTML = "";
+            snap.forEach(d => { grid.innerHTML += `<button class="btn-filho" onclick="selecionarCrianca('usuarios/${id_usuario_pai}/filhos/${d.id}', '${d.data().nome}')">${d.data().nome}</button>`; });
+        });
+    }
+
+    window.selecionarCrianca = (caminho, nome) => { localStorage.setItem('caminho_dados', caminho); localStorage.setItem('nome_crianca', nome); window.location.reload(true); };
+
+    function iniciarApp() {
+        document.getElementById('telaLogin').style.display = 'none'; document.getElementById('telaSelecionarFilho').style.display = 'none'; document.getElementById('telaMapa').style.display = 'block'; document.getElementById('placar-estrelas').style.display = 'flex'; document.getElementById('nome-atual').innerText = nome_crianca;
+        const pts = caminho_dados.split('/'); const pU = `${pts[0]}/${pts[1]}`; const pI = `${pts[0]}/${pts[1]}/${pts[2]}`;
+        onSnapshot(collection(db, `${pU}/atividades`), pCache); onSnapshot(collection(db, `${caminho_dados}/atividades`), pCache);
+        onSnapshot(collection(db, pI), (s) => { const menu = document.getElementById('menu-filhos-items'); menu.innerHTML = ""; s.forEach(d => { menu.innerHTML += `<div class="opcao-crianca" onclick="selecionarCrianca('${pI}/${d.id}', '${d.data().nome}')">${d.data().nome}</div>`; }); });
+      // Liga o cérebro do menu para observar o histórico
+        onSnapshot(collection(db, `${caminho_dados}/historico_estrelas`), calcularEstatisticas);
+        carregarRotinasDoBanco(); setInterval(heartbeat, 30000); setInterval(() => desenharPista(rotinasCache), 60000);
+      
+    }
+
+    function pCache(snap) { snap.forEach(doc => { const d = doc.data(); const id = doc.id.trim().toLowerCase(); const n = (d.nome || "").trim().toLowerCase(); const a = (d.acao || "").trim().toLowerCase(); cacheAtividades[id] = d; if(n) cacheAtividades[n] = d; if(a) cacheAtividades[a] = d; }); if(rotinasCache.length > 0) desenharPista(rotinasCache); }
+    
+    window.toggleMenu = () => { const m = document.getElementById('lista-criancas'); m.style.display = m.style.display==='block'?'none':'block'; };
+    function converterMin(h) { let [hr, mn] = h.split(':').map(Number); if(hr < 5) hr += 24; return hr * 60 + mn; }
+    function obterMinutosAtuais() { const agora = new Date(); let hrSys = agora.getHours(); if(hrSys < 5) hrSys += 24; return hrSys * 60 + agora.getMinutes(); }
+    function buscarIconeAcao(acaoTexto) { return 'https://cdn-icons-png.flaticon.com/512/1048/1048953.png'; }
+
+    const H_ROW = 240; 
+   function calcularConfiguracaoTela() { 
+        const W = document.getElementById('mapa-container').clientWidth; 
+        let it = 5, mX = 140; 
+        
+        if (W < 550) { it = 2; mX = 90; } 
+        else if (W < 800) { it = 3; mX = 110; } 
+        else if (W < 1100) { it = 4; mX = 130; } 
+        else if (W < 1400) { it = 5; mX = 150; }
+        else { it = 7; mX = 180; } // NOVA REGRA: Telas gigantes agora mostram 6 itens por linha e esticam mais!
+
+        return { W, ITENS_POR_LINHA: it, MARGEM_X: mX }; 
+    }
+    function criarCaminhoInfografico(total, conf) {
+        if (total === 0) return "";
+        const uIdx = Math.floor((total - 1) / conf.ITENS_POR_LINHA);
+        document.getElementById('mapa-container').style.height = ((uIdx * H_ROW) + 200) + "px";
+        let d = `M ${conf.MARGEM_X},120 `; let y = 120;
+        const stepX = (conf.W - (2 * conf.MARGEM_X)) / (conf.ITENS_POR_LINHA - 1 || 1);
+
+        for (let i = 0; i <= uIdx; i++) {
+            if (i < uIdx) {
+                let nextX = (i % 2 === 0) ? (conf.W - conf.MARGEM_X) : conf.MARGEM_X;
+                d += `L ${nextX},${y} A ${H_ROW/2} ${H_ROW/2} 0 0 ${(i % 2 === 0) ? 1 : 0} ${nextX} ${y + H_ROW} `; 
+                y += H_ROW;
+            } else {
+                let pos = (total - 1) % conf.ITENS_POR_LINHA;
+                let endX = (i % 2 === 0) ? conf.MARGEM_X + (pos * stepX) : (conf.W - conf.MARGEM_X) - (pos * stepX);
+                d += `L ${endX},${y} `;
+            }
+        }
+        return d;
+    }
+
+    function carregarRotinasDoBanco() {
+        const hoje = new Date().getDay().toString();
+        onSnapshot(query(collection(db, `${caminho_dados}/rotinas`), orderBy("hora")), (snap) => {
+            const lista = []; snap.forEach(d => { let r = d.data(); r.id = d.id; lista.push(r); });
+            rotinasCache = lista.filter(r => !r.dia_semana || r.dia_semana === 'todos' || r.dia_semana === hoje);
+            rotinasCache.sort((a,b) => converterMin(a.hora) - converterMin(b.hora));
+            desenharPista(rotinasCache);
+        });
+    }
+
+    function desenharPista(lista) {
+       if(lista.length === 0) {
+            document.getElementById('mapa-container').style.display = 'none';
+            document.getElementById('telaDiaLivre').style.display = 'flex';
+            return;
+        } else {
+            document.getElementById('mapa-container').style.display = 'block';
+            document.getElementById('telaDiaLivre').style.display = 'none';
+        }
+        const conf = calcularConfiguracaoTela();
+        const dPath = criarCaminhoInfografico(lista.length, conf);
+        document.getElementById('pathTracejado').setAttribute('d', dPath);
+        const totalLen = document.getElementById('pathTracejado').getTotalLength();
+        const grupoCores = document.getElementById('camada-cores'); grupoCores.innerHTML = "";
+        const cores = ["#E8B87D", "#93C49D", "#80C2D6", "#86A3D4", "#B4A3D6"];
+        const pSize = totalLen / 5; 
+        for(let i=0; i<5; i++) { const p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute('d', dPath); p.setAttribute('class', `estrada-corpo c-${i+1}`); p.style.strokeDasharray = `${pSize + 10} ${totalLen}`; p.style.strokeDashoffset = -(i * pSize); grupoCores.appendChild(p); }
+
+        const container = document.getElementById('cards-layer'); container.innerHTML = "";
+        const minAtual = obterMinutosAtuais(); let indexAtual = -1;
+        for(let i = 0; i < lista.length; i++) { if (minAtual >= converterMin(lista[i].hora)) indexAtual = i; }
+        const hoje = obterDataDeHoje();
+
+        lista.forEach((rot, index) => {
+            const lAtual = Math.floor(index / conf.ITENS_POR_LINHA);
+            const stepX = (conf.W - (2 * conf.MARGEM_X)) / (conf.ITENS_POR_LINHA - 1 || 1);
+            let xPos = (lAtual % 2 === 0) ? conf.MARGEM_X + ((index % conf.ITENS_POR_LINHA) * stepX) : (conf.W - conf.MARGEM_X) - ((index % conf.ITENS_POR_LINHA) * stepX);
+            const corAtual = cores[Math.floor((index / lista.length) * 4.99) % 5];
+
+            const div = document.createElement('div');
+            div.className = `marcador ${(lAtual % 2 === 0) ? 'texto-cima' : 'texto-baixo'}`;
+            div.style.left = xPos + "px"; div.style.top = (120 + (lAtual * H_ROW)) + "px";
+
+            if(index < indexAtual) div.classList.add('passado');
+            else if(index === indexAtual) div.classList.add('agora');
+
+            const aLimpa = (rot.acao || "").trim().toLowerCase();
+            const atv = cacheAtividades[aLimpa] || {};
+            let img = atv.imagem || rot.imagem || rot.foto || buscarIconeAcao(rot.acao);
+            let txt = rot.descricao || atv.texto || atv.descricao || "";
+            txt = txt.replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
+            let acaoSegura = rot.acao.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+            let estrelasHTML = "";
+            if (rot.data_avaliacao === hoje && typeof rot.estrelas_ganhas === 'number' && rot.estrelas_ganhas > 0) {
+                // Trocamos o emoji pelo caractere limpo de estrela: ★
+                estrelasHTML = `<div class="estrelas-ganhas">${"★".repeat(rot.estrelas_ganhas)}</div>`;
+            }
+
+            // NOVA MONTAGEM: Textos em cima, Círculo no meio, Estrelas embaixo!
+            div.innerHTML = `
+                <div class="textos">
+                    <span class="badge-hora" style="background:${corAtual}">${rot.hora}</span>
+                    <span class="acao">${rot.acao}</span>
+                </div>
+                <div class="icone-circulo" style="border-color:${corAtual}" onclick="abrirDica('${acaoSegura}', '${txt}', '${rot.id}')">
+                    <img src="${img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1048/1048953.png'">
+                </div>
+                ${estrelasHTML}
+            `;
+            container.appendChild(div);
+        });
+
+        let lPassado = 0;
+        if (indexAtual >= 0) {
+            const cReta = conf.W - (2 * conf.MARGEM_X); const pReta = cReta / (conf.ITENS_POR_LINHA - 1 || 1);
+            lPassado = (Math.floor(indexAtual / conf.ITENS_POR_LINHA) * (cReta + Math.PI * (H_ROW / 2))) + ((indexAtual % conf.ITENS_POR_LINHA) * pReta);
+        }
+        const cCinza = document.getElementById('pathCinzaPassado');
+        cCinza.setAttribute('d', dPath); cCinza.style.strokeDasharray = totalLen; cCinza.style.strokeDashoffset = totalLen - lPassado; 
+    }
+
+    window.addEventListener('resize', () => { setTimeout(() => desenharPista(rotinasCache), 300); });
+    async function heartbeat() { if(caminho_dados) setDoc(doc(db, `${caminho_dados}/dispositivos/tablet_amigo`), { nome: "Tablet", online: serverTimestamp() }, {merge:true}); }
+</script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw-dash.js')
+                    .then(reg => console.log('PWA do Dash ativado!', reg.scope))
+                    .catch(err => console.error('Erro no PWA:', err));
+            });
+        }
+    </script>
+</body>
+</html>
