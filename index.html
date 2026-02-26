@@ -118,6 +118,26 @@
             .balao-fala { border-bottom-left-radius: 30px; border-top-right-radius: 5px; margin-top: 20px; }
             .card { width: 100%; }
         }
+    .btn-acesso-painel {
+    background-color: #3498db; 
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px; 
+    text-decoration: none; 
+    font-weight: bold;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
+    display: inline-block;
+    
+    /* O SEGREDO ESTÁ AQUI 👇 */
+    margin-left: auto; 
+}
+.btn-acesso-painel:hover {
+    background-color: #2980b9; /* Fica um azul mais escuro ao passar o mouse */
+    transform: translateY(-2px); /* Dá um pulinho pra cima */
+    box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
+}
     </style>
 </head>
 <body>
@@ -125,6 +145,7 @@
     <nav class="navbar">
         <img src="icon.ico" alt="Logo Amigo Virtual">
         <h2>Amigo Virtual</h2>
+        <a href="index.html" class="btn-acesso-painel">🔐 Acessar Painel</a>
     </nav>
 
     <section class="hero">
