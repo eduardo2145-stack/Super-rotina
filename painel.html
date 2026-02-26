@@ -899,8 +899,28 @@ onAuthStateChanged(auth, async (u) => {
         window.carregarEdicaoRotina = (id) => { const r=cacheRotinas[id]; if(!r)return; document.getElementById('editIdRotina').value=id; document.getElementById('horaRotina').value=r.hora; document.getElementById('diaRotina').value=r.dia_semana; document.getElementById('selectAtividadeRotina').value=r.acao; };
         window.apagarAtividade = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id)); };
         window.apagarRotina = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`, id)); };
-        window.enviarAcao = async(a) => { if(!filhoAtualId) return alert("Selecione um filho"); await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/config/estado_atual`), {acao:a, timestamp:new Date()}, {merge:true}); mostrarAviso(); };
-        window.apagarDispositivo = async(id) => { if(confirm("Remover este computador?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/dispositivos`, id)); };
+       // FUNÇÃO DE AÇÃO MANUAL (COM MODO "FIRE AND FORGET" TURBO)
+        window.enviarAcao = function(a) { 
+            if(!filhoAtualId) {
+                alert("Selecione um filho para enviar o comando.");
+                return;
+            }
+
+            // 1. Mostra o aviso na sua tela IMEDIATAMENTE (Sem esperar o Firebase)
+            if (typeof mostrarAviso === "function") mostrarAviso();
+
+            // 2. Monta a rota do documento
+            const docRef = doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/config/estado_atual`);
+
+            // 3. Dispara para o servidor em segundo plano (Sem o "await")
+            setDoc(docRef, { 
+                acao: a, 
+                timestamp: Date.now() // Número exato: infinitamente mais rápido para o PC ler
+            }, { merge: true })
+            .catch(erro => {
+                console.error("Erro silencioso ao enviar ação:", erro);
+            }); 
+        };  window.apagarDispositivo = async(id) => { if(confirm("Remover este computador?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/dispositivos`, id)); };
         window.abrirDicas = () => document.getElementById('modalDicas').classList.add('aberta');
         window.fecharDicas = () => document.getElementById('modalDicas').classList.remove('aberta');
 

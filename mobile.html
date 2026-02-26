@@ -853,8 +853,28 @@ onAuthStateChanged(auth, async (u) => {
 window.salvarRotina = async () => { const id=document.getElementById('editIdRotina').value; const dados={ hora: document.getElementById('horaRotina').value, dia_semana: document.getElementById('diaRotina').value, acao: document.getElementById('selectAtividadeRotina').value }; if(!dados.hora) return alert("Hora?"); if(id) await updateDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`, id), dados); else await addDoc(collection(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`), dados); document.getElementById('editIdRotina').value=""; document.getElementById('horaRotina').value=""; };
         window.apagarAtividade = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/atividades`, id)); };
         window.apagarRotina = async(id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/rotinas`, id)); };
-        window.enviarAcao = async(a) => { await setDoc(doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/config/estado_atual`), {acao:a, timestamp:new Date()}, {merge:true}); mostrarAviso();};
-        
+       // FUNÇÃO DE AÇÃO MANUAL (COM MODO "FIRE AND FORGET" TURBO)
+        window.enviarAcao = function(a) { 
+            if(!filhoAtualId) {
+                alert("Selecione um filho para enviar o comando.");
+                return;
+            }
+
+            // 1. Mostra o aviso na sua tela IMEDIATAMENTE (Sem esperar o Firebase)
+            if (typeof mostrarAviso === "function") mostrarAviso();
+
+            // 2. Monta a rota do documento
+            const docRef = doc(db, `usuarios/${usuarioAtual.uid}/filhos/${filhoAtualId}/config/estado_atual`);
+
+            // 3. Dispara para o servidor em segundo plano (Sem o "await")
+            setDoc(docRef, { 
+                acao: a, 
+                timestamp: Date.now() // Número exato: infinitamente mais rápido para o PC ler
+            }, { merge: true })
+            .catch(erro => {
+                console.error("Erro silencioso ao enviar ação:", erro);
+            }); 
+        }; 
         window.carregarEdicaoAtividade = (id) => { 
             const d=cacheAtividades[id]; if(d) { 
                 document.getElementById('idAtividade').value=id; document.getElementById('idAtividade').disabled=true; document.getElementById('editIdAtividade').value=id; 
