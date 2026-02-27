@@ -42,7 +42,46 @@
         .card-title { color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
         .card-value { font-size: 32px; font-weight: 700; color: #0f172a; margin: 0; }
         .card-value span { font-size: 14px; font-weight: 500; color: #10b981; margin-left: 10px; } /* Texto verde extra */
-    </style>
+    /* =========================================
+   MODO RESPONSIVO PARA O ADMIN (CELULAR)
+   ========================================= */
+@media (max-width: 768px) {
+    /* Transforma o layout lado-a-lado em um layout empilhado (um em cima do outro) */
+    #adminWrapper {
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 100vh;
+    }
+
+    /* O Menu Lateral (Sala de Comando) vai para o topo e ocupa 100% da largura */
+    #adminWrapper > div:nth-child(1) {
+        width: 100% !important;
+        height: auto !important;
+        min-height: unset !important;
+        padding-bottom: 20px !important;
+        position: relative !important;
+    }
+
+    /* A área principal do Dashboard ocupa o resto da tela abaixo do menu */
+    #adminWrapper > div:nth-child(2) {
+        width: 100% !important;
+        padding: 15px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Empilha as caixas de Estatísticas (Receita, Assinaturas) para não ficarem espremidas */
+    div[style*="display: flex; gap: 20px;"] {
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+
+    /* Empilha os contadores da tabela de clientes */
+    div[style*="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;"] {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+}
+</style>
 </head>
 <body>
 
@@ -603,4 +642,5 @@
         };
     </script>
 </body>
+
 </html>
