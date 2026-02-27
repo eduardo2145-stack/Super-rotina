@@ -43,44 +43,54 @@
         .card-value { font-size: 32px; font-weight: 700; color: #0f172a; margin: 0; }
         .card-value span { font-size: 14px; font-weight: 500; color: #10b981; margin-left: 10px; } /* Texto verde extra */
     /* =========================================
-   MODO RESPONSIVO PARA O ADMIN (CELULAR)
+   MENU HAMBÚRGUER PROFISSIONAL (CELULAR)
    ========================================= */
 @media (max-width: 768px) {
-    /* Transforma o layout lado-a-lado em um layout empilhado (um em cima do outro) */
+    /* Mostra o cabeçalho com os 3 risquinhos */
+    #cabecalhoMobile {
+        display: flex !important;
+    }
+
     #adminWrapper {
-        flex-direction: column !important;
-        height: auto !important;
-        min-height: 100vh;
+        display: block !important; /* Desliga o modo lado-a-lado */
     }
 
-    /* O Menu Lateral (Sala de Comando) vai para o topo e ocupa 100% da largura */
+    /* Esconde a barra lateral fora da tela (à esquerda) */
     #adminWrapper > div:nth-child(1) {
-        width: 100% !important;
-        height: auto !important;
-        min-height: unset !important;
-        padding-bottom: 20px !important;
-        position: relative !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: -100% !important; /* <--- Fica escondido aqui */
+        width: 280px !important;
+        max-width: 80vw !important;
+        height: 100vh !important;
+        z-index: 999 !important;
+        transition: left 0.3s ease-in-out !important; /* Animação suave */
+        box-shadow: 5px 0 20px rgba(0,0,0,0.5) !important;
     }
 
-    /* A área principal do Dashboard ocupa o resto da tela abaixo do menu */
+    /* Classe que faz o menu deslizar para dentro da tela */
+    #adminWrapper > div:nth-child(1).menu-aberto {
+        left: 0 !important;
+    }
+
+    /* Área principal do Dashboard (Atrás do menu) */
     #adminWrapper > div:nth-child(2) {
         width: 100% !important;
         padding: 15px !important;
         box-sizing: border-box !important;
     }
 
-    /* Empilha as caixas de Estatísticas (Receita, Assinaturas) para não ficarem espremidas */
+    /* Empilha os blocos de estatísticas */
     div[style*="display: flex; gap: 20px;"] {
         flex-direction: column !important;
         gap: 15px !important;
     }
-
-    /* Empilha os contadores da tabela de clientes */
     div[style*="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;"] {
         flex-direction: column !important;
         align-items: flex-start !important;
     }
 }
+
 </style>
 </head>
 <body>
@@ -89,6 +99,12 @@
         <div class="spinner"></div>
         <h2>Validando Credenciais Master...</h2>
     </div>
+    <div id="cabecalhoMobile" style="display: none; background: #1e293b; color: white; padding: 15px 20px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 997;">
+        <div style="font-size: 18px; font-weight: bold;">👑 Sala de Comando</div>
+        <button onclick="toggleMenuMobile()" style="background: none; border: none; color: white; font-size: 26px; cursor: pointer;">☰</button>
+    </div>
+
+    <div id="overlayMenu" onclick="toggleMenuMobile()" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 998;"></div>
 
     <div id="adminWrapper">
         
@@ -641,6 +657,26 @@
             });
         };
     </script>
+        <script>
+        // FUNÇÃO PARA ABRIR E FECHAR O MENU MOBILE
+        window.toggleMenuMobile = function() {
+            // Pega a barra lateral escura
+            const menu = document.querySelector('#adminWrapper > div:nth-child(1)');
+            // Pega o fundo escuro
+            const overlay = document.getElementById('overlayMenu');
+            
+            // Se estiver aberto, ele fecha. Se estiver fechado, ele abre!
+            if (menu.classList.contains('menu-aberto')) {
+                menu.classList.remove('menu-aberto');
+                overlay.style.display = 'none';
+            } else {
+                menu.classList.add('menu-aberto');
+                overlay.style.display = 'block';
+            }
+        };
+    </script>
+
 </body>
 
 </html>
+
