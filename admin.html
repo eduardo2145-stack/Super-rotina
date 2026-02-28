@@ -42,56 +42,7 @@
         .card-title { color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
         .card-value { font-size: 32px; font-weight: 700; color: #0f172a; margin: 0; }
         .card-value span { font-size: 14px; font-weight: 500; color: #10b981; margin-left: 10px; } /* Texto verde extra */
-    /* =========================================
-   MENU HAMBÚRGUER PROFISSIONAL (CELULAR)
-   ========================================= */
-@media (max-width: 768px) {
-    /* Mostra o cabeçalho com os 3 risquinhos */
-    #cabecalhoMobile {
-        display: flex !important;
-    }
-
-    #adminWrapper {
-        display: block !important; /* Desliga o modo lado-a-lado */
-    }
-
-    /* Esconde a barra lateral fora da tela (à esquerda) */
-    #adminWrapper > div:nth-child(1) {
-        position: fixed !important;
-        top: 0 !important;
-        left: -100% !important; /* <--- Fica escondido aqui */
-        width: 280px !important;
-        max-width: 80vw !important;
-        height: 100vh !important;
-        z-index: 999 !important;
-        transition: left 0.3s ease-in-out !important; /* Animação suave */
-        box-shadow: 5px 0 20px rgba(0,0,0,0.5) !important;
-    }
-
-    /* Classe que faz o menu deslizar para dentro da tela */
-    #adminWrapper > div:nth-child(1).menu-aberto {
-        left: 0 !important;
-    }
-
-    /* Área principal do Dashboard (Atrás do menu) */
-    #adminWrapper > div:nth-child(2) {
-        width: 100% !important;
-        padding: 15px !important;
-        box-sizing: border-box !important;
-    }
-
-    /* Empilha os blocos de estatísticas */
-    div[style*="display: flex; gap: 20px;"] {
-        flex-direction: column !important;
-        gap: 15px !important;
-    }
-    div[style*="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;"] {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-    }
-}
-
-</style>
+    </style>
 </head>
 <body>
 
@@ -99,15 +50,9 @@
         <div class="spinner"></div>
         <h2>Validando Credenciais Master...</h2>
     </div>
-     
-   <div id="adminWrapper">
-        <div id="cabecalhoMobile" style="display: none; background: #1e293b; color: white; padding: 15px 20px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 997;">
-        <div style="font-size: 18px; font-weight: bold;">👑 Sala de Comando</div>
-        <button onclick="toggleMenuMobile()" style="background: none; border: none; color: white; font-size: 26px; cursor: pointer;">☰</button>
-    </div>
 
-    <div id="overlayMenu" onclick="toggleMenuMobile()" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 998;"></div>
-
+    <div id="adminWrapper">
+        
         <aside class="sidebar">
             <div class="sidebar-logo">👑 Sala de Comando</div>
             <div class="nav-link ativo" onclick="mudarAba('dashboard', this)">📊 Dashboard</div>
@@ -290,7 +235,7 @@
         });
 
         // FUNÇÃO QUE PUXA OS NÚMEROS DO BANCO
-   window.carregarEstatisticas = async function() {
+window.carregarEstatisticas = async function() {
             try {
                 // 1. Descobre qual o valor da assinatura que você configurou no Gateway
                 let valorMensalidade = 0;
@@ -304,11 +249,16 @@
                 const snapshot = await getDocs(assinaturasRef);
 
                 let totalUsuarios = 0;
-                let usuariosAtivos = 0;
+                let usuariosAtivos = 0; // Agora só vai contar os Premium!
 
                 snapshot.forEach((doc) => {
-                    totalUsuarios++; 
-                    if (doc.data().status === "ativo") usuariosAtivos++; 
+                    totalUsuarios++; // Conta todo o mundo (Premium e Trial)
+                    
+                    const dados = doc.data();
+                    // A MÁGICA AQUI: Só soma dinheiro e assinaturas ativas se for PREMIUM
+                    if (dados.status === "ativo" && dados.plano === "premium") {
+                        usuariosAtivos++; 
+                    }
                 });
 
                 // 3. Calcula e mostra na tela
@@ -657,27 +607,5 @@
             });
         };
     </script>
-        <script>
-        // FUNÇÃO PARA ABRIR E FECHAR O MENU MOBILE
-        window.toggleMenuMobile = function() {
-            // Pega a barra lateral escura
-            const menu = document.querySelector('#adminWrapper > div:nth-child(1)');
-            // Pega o fundo escuro
-            const overlay = document.getElementById('overlayMenu');
-            
-            // Se estiver aberto, ele fecha. Se estiver fechado, ele abre!
-            if (menu.classList.contains('menu-aberto')) {
-                menu.classList.remove('menu-aberto');
-                overlay.style.display = 'none';
-            } else {
-                menu.classList.add('menu-aberto');
-                overlay.style.display = 'block';
-            }
-        };
-    </script>
-
 </body>
-
 </html>
-
-
