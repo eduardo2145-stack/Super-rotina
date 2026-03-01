@@ -3,170 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Minha Trilha Mágica</title>
+    <title>Trilha Candy Premium</title>
     <style>
         /* =========================================
-           O MUNDO MÁGICO (Cores e Fundo 2.5D)
+           UNIVERSO CANDY (Fundo e Texturas)
            ========================================= */
         body, html {
             margin: 0; padding: 0; width: 100vw; height: 100vh;
-            background: #a6c0fe;
+            /* Fundo com degradê suave e "névoa" mágica */
+            background: linear-gradient(180deg, #fbcfe8 0%, #e0e7ff 40%, #a7f3d0 100%);
             font-family: 'Nunito', 'Segoe UI', sans-serif;
-            overflow: hidden; /* Esconde barra de rolagem */
-            touch-action: none; /* Evita que a tela puxe pra baixo no celular */
+            overflow: hidden; touch-action: none;
         }
 
-        /* O CÉU */
-        .ceu {
-            position: absolute; top: 0; left: 0; width: 100%; height: 35vh;
-            background: linear-gradient(to bottom, #7dd3fc 0%, #bae6fd 100%);
-            z-index: 1;
+        /* Nuvens macias no topo */
+        .ceu-decor {
+            position: absolute; top: -5%; left: -10%; width: 120%; height: 30vh;
+            background: radial-gradient(circle at 50% 100%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 60%);
+            z-index: 1; filter: blur(10px);
         }
 
-        /* AS NUVENS ANIMADAS */
-        .nuvem { position: absolute; font-size: 60px; opacity: 0.8; animation: moverNuvens linear infinite; z-index: 2; }
-        .n1 { top: 5%; left: -20%; animation-duration: 30s; font-size: 80px; }
-        .n2 { top: 15%; left: -20%; animation-duration: 40s; font-size: 50px; animation-delay: -15s; }
-        @keyframes moverNuvens { 0% { transform: translateX(-20vw); } 100% { transform: translateX(120vw); } }
-
-        /* O CHÃO (Desenhado com horizonte suave) */
-        .chao {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 68vh;
-            background: linear-gradient(to bottom, #a7f3d0 0%, #10b981 100%);
-            border-top: 4px solid #6ee7b7; /* Linha do horizonte */
-            z-index: 3;
-            border-top-left-radius: 50% 15px; /* Curva suave no horizonte */
-            border-top-right-radius: 50% 15px;
-        }
+        /* Bordas de "Glacê/Chantilly" nas laterais (Dá o efeito de mundo de doces) */
+        .glace-esq { position: absolute; left: -20px; top: 0; bottom: 0; width: 50px; background: rgba(255,255,255,0.4); border-radius: 50px; filter: blur(15px); z-index: 2; }
+        .glace-dir { position: absolute; right: -20px; top: 0; bottom: 0; width: 50px; background: rgba(255,255,255,0.4); border-radius: 50px; filter: blur(15px); z-index: 2; }
 
         /* =========================================
-           A ESTRADA DOCE EM ZIGUEZAGUE
+           O RIO / CAMINHO (Efeito Grosso 3D)
            ========================================= */
         .container-estrada {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
-            z-index: 4;
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 5;
         }
         
         .svg-estrada { width: 100%; height: 100%; overflow: visible; }
         
-        .linha-estrada-sombra {
-            fill: none; stroke: #db2777; stroke-width: 6; stroke-linecap: round;
-            transform: translate(0px, 1.5px); /* Sombra 3D para a rua */
-        }
-        
-        .linha-estrada {
-            fill: none; stroke: #fbcfe8; stroke-width: 6; stroke-linecap: round;
-        }
-
-        .linha-tracejada {
-            fill: none; stroke: #ffffff; stroke-width: 1.5; stroke-dasharray: 4, 4; stroke-linecap: round;
-        }
+        /* 1. A sombra do rio no chão */
+        .rio-sombra { fill: none; stroke: rgba(4, 120, 87, 0.2); stroke-width: 26; stroke-linecap: round; transform: translate(3px, 5px); }
+        /* 2. O Rio principal (Azul glacê) */
+        .rio-base { fill: none; stroke: #bae6fd; stroke-width: 24; stroke-linecap: round; }
+        /* 3. O brilho interno do rio */
+        .rio-brilho { fill: none; stroke: rgba(255,255,255,0.5); stroke-width: 18; stroke-linecap: round; }
+        /* 4. A trilha de doces no meio */
+        .linha-doces { fill: none; stroke: #f43f5e; stroke-width: 3.5; stroke-dasharray: 0 12; stroke-linecap: round; }
 
         /* =========================================
-           AS BOLINHAS (As Fases do Candy Crush)
+           BOTÕES CANDY CRUSH (Efeito Glossy/Gelatina)
            ========================================= */
         .fases-container {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 68vh;
-            z-index: 10;
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 15;
         }
 
         .fase {
-            position: absolute; width: 85px; height: 85px; border-radius: 50%;
+            position: absolute; width: 75px; height: 75px; border-radius: 50%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            /* Centraliza a bolinha exatamente na coordenada */
-            transform: translate(-50%, 50%); 
-            border: 4px solid #fff; box-shadow: 0 8px 0 rgba(0,0,0,0.15), 0 15px 20px rgba(0,0,0,0.2);
-            cursor: pointer; transition: 0.2s;
+            transform: translate(-50%, 50%); cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* A borda grossa branca de jogo */
+            border: 4px solid #ffffff;
+        }
+
+        /* O REFLEXO DE PLÁSTICO (A Mágica do Brilho) */
+        .fase::after {
+            content: ''; position: absolute; top: 4px; left: 12px; width: 30px; height: 12px;
+            background: rgba(255,255,255,0.8); border-radius: 20px; transform: rotate(-25deg);
+            pointer-events: none;
+        }
+
+        .fase:active { transform: translate(-50%, 55%) scale(0.9); box-shadow: 0 4px 0 rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.2) !important; padding-top: 4px; }
+
+        /* Cores e Sombras 3D Pesadas */
+        .fase-feita { 
+            background: radial-gradient(circle at 40% 40%, #fbbf24, #d97706); 
+            /* Sombra interna para volume, sombra de fundo para altura */
+            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2), inset 5px 5px 10px rgba(255,255,255,0.4), 0 10px 0 #b45309, 0 15px 25px rgba(0,0,0,0.3); 
         }
         
-        .fase:active { margin-top: 5px; box-shadow: 0 3px 0 rgba(0,0,0,0.15), 0 5px 10px rgba(0,0,0,0.2); }
+        .fase-atual { 
+            background: radial-gradient(circle at 40% 40%, #34d399, #059669); 
+            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2), inset 5px 5px 10px rgba(255,255,255,0.4), 0 10px 0 #047857, 0 15px 25px rgba(0,0,0,0.3), 0 0 40px #6ee7b7; 
+            animation: pulsarFase 1.5s infinite alternate; 
+        }
 
-        /* As Posições e Tamanhos (Ziguezague e Profundidade) */
-        /* Lá no fundo (menor) */
-        .f-4 { bottom: 85%; left: 40%; transform: translate(-50%, 50%) scale(0.65); z-index: 11; } 
-        /* Meio de cima */
-        .f-3 { bottom: 60%; left: 70%; transform: translate(-50%, 50%) scale(0.75); z-index: 12; }
-        /* Meio de baixo */
-        .f-2 { bottom: 35%; left: 25%; transform: translate(-50%, 50%) scale(0.85); z-index: 13; }
-        /* Perto da tela (maior) */
-        .f-1 { bottom: 10%; left: 50%; transform: translate(-50%, 50%) scale(1); z-index: 14; }
+        .fase-bloqueada { 
+            background: radial-gradient(circle at 40% 40%, #e2e8f0, #94a3b8); 
+            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.1), inset 5px 5px 10px rgba(255,255,255,0.8), 0 10px 0 #64748b, 0 15px 25px rgba(0,0,0,0.2); 
+            /* Sem ícone de cadeado triste, só uma cor mais neutra como no jogo */
+        }
 
-        /* Estilos e Cores das Fases */
-        .fase-feita { background: radial-gradient(circle at 30% 30%, #ffd700, #f59e0b); box-shadow: 0 8px 0 #d97706, 0 15px 20px rgba(0,0,0,0.2); }
-        .fase-atual { background: radial-gradient(circle at 30% 30%, #34d399, #059669); box-shadow: 0 8px 0 #047857, 0 15px 20px rgba(0,0,0,0.2), 0 0 30px #34d399; animation: pulsarFase 1.5s infinite alternate; }
-        .fase-bloqueada { background: radial-gradient(circle at 30% 30%, #cbd5e1, #94a3b8); box-shadow: 0 8px 0 #64748b, 0 15px 20px rgba(0,0,0,0.2); filter: grayscale(0.5); }
-
-        @keyframes pulsarFase { 0% { transform: translate(-50%, 50%) scale(inherit); } 100% { transform: translate(-50%, 50%) scale(calc(inherit + 0.05)); } }
-
-        /* Textos dentro das bolinhas */
-        .fase-icone { font-size: 30px; margin-bottom: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .fase-estrelas { font-size: 14px; letter-spacing: -2px; margin-top: -5px; }
-        
-        /* Plaquinha elegante */
-        .plaquinha-texto { position: absolute; bottom: -30px; background: white; color: #334155; font-size: 15px; font-weight: 900; padding: 4px 14px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); white-space: nowrap; border: 2px solid #e2e8f0; }
-
-        /* O Avatar do Menino */
-        .avatar-jogador { position: absolute; top: -50px; width: 65px; height: 65px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4)); animation: flutuarAvatar 2s infinite ease-in-out; z-index: 20; }
-        @keyframes flutuarAvatar { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
+        @keyframes pulsarFase { 0% { filter: brightness(1); } 100% { filter: brightness(1.15); transform: translate(-50%, 45%) scale(1.05); } }
 
         /* =========================================
-           CENÁRIO 3D (Árvores e Casas nas laterais)
+           PLACAS DE TEXTO (UI Estilo Jogo)
            ========================================= */
-        .decor { position: absolute; transform: translate(-50%, 50%); filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); z-index: 5; }
-        .d-1 { bottom: 20%; left: 85%; font-size: 60px; z-index: 13; } /* Árvore perto */
-        .d-2 { bottom: 45%; left: 80%; font-size: 40px; z-index: 12; } /* Castelo meio */
-        .d-3 { bottom: 75%; left: 15%; font-size: 30px; z-index: 11; } /* Árvore longe */
-        .d-4 { bottom: 50%; left: 10%; font-size: 45px; z-index: 12; } /* Doce meio */
+        .plaquinha-texto {
+            position: absolute; bottom: -35px; white-space: nowrap;
+            background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+            color: #1e293b; font-size: 15px; font-weight: 900; 
+            padding: 6px 16px; border-radius: 25px;
+            /* Borda grossa e sombra de botão */
+            border: 2px solid #ffffff; box-shadow: 0 5px 0 #cbd5e1, 0 10px 15px rgba(0,0,0,0.15);
+            text-shadow: 0 1px 1px rgba(255,255,255,1);
+            z-index: 20;
+        }
 
+        .fase-feita .plaquinha-texto { background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%); box-shadow: 0 5px 0 #d97706, 0 10px 15px rgba(0,0,0,0.15); color: #78350f; border-color: #fef3c7;}
+        .fase-atual .plaquinha-texto { background: linear-gradient(180deg, #d1fae5 0%, #a7f3d0 100%); box-shadow: 0 5px 0 #059669, 0 10px 15px rgba(0,0,0,0.15); color: #064e3b; border-color: #d1fae5;}
+
+        /* Elementos internos do botão */
+        .fase-icone { font-size: 32px; z-index: 2; margin-top: 2px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); }
+        .fase-estrelas { font-size: 15px; letter-spacing: -3px; margin-top: -6px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3)); }
+        
+        .avatar-jogador { position: absolute; top: -55px; width: 70px; height: 70px; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.4)); animation: flutuarAvatar 2s infinite ease-in-out; z-index: 30; border-radius: 50%; border: 3px solid #fff; background: #6ee7b7;}
+        @keyframes flutuarAvatar { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+
+        /* =========================================
+           POSIÇÕES E CURVAS DA TRILHA
+           ========================================= */
+        /* Coordenadas cravadas com a curva do SVG (bottom, left) */
+        .f-4 { bottom: 82%; left: 45%; transform: translate(-50%, 50%) scale(0.65); z-index: 11; } 
+        .f-3 { bottom: 58%; left: 75%; transform: translate(-50%, 50%) scale(0.80); z-index: 12; }
+        .f-2 { bottom: 33%; left: 25%; transform: translate(-50%, 50%) scale(0.95); z-index: 13; }
+        .f-1 { bottom: 8%; left: 55%; transform: translate(-50%, 50%) scale(1.1); z-index: 14; }
+
+        /* =========================================
+           CENÁRIO DOCE (Elementos Laterais)
+           ========================================= */
+        .decor { position: absolute; filter: drop-shadow(0 8px 6px rgba(0,0,0,0.25)); z-index: 10; user-select: none; }
+        .d-1 { bottom: 15%; left: 10%; font-size: 65px; z-index: 15; transform: rotate(-10deg); } /* Sorvete perto */
+        .d-2 { bottom: 45%; right: 5%; font-size: 55px; z-index: 12; transform: rotate(15deg); } /* Chocolate meio */
+        .d-3 { bottom: 75%; left: 15%; font-size: 45px; z-index: 11; } /* Cupcake longe */
+        .d-4 { top: 10%; right: 20%; font-size: 40px; opacity: 0.8; z-index: 5;} /* Balão no céu */
     </style>
 </head>
 <body>
 
-    <div class="ceu">
-        <div class="nuvem n1">☁️</div>
-        <div class="nuvem n2">☁️</div>
+    <div class="ceu-decor"></div>
+    <div class="glace-esq"></div>
+    <div class="glace-dir"></div>
+
+    <div class="decor d-1">🍦</div>
+    <div class="decor d-2">🍫</div>
+    <div class="decor d-3">🧁</div>
+    <div class="decor d-4">🎈</div>
+
+    <div class="container-estrada">
+        <svg class="svg-estrada" preserveAspectRatio="none" viewBox="0 0 100 100">
+            <path class="rio-sombra" d="M 55 110 C 55 90, 15 85, 25 65 C 35 45, 95 50, 75 40 C 55 30, 40 25, 45 10 C 50 -5, 45 -5, 45 -10" />
+            <path class="rio-base" d="M 55 110 C 55 90, 15 85, 25 65 C 35 45, 95 50, 75 40 C 55 30, 40 25, 45 10 C 50 -5, 45 -5, 45 -10" />
+            <path class="rio-brilho" d="M 55 110 C 55 90, 15 85, 25 65 C 35 45, 95 50, 75 40 C 55 30, 40 25, 45 10 C 50 -5, 45 -5, 45 -10" />
+            <path class="linha-doces" d="M 55 110 C 55 90, 15 85, 25 65 C 35 45, 95 50, 75 40 C 55 30, 40 25, 45 10 C 50 -5, 45 -5, 45 -10" />
+        </svg>
     </div>
 
-    <div class="chao">
+    <div class="fases-container">
         
-        <div class="decor d-1">🌳</div>
-        <div class="decor d-2">🏰</div>
-        <div class="decor d-3">🌲</div>
-        <div class="decor d-4">🍭</div>
-
-        <div class="container-estrada">
-            <svg class="svg-estrada" preserveAspectRatio="none" viewBox="0 0 100 100">
-                <path class="linha-estrada-sombra" d="M 50 110 C 50 95, 50 90, 50 90 C 50 75, 25 80, 25 65 C 25 50, 70 55, 70 40 C 70 25, 40 30, 40 15 C 40 0, 40 0, 40 -10" />
-                <path class="linha-estrada" d="M 50 110 C 50 95, 50 90, 50 90 C 50 75, 25 80, 25 65 C 25 50, 70 55, 70 40 C 70 25, 40 30, 40 15 C 40 0, 40 0, 40 -10" />
-                <path class="linha-tracejada" d="M 50 110 C 50 95, 50 90, 50 90 C 50 75, 25 80, 25 65 C 25 50, 70 55, 70 40 C 70 25, 40 30, 40 15 C 40 0, 40 0, 40 -10" />
-            </svg>
+        <div class="fase fase-bloqueada f-4">
+            <div class="fase-icone">🔒</div>
+            <div class="plaquinha-texto">Jogar PC 🎮</div>
         </div>
 
-        <div class="fases-container">
-            
-            <div class="fase fase-bloqueada f-4">
-                <div class="fase-icone">🔒</div>
-                <div class="plaquinha-texto">Jogar PC 🎮</div>
-            </div>
-
-            <div class="fase fase-bloqueada f-3">
-                <div class="fase-icone">🔒</div>
-                <div class="plaquinha-texto">Lição de Casa 📚</div>
-            </div>
-
-            <div class="fase fase-atual f-2">
-                <img src="https://cdn-icons-png.flaticon.com/512/4140/4140047.png" class="avatar-jogador" alt="Menino">
-                <div class="fase-icone">🍽️</div>
-                <div class="plaquinha-texto">Almoçar 🍛</div>
-            </div>
-
-            <div class="fase fase-feita f-1">
-                <div class="fase-icone">🛏️</div>
-                <div class="fase-estrelas">⭐⭐⭐</div>
-                <div class="plaquinha-texto">Arrumar Cama ✨</div>
-            </div>
-
+        <div class="fase fase-bloqueada f-3">
+            <div class="fase-icone">🔒</div>
+            <div class="plaquinha-texto">Lição de Casa 📚</div>
         </div>
+
+        <div class="fase fase-atual f-2">
+            <img src="https://cdn-icons-png.flaticon.com/512/4140/4140047.png" class="avatar-jogador" alt="Menino">
+            <div class="fase-icone">🍽️</div>
+            <div class="plaquinha-texto">Almoçar 🍛</div>
+        </div>
+
+        <div class="fase fase-feita f-1">
+            <div class="fase-icone">🛏️</div>
+            <div class="fase-estrelas">⭐⭐⭐</div>
+            <div class="plaquinha-texto">Arrumar Cama ✨</div>
+        </div>
+
     </div>
 
 </body>
