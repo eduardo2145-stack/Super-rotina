@@ -2,162 +2,171 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Minha Trilha Mágica</title>
     <style>
         /* =========================================
-           O UNIVERSO 3D (Cenas e Perspetiva)
+           O MUNDO MÁGICO (Cores e Fundo 2.5D)
            ========================================= */
         body, html {
             margin: 0; padding: 0; width: 100vw; height: 100vh;
-            background: #87CEEB; /* Céu azul base */
+            background: #a6c0fe;
             font-family: 'Nunito', 'Segoe UI', sans-serif;
-            overflow: hidden; /* Esconde a barra de rolagem */
+            overflow: hidden; /* Esconde barra de rolagem */
+            touch-action: none; /* Evita que a tela puxe pra baixo no celular */
         }
 
-        /* Container que cria a ilusão de profundidade 3D */
-        .cena-3d {
-            position: relative; width: 100%; height: 100%;
-            perspective: 1200px; /* A mágica acontece aqui: define o "ângulo do olho" */
-            overflow: hidden;
+        /* O CÉU */
+        .ceu {
+            position: absolute; top: 0; left: 0; width: 100%; height: 35vh;
+            background: linear-gradient(to bottom, #7dd3fc 0%, #bae6fd 100%);
+            z-index: 1;
+        }
+
+        /* AS NUVENS ANIMADAS */
+        .nuvem { position: absolute; font-size: 60px; opacity: 0.8; animation: moverNuvens linear infinite; z-index: 2; }
+        .n1 { top: 5%; left: -20%; animation-duration: 30s; font-size: 80px; }
+        .n2 { top: 15%; left: -20%; animation-duration: 40s; font-size: 50px; animation-delay: -15s; }
+        @keyframes moverNuvens { 0% { transform: translateX(-20vw); } 100% { transform: translateX(120vw); } }
+
+        /* O CHÃO (Desenhado com horizonte suave) */
+        .chao {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 68vh;
+            background: linear-gradient(to bottom, #a7f3d0 0%, #10b981 100%);
+            border-top: 4px solid #6ee7b7; /* Linha do horizonte */
+            z-index: 3;
+            border-top-left-radius: 50% 15px; /* Curva suave no horizonte */
+            border-top-right-radius: 50% 15px;
         }
 
         /* =========================================
-           O CÉU E AS NUVENS (Fundo Fixo)
+           A ESTRADA DOCE EM ZIGUEZAGUE
            ========================================= */
-        .ceu-fundo {
-            position: absolute; top: 0; left: 0; width: 100%; height: 60%;
-            background: linear-gradient(to bottom, #7dd3fc 0%, #c2e9fb 100%);
-            z-index: 0;
+        .container-estrada {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+            z-index: 4;
         }
         
-        .nuvem { position: absolute; font-size: 80px; opacity: 0.7; animation: moverNuvens linear infinite; z-index: 1; user-select: none; }
-        .n1 { top: 10%; left: -20%; animation-duration: 40s; font-size: 100px; }
-        .n2 { top: 30%; left: -20%; animation-duration: 30s; font-size: 130px; animation-delay: -15s; }
-        @keyframes moverNuvens { 0% { transform: translateX(-10vw); } 100% { transform: translateX(120vw); } }
+        .svg-estrada { width: 100%; height: 100%; overflow: visible; }
+        
+        .linha-estrada-sombra {
+            fill: none; stroke: #db2777; stroke-width: 6; stroke-linecap: round;
+            transform: translate(0px, 1.5px); /* Sombra 3D para a rua */
+        }
+        
+        .linha-estrada {
+            fill: none; stroke: #fbcfe8; stroke-width: 6; stroke-linecap: round;
+        }
 
-        /* =========================================
-           O CHÃO (O Plano Inclinado)
-           ========================================= */
-        .chao-mapa {
-            position: absolute; bottom: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(to bottom, #d9f99d 0%, #10b981 100%); /* Grama doce */
-            transform: rotateX(65deg); /* Inclina o chão para criar a profundidade */
-            z-index: 2;
-            box-shadow: inset 0 200px 300px rgba(16, 185, 129, 0.5); /* Efeito de névoa no horizonte */
+        .linha-tracejada {
+            fill: none; stroke: #ffffff; stroke-width: 1.5; stroke-dasharray: 4, 4; stroke-linecap: round;
         }
 
         /* =========================================
-           A TRILHA SEPARADA (Bolinhas do Candy Crush)
+           AS BOLINHAS (As Fases do Candy Crush)
            ========================================= */
-        .trilha {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; align-items: center; justify-content: space-around;
-            z-index: 3; padding-bottom: 20vh; box-sizing: border-box;
+        .fases-container {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 68vh;
+            z-index: 10;
         }
 
         .fase {
-            position: relative; width: 90px; height: 90px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s ease-out;
-            border: 4px solid #fff; box-shadow: 0 10px 0 rgba(0,0,0,0.2), 0 15px 25px rgba(0,0,0,0.3);
-            /* Importante: Impede que a bolinha deite com o chão */
-            transform: rotateX(-65deg); 
-            transform-origin: bottom center;
+            position: absolute; width: 85px; height: 85px; border-radius: 50%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            /* Centraliza a bolinha exatamente na coordenada */
+            transform: translate(-50%, 50%); 
+            border: 4px solid #fff; box-shadow: 0 8px 0 rgba(0,0,0,0.15), 0 15px 20px rgba(0,0,0,0.2);
+            cursor: pointer; transition: 0.2s;
         }
         
-        /* Efeito de diminuir de tamanho conforme sobe (quanto mais baixo o nth-child, mais lá no fundo/pequeno) */
-        .fase:nth-child(1) { transform: rotateX(-65deg) scale(0.65); z-index: 4; }
-        .fase:nth-child(2) { transform: rotateX(-65deg) scale(0.75); z-index: 5; }
-        .fase:nth-child(3) { transform: rotateX(-65deg) scale(0.85); z-index: 6; }
-        .fase:nth-child(4) { transform: rotateX(-65deg) scale(0.95); z-index: 7; } /* A mais próxima */
+        .fase:active { margin-top: 5px; box-shadow: 0 3px 0 rgba(0,0,0,0.15), 0 5px 10px rgba(0,0,0,0.2); }
+
+        /* As Posições e Tamanhos (Ziguezague e Profundidade) */
+        /* Lá no fundo (menor) */
+        .f-4 { bottom: 85%; left: 40%; transform: translate(-50%, 50%) scale(0.65); z-index: 11; } 
+        /* Meio de cima */
+        .f-3 { bottom: 60%; left: 70%; transform: translate(-50%, 50%) scale(0.75); z-index: 12; }
+        /* Meio de baixo */
+        .f-2 { bottom: 35%; left: 25%; transform: translate(-50%, 50%) scale(0.85); z-index: 13; }
+        /* Perto da tela (maior) */
+        .f-1 { bottom: 10%; left: 50%; transform: translate(-50%, 50%) scale(1); z-index: 14; }
+
+        /* Estilos e Cores das Fases */
+        .fase-feita { background: radial-gradient(circle at 30% 30%, #ffd700, #f59e0b); box-shadow: 0 8px 0 #d97706, 0 15px 20px rgba(0,0,0,0.2); }
+        .fase-atual { background: radial-gradient(circle at 30% 30%, #34d399, #059669); box-shadow: 0 8px 0 #047857, 0 15px 20px rgba(0,0,0,0.2), 0 0 30px #34d399; animation: pulsarFase 1.5s infinite alternate; }
+        .fase-bloqueada { background: radial-gradient(circle at 30% 30%, #cbd5e1, #94a3b8); box-shadow: 0 8px 0 #64748b, 0 15px 20px rgba(0,0,0,0.2); filter: grayscale(0.5); }
+
+        @keyframes pulsarFase { 0% { transform: translate(-50%, 50%) scale(inherit); } 100% { transform: translate(-50%, 50%) scale(calc(inherit + 0.05)); } }
+
+        /* Textos dentro das bolinhas */
+        .fase-icone { font-size: 30px; margin-bottom: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .fase-estrelas { font-size: 14px; letter-spacing: -2px; margin-top: -5px; }
         
-        .fase:active { transform: rotateX(-65deg) translateY(10px) scale(inherit); box-shadow: 0 0 0 rgba(0,0,0,0); }
+        /* Plaquinha elegante */
+        .plaquinha-texto { position: absolute; bottom: -30px; background: white; color: #334155; font-size: 15px; font-weight: 900; padding: 4px 14px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); white-space: nowrap; border: 2px solid #e2e8f0; }
 
-        /* Estilos de Status (Candy Crush Colors) */
-        .fase-feita { background: radial-gradient(circle at 30% 30%, #ffd700, #f59e0b); color: #78350f; }
-        .fase-atual { background: radial-gradient(circle at 30% 30%, #34d399, #059669); color: white; animation: pulsarFase 1.5s infinite alternate; }
-        .fase-bloqueada { background: radial-gradient(circle at 30% 30%, #cbd5e1, #94a3b8); color: white; filter: grayscale(0.5); cursor: not-allowed; }
-
-        @keyframes pulsarFase { 0% { box-shadow: 0 10px 0 #047857, 0 15px 25px rgba(0,0,0,0.3); } 100% { box-shadow: 0 10px 0 #047857, 0 15px 25px rgba(0,0,0,0.3), 0 0 40px #34d399; } }
-
-        .fase-icone { font-size: 32px; z-index: 2; margin-bottom: 2px;}
-        .fase-estrelas { font-size: 14px; letter-spacing: -2px; line-height: 1; margin-top: -5px;}
-        .plaquinha-texto { position: absolute; bottom: -35px; background: white; color: #334155; font-size: 14px; font-weight: 900; padding: 4px 12px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); white-space: nowrap; border: 2px solid #f1f5f9; }
-
-        /* O Avatar flutuante */
-        .avatar-jogador { position: absolute; top: -50px; width: 60px; height: 60px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3)); animation: flutuarAvatar 2s infinite ease-in-out; z-index: 100; }
-        @keyframes flutuarAvatar { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        /* O Avatar do Menino */
+        .avatar-jogador { position: absolute; top: -50px; width: 65px; height: 65px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4)); animation: flutuarAvatar 2s infinite ease-in-out; z-index: 20; }
+        @keyframes flutuarAvatar { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
 
         /* =========================================
-           DECORAÇÃO ENGRAÇADA (Casas e Árvores)
+           CENÁRIO 3D (Árvores e Casas nas laterais)
            ========================================= */
-        /* Tudo aqui precisa ter transform: rotateX(-65deg) para ficar "em pé" no chão inclinado */
-        .decoracao { position: absolute; font-size: 100px; transform: rotateX(-65deg); transform-origin: bottom center; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); z-index: 3; user-select: none;}
-        
-        /* Árvores de Pirulito */
-        .arvore { color: #10b981; }
-        .t1 { bottom: 20%; left: 15%; font-size: 120px; scale: 0.9; }
-        .t2 { bottom: 40%; right: 15%; font-size: 100px; scale: 0.8; }
-        .t3 { bottom: 65%; left: 10%; font-size: 130px; scale: 0.7; }
-        .t4 { bottom: 80%; right: 10%; font-size: 90px; scale: 0.6; }
-
-        /* Casas Doce / Engraçadas */
-        .casa { color: #f9a8d4; }
-        .c1 { bottom: 30%; left: 10%; font-size: 150px; color: #a5b4fc; scale: 0.8; }
-        .c2 { bottom: 60%; right: 10%; font-size: 130px; color: #f9a8d4; scale: 0.7; }
-        .c3 { bottom: 85%; left: 15%; font-size: 110px; color: #818cf8; scale: 0.6; }
-
-        /* A PONTE MÁGICA */
-        .ponte { position: absolute; top: 46%; left: 50%; width: 150px; height: 60px; background: repeating-linear-gradient(to right, #8b5cf6, #8b5cf6 10px, #a78bfa 10px, #a78bfa 20px); border-radius: 10px; transform: translate(-50%, -50%) rotateX(-65deg); z-index: 5; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .decor { position: absolute; transform: translate(-50%, 50%); filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); z-index: 5; }
+        .d-1 { bottom: 20%; left: 85%; font-size: 60px; z-index: 13; } /* Árvore perto */
+        .d-2 { bottom: 45%; left: 80%; font-size: 40px; z-index: 12; } /* Castelo meio */
+        .d-3 { bottom: 75%; left: 15%; font-size: 30px; z-index: 11; } /* Árvore longe */
+        .d-4 { bottom: 50%; left: 10%; font-size: 45px; z-index: 12; } /* Doce meio */
 
     </style>
 </head>
 <body>
 
-    <div class="cena-3d">
+    <div class="ceu">
+        <div class="nuvem n1">☁️</div>
+        <div class="nuvem n2">☁️</div>
+    </div>
+
+    <div class="chao">
         
-        <div class="ceu-fundo">
-            <div class="nuvem n1">☁️</div>
-            <div class="nuvem n2">☁️</div>
+        <div class="decor d-1">🌳</div>
+        <div class="decor d-2">🏰</div>
+        <div class="decor d-3">🌲</div>
+        <div class="decor d-4">🍭</div>
+
+        <div class="container-estrada">
+            <svg class="svg-estrada" preserveAspectRatio="none" viewBox="0 0 100 100">
+                <path class="linha-estrada-sombra" d="M 50 110 C 50 95, 50 90, 50 90 C 50 75, 25 80, 25 65 C 25 50, 70 55, 70 40 C 70 25, 40 30, 40 15 C 40 0, 40 0, 40 -10" />
+                <path class="linha-estrada" d="M 50 110 C 50 95, 50 90, 50 90 C 50 75, 25 80, 25 65 C 25 50, 70 55, 70 40 C 70 25, 40 30, 40 15 C 40 0, 40 0, 40 -10" />
+                <path class="linha-tracejada" d="M 50 110 C 50 95, 50 90, 50 90 C 50 75, 25 80, 25 65 C 25 50, 70 55, 70 40 C 70 25, 40 30, 40 15 C 40 0, 40 0, 40 -10" />
+            </svg>
         </div>
 
-        <div class="chao-mapa">
-            <div class="decoracao arvore t1">🌳</div>
-            <div class="decoracao casa c1">💒</div>
-            <div class="decoracao arvore t2">🌳</div>
-            <div class="decoracao casa c2">🏰</div>
-            <div class="decoracao arvore t3">🌳</div>
-            <div class="decoracao arvore t4">🌳</div>
-            <div class="decoracao casa c3">💒</div>
-        </div>
-        
-        <div class="ponte"></div>
-
-        <div class="trilha">
-
-            <div class="fase fase-bloqueada">
+        <div class="fases-container">
+            
+            <div class="fase fase-bloqueada f-4">
                 <div class="fase-icone">🔒</div>
                 <div class="plaquinha-texto">Jogar PC 🎮</div>
             </div>
 
-            <div class="fase fase-bloqueada">
+            <div class="fase fase-bloqueada f-3">
                 <div class="fase-icone">🔒</div>
                 <div class="plaquinha-texto">Lição de Casa 📚</div>
             </div>
 
-            <div class="fase fase-atual">
-                <img src="https://cdn-icons-png.flaticon.com/512/4140/4140047.png" class="avatar-jogador" alt="Avatar">
+            <div class="fase fase-atual f-2">
+                <img src="https://cdn-icons-png.flaticon.com/512/4140/4140047.png" class="avatar-jogador" alt="Menino">
                 <div class="fase-icone">🍽️</div>
                 <div class="plaquinha-texto">Almoçar 🍛</div>
             </div>
 
-            <div class="fase fase-feita">
+            <div class="fase fase-feita f-1">
                 <div class="fase-icone">🛏️</div>
                 <div class="fase-estrelas">⭐⭐⭐</div>
                 <div class="plaquinha-texto">Arrumar Cama ✨</div>
             </div>
 
         </div>
-
     </div>
 
 </body>
