@@ -2,231 +2,181 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Mapa Candy Premium</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mundo Doce 2.5D</title>
 
 <style>
 body,html{
 margin:0;
 padding:0;
-width:100%;
 height:100%;
 overflow:hidden;
-font-family:'Nunito',sans-serif;
-background:linear-gradient(180deg,#ff9ad5 0%,#ffc3e6 25%,#b6f0ff 55%,#a5ffcc 100%);
+font-family:sans-serif;
+background:linear-gradient(#ffb6e6,#b3f0ff 60%,#8fffcc);
+perspective:900px;
 }
 
-/* ===== NUVENS ===== */
-.nuvens{
+/* ===== CÉU ===== */
+.ceu{
 position:absolute;
+width:100%;
+height:50%;
 top:0;
-left:-50%;
-width:200%;
-height:35vh;
-background:radial-gradient(circle at 20% 60%,rgba(255,255,255,.8) 0%,transparent 60%),
-radial-gradient(circle at 60% 40%,rgba(255,255,255,.7) 0%,transparent 60%);
-animation:moverNuvens 60s linear infinite;
-opacity:.6;
+overflow:hidden;
 z-index:1;
 }
-@keyframes moverNuvens{
-from{transform:translateX(0)}
-to{transform:translateX(50%)}
-}
 
-/* ===== PARTÍCULAS ===== */
-.particulas{
+.nuvem{
 position:absolute;
-width:100%;
-height:100%;
-pointer-events:none;
-z-index:2;
-overflow:hidden;
-}
-.particulas span{
-position:absolute;
-width:6px;
-height:6px;
 background:white;
-border-radius:50%;
-opacity:.6;
-animation:subir 8s linear infinite;
-}
-@keyframes subir{
-from{transform:translateY(100vh) scale(.5);opacity:0}
-50%{opacity:1}
-to{transform:translateY(-10vh) scale(1);opacity:0}
+width:120px;
+height:60px;
+border-radius:60px;
+opacity:.8;
+animation:nuvemMove 40s linear infinite;
 }
 
-/* ===== CONTAINER SCROLL ===== */
-.mapa{
+@keyframes nuvemMove{
+from{transform:translateX(-200px)}
+to{transform:translateX(120vw)}
+}
+
+/* ===== MUNDO 3D ===== */
+.mundo{
+position:absolute;
+bottom:-30%;
+width:100%;
+height:200%;
+transform:rotateX(60deg);
+transform-style:preserve-3d;
+animation:caminhar 20s linear infinite;
+}
+
+/* movimento do mundo simulando caminhada */
+@keyframes caminhar{
+from{transform:rotateX(60deg) translateY(0)}
+to{transform:rotateX(60deg) translateY(300px)}
+}
+
+/* ===== CHÃO ===== */
+.chao{
 position:absolute;
 width:100%;
-height:200vh;
-overflow-y:auto;
-scroll-behavior:smooth;
+height:200%;
+background:linear-gradient(#8fffcc,#55d6aa);
 }
 
-/* ===== RIO ===== */
-svg{
+/* ===== CAMINHO ===== */
+.caminho{
 position:absolute;
-width:100%;
-height:200vh;
-z-index:3;
-}
-.rio{
-fill:none;
-stroke:#bae6fd;
-stroke-width:24;
-stroke-linecap:round;
-filter:drop-shadow(0 10px 10px rgba(0,0,0,.2));
-}
-.doces{
-fill:none;
-stroke:#ff2e63;
-stroke-width:4;
-stroke-dasharray:2 12;
-stroke-linecap:round;
-animation:moverDoces 2s linear infinite;
-}
-@keyframes moverDoces{
-from{stroke-dashoffset:0}
-to{stroke-dashoffset:-14}
+left:40%;
+width:20%;
+height:200%;
+background:#9ddcff;
+border-radius:100px;
 }
 
-/* ===== FASES ===== */
-.fase{
+/* ===== CASAS ===== */
+.casa{
 position:absolute;
 width:80px;
 height:80px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-color:white;
-font-size:28px;
-cursor:pointer;
-transition:.3s;
-border:4px solid white;
-box-shadow:0 10px 0 rgba(0,0,0,.2),0 20px 25px rgba(0,0,0,.3);
+background:#ff9ad5;
+border-radius:10px;
+box-shadow:0 10px 20px rgba(0,0,0,.3);
 }
-.fase:hover{
-transform:scale(1.1);
-}
-.fase::after{
+
+.casa::before{
 content:'';
 position:absolute;
-top:5px;
-left:15px;
-width:35px;
-height:15px;
-background:rgba(255,255,255,.7);
-border-radius:20px;
-transform:rotate(-25deg);
-}
-.feita{background:radial-gradient(circle at 40% 40%,#fbbf24,#d97706);}
-.atual{
-background:radial-gradient(circle at 40% 40%,#34d399,#059669);
-animation:pulsar 1.5s infinite alternate;
-}
-@keyframes pulsar{
-from{filter:brightness(1)}
-to{filter:brightness(1.2)}
-}
-.bloqueada{
-background:radial-gradient(circle at 40% 40%,#e2e8f0,#94a3b8);
+top:-40px;
+left:0;
+width:0;
+height:0;
+border-left:40px solid transparent;
+border-right:40px solid transparent;
+border-bottom:40px solid #ff6ec7;
 }
 
-/* POSIÇÕES */
-.f1{top:170vh;left:55%}
-.f2{top:140vh;left:25%}
-.f3{top:110vh;left:75%}
-.f4{top:80vh;left:35%}
-.f5{top:50vh;left:60%}
-.f6{top:20vh;left:40%}
-
-/* DECOR */
-.decor{
+/* ===== ÁRVORES ===== */
+.arvore{
 position:absolute;
-font-size:60px;
-animation:flutuar 4s ease-in-out infinite;
+width:30px;
+height:60px;
+background:#8b5a2b;
 }
+
+.arvore::before{
+content:'';
+position:absolute;
+bottom:30px;
+left:-35px;
+width:100px;
+height:80px;
+background:#34d399;
+border-radius:50%;
+}
+
+/* ===== PONTE ===== */
+.ponte{
+position:absolute;
+width:25%;
+height:20px;
+background:#d97706;
+left:37%;
+}
+
+/* ===== DOCES ===== */
+.doce{
+position:absolute;
+font-size:40px;
+animation:flutuar 3s ease-in-out infinite;
+}
+
 @keyframes flutuar{
 0%{transform:translateY(0)}
-50%{transform:translateY(-15px)}
+50%{transform:translateY(-10px)}
 100%{transform:translateY(0)}
 }
-.d1{top:150vh;left:10%}
-.d2{top:100vh;right:5%}
-.d3{top:60vh;left:15%}
-.d4{top:30vh;right:20%}
+
+/* POSICIONAMENTOS */
+.casa1{top:200px;left:15%}
+.casa2{top:600px;right:15%}
+
+.arvore1{top:350px;left:20%}
+.arvore2{top:800px;right:20%}
+
+.ponte1{top:1000px}
+
+.doce1{top:450px;left:60%}
+.doce2{top:900px;left:30%}
+
 </style>
 </head>
 
 <body>
 
-<div class="nuvens"></div>
-
-<div class="particulas">
-<span style="left:10%"></span>
-<span style="left:30%"></span>
-<span style="left:50%"></span>
-<span style="left:70%"></span>
-<span style="left:85%"></span>
+<div class="ceu">
+<div class="nuvem" style="top:40px;animation-delay:0s;"></div>
+<div class="nuvem" style="top:100px;animation-delay:10s;"></div>
 </div>
 
-<div class="mapa" id="mapa">
+<div class="mundo">
+<div class="chao"></div>
+<div class="caminho"></div>
 
-<svg viewBox="0 0 100 200" preserveAspectRatio="none">
-<path class="rio" d="M50 200 C50 170,10 150,30 130 C50 110,90 100,70 80 C50 60,20 40,50 0"/>
-<path class="doces" d="M50 200 C50 170,10 150,30 130 C50 110,90 100,70 80 C50 60,20 40,50 0"/>
-</svg>
+<div class="casa casa1"></div>
+<div class="casa casa2"></div>
 
-<div class="decor d1">🍦</div>
-<div class="decor d2">🍫</div>
-<div class="decor d3">🧁</div>
-<div class="decor d4">🎈</div>
+<div class="arvore arvore1"></div>
+<div class="arvore arvore2"></div>
 
-<div class="fase feita f1">⭐</div>
-<div class="fase atual f2">🍛</div>
-<div class="fase bloqueada f3">🔒</div>
-<div class="fase bloqueada f4">🔒</div>
-<div class="fase bloqueada f5">🔒</div>
-<div class="fase bloqueada f6">🔒</div>
+<div class="ponte ponte1"></div>
+
+<div class="doce doce1">🍭</div>
+<div class="doce doce2">🧁</div>
 
 </div>
-
-<audio id="clickSound">
-<source src="https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3" type="audio/mpeg">
-</audio>
-
-<script>
-const fases=document.querySelectorAll('.fase');
-const som=document.getElementById('clickSound');
-
-fases.forEach((fase,i)=>{
-fase.addEventListener('click',()=>{
-som.currentTime=0;
-som.play();
-
-if(fase.classList.contains('bloqueada')){
-alert("🔒 Fase bloqueada!");
-return;
-}
-
-if(fase.classList.contains('atual')){
-fase.classList.remove('atual');
-fase.classList.add('feita');
-
-const proxima=fases[i+1];
-if(proxima){
-proxima.classList.remove('bloqueada');
-proxima.classList.add('atual');
-}
-}
-});
-});
-</script>
 
 </body>
 </html>
