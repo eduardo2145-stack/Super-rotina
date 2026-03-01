@@ -3,129 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Dia Mágico</title>
+    <title>Minha Trilha Mágica</title>
     <style>
         /* =========================================
-           O MUNDO MÁGICO (Cores e Fundo)
+           O UNIVERSO 3D (Cenas e Perspetiva)
            ========================================= */
         body, html {
             margin: 0; padding: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(to bottom, #fbc2eb 0%, #a6c1ee 100%); /* Céu rosa e azul doce */
+            background: #87CEEB; /* Céu azul base */
             font-family: 'Nunito', 'Segoe UI', sans-serif;
             overflow: hidden; /* Esconde a barra de rolagem */
         }
 
-        .mapa-container { position: relative; width: 100%; height: 100%; }
-
-        /* =========================================
-           NUVENS ANIMADAS QUE SE MOVEM
-           ========================================= */
-        .nuvem { position: absolute; font-size: 80px; opacity: 0.6; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1)); animation: moverNuvens linear infinite; z-index: 0; user-select: none; }
-        .n1 { top: 10%; left: -20%; animation-duration: 35s; font-size: 90px; }
-        .n2 { top: 40%; left: -20%; animation-duration: 25s; font-size: 120px; animation-delay: -10s; }
-        .n3 { top: 70%; left: -20%; animation-duration: 40s; font-size: 70px; animation-delay: -20s; }
-
-        @keyframes moverNuvens {
-            0% { transform: translateX(-10vw); }
-            100% { transform: translateX(120vw); } /* Atravessa a tela toda */
+        /* Container que cria a ilusão de profundidade 3D */
+        .cena-3d {
+            position: relative; width: 100%; height: 100%;
+            perspective: 1200px; /* A mágica acontece aqui: define o "ângulo do olho" */
+            overflow: hidden;
         }
 
         /* =========================================
-           A ESTRADA EM ZIGUEZAGUE (Caminho Doce)
+           O CÉU E AS NUVENS (Fundo Fixo)
            ========================================= */
-        .caminho-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-        .linha-estrada { fill: none; stroke: rgba(255, 255, 255, 0.8); stroke-width: 8; stroke-dasharray: 15, 15; stroke-linecap: round; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.1)); }
+        .ceu-fundo {
+            position: absolute; top: 0; left: 0; width: 100%; height: 60%;
+            background: linear-gradient(to bottom, #7dd3fc 0%, #c2e9fb 100%);
+            z-index: 0;
+        }
+        
+        .nuvem { position: absolute; font-size: 80px; opacity: 0.7; animation: moverNuvens linear infinite; z-index: 1; user-select: none; }
+        .n1 { top: 10%; left: -20%; animation-duration: 40s; font-size: 100px; }
+        .n2 { top: 30%; left: -20%; animation-duration: 30s; font-size: 130px; animation-delay: -15s; }
+        @keyframes moverNuvens { 0% { transform: translateX(-10vw); } 100% { transform: translateX(120vw); } }
 
         /* =========================================
-           AS FASES (Botões 3D estilo Candy Crush)
+           O CHÃO (O Plano Inclinado)
            ========================================= */
+        .chao-mapa {
+            position: absolute; bottom: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(to bottom, #d9f99d 0%, #10b981 100%); /* Grama doce */
+            transform: rotateX(65deg); /* Inclina o chão para criar a profundidade */
+            z-index: 2;
+            box-shadow: inset 0 200px 300px rgba(16, 185, 129, 0.5); /* Efeito de névoa no horizonte */
+        }
+
+        /* =========================================
+           A TRILHA SEPARADA (Bolinhas do Candy Crush)
+           ========================================= */
+        .trilha {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: space-around;
+            z-index: 3; padding-bottom: 20vh; box-sizing: border-box;
+        }
+
         .fase {
-            position: absolute; width: 75px; height: 75px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; cursor: pointer; transition: transform 0.2s;
-            transform: translate(-50%, -50%); /* Centraliza exatamente no ponto */
+            position: relative; width: 90px; height: 90px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s ease-out;
+            border: 4px solid #fff; box-shadow: 0 10px 0 rgba(0,0,0,0.2), 0 15px 25px rgba(0,0,0,0.3);
+            /* Importante: Impede que a bolinha deite com o chão */
+            transform: rotateX(-65deg); 
+            transform-origin: bottom center;
         }
         
-        .fase:active { transform: translate(-50%, -45%) scale(0.95); } /* Efeito de apertar o botão */
-
-        /* Estilo da Fase Feita (Dourada/Verde) */
-        .fase-feita {
-            background: radial-gradient(circle at 30% 30%, #ffd700, #f59e0b);
-            border: 4px solid #fff;
-            box-shadow: 0 8px 0 #d97706, 0 15px 20px rgba(0,0,0,0.3); /* Sombra 3D grossa */
-        }
-
-        /* Estilo da Fase Atual (Pulsante) */
-        .fase-atual {
-            background: radial-gradient(circle at 30% 30%, #34d399, #059669);
-            border: 4px solid #fff;
-            box-shadow: 0 8px 0 #047857, 0 15px 20px rgba(0,0,0,0.3), 0 0 30px #34d399; /* Brilho em volta */
-            animation: pulsarFase 1.5s infinite alternate;
-        }
-
-        /* Estilo da Fase Bloqueada (Cinza) */
-        .fase-bloqueada {
-            background: radial-gradient(circle at 30% 30%, #cbd5e1, #94a3b8);
-            border: 4px solid #fff;
-            box-shadow: 0 8px 0 #64748b, 0 15px 20px rgba(0,0,0,0.2);
-            filter: grayscale(0.5); cursor: not-allowed;
-        }
-
-        @keyframes pulsarFase {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            100% { transform: translate(-50%, -50%) scale(1.15); }
-        }
-
-        /* Textos, Estrelas e Ícones dentro das bolinhas */
-        .fase-icone { font-size: 28px; z-index: 2; line-height: 1; margin-bottom: 2px;}
-        .fase-estrelas { font-size: 12px; letter-spacing: -2px; line-height: 1; }
+        /* Efeito de diminuir de tamanho conforme sobe (quanto mais baixo o nth-child, mais lá no fundo/pequeno) */
+        .fase:nth-child(1) { transform: rotateX(-65deg) scale(0.65); z-index: 4; }
+        .fase:nth-child(2) { transform: rotateX(-65deg) scale(0.75); z-index: 5; }
+        .fase:nth-child(3) { transform: rotateX(-65deg) scale(0.85); z-index: 6; }
+        .fase:nth-child(4) { transform: rotateX(-65deg) scale(0.95); z-index: 7; } /* A mais próxima */
         
-        /* A plaquinha com o nome da tarefa embaixo da bolinha */
-        .plaquinha-texto {
-            position: absolute; bottom: -35px; background: white; color: #334155; font-size: 14px; font-weight: 900; padding: 4px 12px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); white-space: nowrap; border: 2px solid #f1f5f9;
-        }
+        .fase:active { transform: rotateX(-65deg) translateY(10px) scale(inherit); box-shadow: 0 0 0 rgba(0,0,0,0); }
 
-        /* O Avatar do Menino em cima da fase atual */
-        .avatar-jogador { position: absolute; top: -35px; width: 50px; height: 50px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3)); animation: flutuarAvatar 2s infinite ease-in-out; }
+        /* Estilos de Status (Candy Crush Colors) */
+        .fase-feita { background: radial-gradient(circle at 30% 30%, #ffd700, #f59e0b); color: #78350f; }
+        .fase-atual { background: radial-gradient(circle at 30% 30%, #34d399, #059669); color: white; animation: pulsarFase 1.5s infinite alternate; }
+        .fase-bloqueada { background: radial-gradient(circle at 30% 30%, #cbd5e1, #94a3b8); color: white; filter: grayscale(0.5); cursor: not-allowed; }
 
-        @keyframes flutuarAvatar {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-            100% { transform: translateY(0px); }
-        }
+        @keyframes pulsarFase { 0% { box-shadow: 0 10px 0 #047857, 0 15px 25px rgba(0,0,0,0.3); } 100% { box-shadow: 0 10px 0 #047857, 0 15px 25px rgba(0,0,0,0.3), 0 0 40px #34d399; } }
+
+        .fase-icone { font-size: 32px; z-index: 2; margin-bottom: 2px;}
+        .fase-estrelas { font-size: 14px; letter-spacing: -2px; line-height: 1; margin-top: -5px;}
+        .plaquinha-texto { position: absolute; bottom: -35px; background: white; color: #334155; font-size: 14px; font-weight: 900; padding: 4px 12px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); white-space: nowrap; border: 2px solid #f1f5f9; }
+
+        /* O Avatar flutuante */
+        .avatar-jogador { position: absolute; top: -50px; width: 60px; height: 60px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3)); animation: flutuarAvatar 2s infinite ease-in-out; z-index: 100; }
+        @keyframes flutuarAvatar { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+
+        /* =========================================
+           DECORAÇÃO ENGRAÇADA (Casas e Árvores)
+           ========================================= */
+        /* Tudo aqui precisa ter transform: rotateX(-65deg) para ficar "em pé" no chão inclinado */
+        .decoracao { position: absolute; font-size: 100px; transform: rotateX(-65deg); transform-origin: bottom center; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); z-index: 3; user-select: none;}
+        
+        /* Árvores de Pirulito */
+        .arvore { color: #10b981; }
+        .t1 { bottom: 20%; left: 15%; font-size: 120px; scale: 0.9; }
+        .t2 { bottom: 40%; right: 15%; font-size: 100px; scale: 0.8; }
+        .t3 { bottom: 65%; left: 10%; font-size: 130px; scale: 0.7; }
+        .t4 { bottom: 80%; right: 10%; font-size: 90px; scale: 0.6; }
+
+        /* Casas Doce / Engraçadas */
+        .casa { color: #f9a8d4; }
+        .c1 { bottom: 30%; left: 10%; font-size: 150px; color: #a5b4fc; scale: 0.8; }
+        .c2 { bottom: 60%; right: 10%; font-size: 130px; color: #f9a8d4; scale: 0.7; }
+        .c3 { bottom: 85%; left: 15%; font-size: 110px; color: #818cf8; scale: 0.6; }
+
+        /* A PONTE MÁGICA */
+        .ponte { position: absolute; top: 46%; left: 50%; width: 150px; height: 60px; background: repeating-linear-gradient(to right, #8b5cf6, #8b5cf6 10px, #a78bfa 10px, #a78bfa 20px); border-radius: 10px; transform: translate(-50%, -50%) rotateX(-65deg); z-index: 5; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
 
     </style>
 </head>
 <body>
 
-    <div class="mapa-container">
+    <div class="cena-3d">
         
-        <div class="nuvem n1">☁️</div>
-        <div class="nuvem n2">☁️</div>
-        <div class="nuvem n3">☁️</div>
-
-        <svg class="caminho-svg" preserveAspectRatio="none" viewBox="0 0 100 100">
-            <path class="linha-estrada" d="M 50 100 Q 20 85 50 70 T 50 40 T 50 10" />
-        </svg>
-
-        <div class="fase fase-bloqueada" style="top: 15%; left: 35%;">
-            <div class="fase-icone">🔒</div>
-            <div class="plaquinha-texto">Jogar PC 🎮</div>
+        <div class="ceu-fundo">
+            <div class="nuvem n1">☁️</div>
+            <div class="nuvem n2">☁️</div>
         </div>
 
-        <div class="fase fase-bloqueada" style="top: 38%; left: 65%;">
-            <div class="fase-icone">🔒</div>
-            <div class="plaquinha-texto">Lição de Casa 📚</div>
+        <div class="chao-mapa">
+            <div class="decoracao arvore t1">🌳</div>
+            <div class="decoracao casa c1">💒</div>
+            <div class="decoracao arvore t2">🌳</div>
+            <div class="decoracao casa c2">🏰</div>
+            <div class="decoracao arvore t3">🌳</div>
+            <div class="decoracao arvore t4">🌳</div>
+            <div class="decoracao casa c3">💒</div>
         </div>
+        
+        <div class="ponte"></div>
 
-        <div class="fase fase-atual" style="top: 62%; left: 35%;">
-            <img src="https://cdn-icons-png.flaticon.com/512/4140/4140047.png" class="avatar-jogador" alt="Avatar">
-            <div class="fase-icone">🍽️</div>
-            <div class="plaquinha-texto">Almoçar 🍛</div>
-        </div>
+        <div class="trilha">
 
-        <div class="fase fase-feita" style="top: 85%; left: 60%;">
-            <div class="fase-icone">🛏️</div>
-            <div class="fase-estrelas">⭐⭐⭐</div>
-            <div class="plaquinha-texto">Arrumar Cama ✨</div>
+            <div class="fase fase-bloqueada">
+                <div class="fase-icone">🔒</div>
+                <div class="plaquinha-texto">Jogar PC 🎮</div>
+            </div>
+
+            <div class="fase fase-bloqueada">
+                <div class="fase-icone">🔒</div>
+                <div class="plaquinha-texto">Lição de Casa 📚</div>
+            </div>
+
+            <div class="fase fase-atual">
+                <img src="https://cdn-icons-png.flaticon.com/512/4140/4140047.png" class="avatar-jogador" alt="Avatar">
+                <div class="fase-icone">🍽️</div>
+                <div class="plaquinha-texto">Almoçar 🍛</div>
+            </div>
+
+            <div class="fase fase-feita">
+                <div class="fase-icone">🛏️</div>
+                <div class="fase-estrelas">⭐⭐⭐</div>
+                <div class="plaquinha-texto">Arrumar Cama ✨</div>
+            </div>
+
         </div>
 
     </div>
