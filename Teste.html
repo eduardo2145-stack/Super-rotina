@@ -1,183 +1,244 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trilha Candy Premium</title>
-    <style>
-        /* =========================================
-           UNIVERSO CANDY (Fundo e Texturas)
-           ========================================= */
-        body, html {
-            margin: 0; padding: 0; width: 100vw; height: 100vh;
-            /* Fundo com degradê suave e "névoa" mágica */
-            background: linear-gradient(180deg, #fbcfe8 0%, #e0e7ff 40%, #a7f3d0 100%);
-            font-family: 'Nunito', 'Segoe UI', sans-serif;
-            overflow: hidden; touch-action: none;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Candy Land Premium</title>
 
-        /* Nuvens macias no topo */
-        .ceu-decor {
-            position: absolute; top: -5%; left: -10%; width: 120%; height: 30vh;
-            background: radial-gradient(circle at 50% 100%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 60%);
-            z-index: 1; filter: blur(10px);
-        }
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  overflow:hidden;
+  background:linear-gradient(to top,#87f5c6,#ffb6e6);
+  perspective:900px;
+  font-family:sans-serif;
+}
 
-        /* Bordas de "Glacê/Chantilly" nas laterais (Dá o efeito de mundo de doces) */
-        .glace-esq { position: absolute; left: -20px; top: 0; bottom: 0; width: 50px; background: rgba(255,255,255,0.4); border-radius: 50px; filter: blur(15px); z-index: 2; }
-        .glace-dir { position: absolute; right: -20px; top: 0; bottom: 0; width: 50px; background: rgba(255,255,255,0.4); border-radius: 50px; filter: blur(15px); z-index: 2; }
+/* SCENE */
+.scene{
+  width:100vw;
+  height:100vh;
+  position:relative;
+  transform-style:preserve-3d;
+}
 
-        /* =========================================
-           O RIO / CAMINHO (Efeito Grosso 3D)
-           ========================================= */
-        .container-estrada {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 5;
-        }
-        
-        .svg-estrada { width: 100%; height: 100%; overflow: visible; }
-        
-        /* 1. A sombra do rio no chão */
-        .rio-sombra { fill: none; stroke: rgba(4, 120, 87, 0.2); stroke-width: 26; stroke-linecap: round; transform: translate(3px, 5px); }
-        /* 2. O Rio principal (Azul glacê) */
-        .rio-base { fill: none; stroke: #bae6fd; stroke-width: 24; stroke-linecap: round; }
-        /* 3. O brilho interno do rio */
-        .rio-brilho { fill: none; stroke: rgba(255,255,255,0.5); stroke-width: 18; stroke-linecap: round; }
-        /* 4. A trilha de doces no meio */
-        .linha-doces { fill: none; stroke: #f43f5e; stroke-width: 3.5; stroke-dasharray: 0 12; stroke-linecap: round; }
+/* CAMERA */
+.camera{
+  position:absolute;
+  width:100%;
+  height:300%;
+  transform-style:preserve-3d;
+  transition:transform 0.1s linear;
+}
 
-        /* =========================================
-           BOTÕES CANDY CRUSH (Efeito Glossy/Gelatina)
-           ========================================= */
-        .fases-container {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 15;
-        }
+/* PATH */
+.path{
+  position:absolute;
+  width:320px;
+  height:3000px;
+  background:linear-gradient(#6ec6ff,#4ab3f4);
+  left:50%;
+  transform:translateX(-50%) rotateX(60deg);
+  border-radius:120px;
+  box-shadow:0 0 40px rgba(255,255,255,0.5) inset;
+}
 
-        .fase {
-            position: absolute; width: 75px; height: 75px; border-radius: 50%;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transform: translate(-50%, 50%); cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            /* A borda grossa branca de jogo */
-            border: 4px solid #ffffff;
-        }
+/* CHARACTER */
+.player{
+  position:fixed;
+  bottom:100px;
+  left:50%;
+  width:50px;
+  height:70px;
+  transform:translateX(-50%);
+}
+.head{
+  width:40px;height:40px;
+  background:#ffd1dc;
+  border-radius:50%;
+  margin:auto;
+}
+.body{
+  width:30px;height:40px;
+  background:#ff4da6;
+  margin:auto;
+  border-radius:10px;
+  animation:walk 0.6s infinite alternate;
+}
+@keyframes walk{
+  from{ transform:rotate(-5deg);}
+  to{ transform:rotate(5deg);}
+}
 
-        /* O REFLEXO DE PLÁSTICO (A Mágica do Brilho) */
-        .fase::after {
-            content: ''; position: absolute; top: 4px; left: 12px; width: 30px; height: 12px;
-            background: rgba(255,255,255,0.8); border-radius: 20px; transform: rotate(-25deg);
-            pointer-events: none;
-        }
+/* HOUSE */
+.house{
+  position:absolute;
+  width:130px;height:110px;
+  background:#ff8ad6;
+  border-radius:25px;
+  transform:rotateX(60deg);
+  box-shadow:0 20px 40px rgba(0,0,0,0.2);
+}
+.house::before{
+  content:"";
+  position:absolute;
+  top:-50px;left:0;
+  width:100%;height:70px;
+  background:#5a2c1a;
+  clip-path:polygon(50% 0%,0% 100%,100% 100%);
+}
 
-        .fase:active { transform: translate(-50%, 55%) scale(0.9); box-shadow: 0 4px 0 rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.2) !important; padding-top: 4px; }
+/* TREE */
+.tree{
+  position:absolute;
+  width:30px;height:90px;
+  background:#c68642;
+  transform:rotateX(60deg);
+}
+.tree::before{
+  content:"";
+  position:absolute;
+  top:-70px;left:-45px;
+  width:120px;height:90px;
+  background:#ff99cc;
+  border-radius:50%;
+}
 
-        /* Cores e Sombras 3D Pesadas */
-        .fase-feita { 
-            background: radial-gradient(circle at 40% 40%, #fbbf24, #d97706); 
-            /* Sombra interna para volume, sombra de fundo para altura */
-            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2), inset 5px 5px 10px rgba(255,255,255,0.4), 0 10px 0 #b45309, 0 15px 25px rgba(0,0,0,0.3); 
-        }
-        
-        .fase-atual { 
-            background: radial-gradient(circle at 40% 40%, #34d399, #059669); 
-            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2), inset 5px 5px 10px rgba(255,255,255,0.4), 0 10px 0 #047857, 0 15px 25px rgba(0,0,0,0.3), 0 0 40px #6ee7b7; 
-            animation: pulsarFase 1.5s infinite alternate; 
-        }
+/* BRIDGE */
+.bridge{
+  position:absolute;
+  width:350px;height:120px;
+  background:linear-gradient(#ffb347,#ff7b00);
+  left:50%;
+  transform:translateX(-50%) rotateX(60deg);
+  border-radius:40px;
+  box-shadow:0 0 20px rgba(255,200,0,0.5);
+}
 
-        .fase-bloqueada { 
-            background: radial-gradient(circle at 40% 40%, #e2e8f0, #94a3b8); 
-            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.1), inset 5px 5px 10px rgba(255,255,255,0.8), 0 10px 0 #64748b, 0 15px 25px rgba(0,0,0,0.2); 
-            /* Sem ícone de cadeado triste, só uma cor mais neutra como no jogo */
-        }
+/* LOCK */
+.lock{
+  position:absolute;
+  width:80px;height:80px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.8);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  transform:rotateX(60deg);
+}
 
-        @keyframes pulsarFase { 0% { filter: brightness(1); } 100% { filter: brightness(1.15); transform: translate(-50%, 45%) scale(1.05); } }
+/* CANDY */
+.candy{
+  position:absolute;
+  width:60px;height:60px;
+  border-radius:50%;
+  background:radial-gradient(circle,#fff,#ff4da6);
+  transform:rotateX(60deg);
+  animation:spin 4s linear infinite;
+}
+@keyframes spin{
+  from{ transform:rotateX(60deg) rotateZ(0deg);}
+  to{ transform:rotateX(60deg) rotateZ(360deg);}
+}
 
-        /* =========================================
-           PLACAS DE TEXTO (UI Estilo Jogo)
-           ========================================= */
-        .plaquinha-texto {
-            position: absolute; bottom: -35px; white-space: nowrap;
-            background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
-            color: #1e293b; font-size: 15px; font-weight: 900; 
-            padding: 6px 16px; border-radius: 25px;
-            /* Borda grossa e sombra de botão */
-            border: 2px solid #ffffff; box-shadow: 0 5px 0 #cbd5e1, 0 10px 15px rgba(0,0,0,0.15);
-            text-shadow: 0 1px 1px rgba(255,255,255,1);
-            z-index: 20;
-        }
+/* PARTICLES */
+.particle{
+  position:fixed;
+  width:6px;height:6px;
+  background:white;
+  border-radius:50%;
+  pointer-events:none;
+  animation:magic 2s linear forwards;
+}
+@keyframes magic{
+  from{opacity:1;transform:translateY(0);}
+  to{opacity:0;transform:translateY(-80px);}
+}
 
-        .fase-feita .plaquinha-texto { background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%); box-shadow: 0 5px 0 #d97706, 0 10px 15px rgba(0,0,0,0.15); color: #78350f; border-color: #fef3c7;}
-        .fase-atual .plaquinha-texto { background: linear-gradient(180deg, #d1fae5 0%, #a7f3d0 100%); box-shadow: 0 5px 0 #059669, 0 10px 15px rgba(0,0,0,0.15); color: #064e3b; border-color: #d1fae5;}
+/* CLOUD */
+.cloud{
+  position:absolute;
+  width:200px;height:80px;
+  background:white;
+  border-radius:50px;
+  top:50px;
+  animation:float 40s linear infinite;
+}
+@keyframes float{
+  from{left:-200px;}
+  to{left:110%;}
+}
 
-        /* Elementos internos do botão */
-        .fase-icone { font-size: 32px; z-index: 2; margin-top: 2px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); }
-        .fase-estrelas { font-size: 15px; letter-spacing: -3px; margin-top: -6px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3)); }
-        
-        .avatar-jogador { position: absolute; top: -55px; width: 70px; height: 70px; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.4)); animation: flutuarAvatar 2s infinite ease-in-out; z-index: 30; border-radius: 50%; border: 3px solid #fff; background: #6ee7b7;}
-        @keyframes flutuarAvatar { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
-
-        /* =========================================
-           POSIÇÕES E CURVAS DA TRILHA
-           ========================================= */
-        /* Coordenadas cravadas com a curva do SVG (bottom, left) */
-        .f-4 { bottom: 82%; left: 45%; transform: translate(-50%, 50%) scale(0.65); z-index: 11; } 
-        .f-3 { bottom: 58%; left: 75%; transform: translate(-50%, 50%) scale(0.80); z-index: 12; }
-        .f-2 { bottom: 33%; left: 25%; transform: translate(-50%, 50%) scale(0.95); z-index: 13; }
-        .f-1 { bottom: 8%; left: 55%; transform: translate(-50%, 50%) scale(1.1); z-index: 14; }
-
-        /* =========================================
-           CENÁRIO DOCE (Elementos Laterais)
-           ========================================= */
-        .decor { position: absolute; filter: drop-shadow(0 8px 6px rgba(0,0,0,0.25)); z-index: 10; user-select: none; }
-        .d-1 { bottom: 15%; left: 10%; font-size: 65px; z-index: 15; transform: rotate(-10deg); } /* Sorvete perto */
-        .d-2 { bottom: 45%; right: 5%; font-size: 55px; z-index: 12; transform: rotate(15deg); } /* Chocolate meio */
-        .d-3 { bottom: 75%; left: 15%; font-size: 45px; z-index: 11; } /* Cupcake longe */
-        .d-4 { top: 10%; right: 20%; font-size: 40px; opacity: 0.8; z-index: 5;} /* Balão no céu */
-    </style>
+</style>
 </head>
 <body>
 
-    <div class="ceu-decor"></div>
-    <div class="glace-esq"></div>
-    <div class="glace-dir"></div>
+<div class="scene">
+  <div class="camera" id="camera">
 
-    <div class="decor d-1">🍦</div>
-    <div class="decor d-2">🍫</div>
-    <div class="decor d-3">🧁</div>
-    <div class="decor d-4">🎈</div>
+    <div class="path"></div>
 
-    <div class="container-estrada">
-        <svg class="svg-estrada" preserveAspectRatio="none" viewBox="0 0 100 100">
-            <path class="rio-sombra" d="M 55 110 C 55 90, 15 85, 25 65 C 35 45, 95 50, 75 40 C 55 30, 40 25, 45 10 C 50 -5, 45 -5, 45 -10" />
-            <path class="rio-base" d="M 55 110 C 55 90, 15 85, 25 65 C 35 45, 95 50, 75 40 C 55 30, 40 25, 45 10 C 50 -5, 45 -5, 45 -10" />
-            <path class="rio-brilho" d="M 55 110 C 55 90, 15 85, 25 65 C 35 45, 95 50, 75 40 C 55 30, 40 25, 45 10 C 50 -5, 45 -5, 45 -10" />
-            <path class="linha-doces" d="M 55 110 C 55 90, 15 85, 25 65 C 35 45, 95 50, 75 40 C 55 30, 40 25, 45 10 C 50 -5, 45 -5, 45 -10" />
-        </svg>
-    </div>
+    <div class="house" style="top:500px;left:20%;"></div>
+    <div class="house" style="top:1200px;left:70%;"></div>
 
-    <div class="fases-container">
-        
-        <div class="fase fase-bloqueada f-4">
-            <div class="fase-icone">🔒</div>
-            <div class="plaquinha-texto">Jogar PC 🎮</div>
-        </div>
+    <div class="tree" style="top:400px;left:75%;"></div>
+    <div class="tree" style="top:1500px;left:15%;"></div>
 
-        <div class="fase fase-bloqueada f-3">
-            <div class="fase-icone">🔒</div>
-            <div class="plaquinha-texto">Lição de Casa 📚</div>
-        </div>
+    <div class="bridge" style="top:1800px;"></div>
 
-        <div class="fase fase-atual f-2">
-            <img src="https://cdn-icons-png.flaticon.com/512/4140/4140047.png" class="avatar-jogador" alt="Menino">
-            <div class="fase-icone">🍽️</div>
-            <div class="plaquinha-texto">Almoçar 🍛</div>
-        </div>
+    <div class="lock" style="top:2000px;left:50%;transform:translateX(-50%) rotateX(60deg);">🔒</div>
 
-        <div class="fase fase-feita f-1">
-            <div class="fase-icone">🛏️</div>
-            <div class="fase-estrelas">⭐⭐⭐</div>
-            <div class="plaquinha-texto">Arrumar Cama ✨</div>
-        </div>
+    <div class="candy" style="top:800px;left:50%;"></div>
+    <div class="candy" style="top:1600px;left:45%;"></div>
 
-    </div>
+  </div>
+
+  <div class="cloud" style="top:80px;"></div>
+  <div class="cloud" style="top:150px;animation-duration:50s;"></div>
+
+  <div class="player">
+    <div class="head"></div>
+    <div class="body"></div>
+  </div>
+
+</div>
+
+<script>
+let camera = document.getElementById("camera");
+let position = 0;
+
+function autoMove(){
+  position += 2;
+  camera.style.transform = `translateZ(${position}px)`;
+  requestAnimationFrame(autoMove);
+}
+autoMove();
+
+/* TOUCH CONTROL */
+let startY = 0;
+window.addEventListener("touchstart",e=>{
+  startY = e.touches[0].clientY;
+});
+
+window.addEventListener("touchmove",e=>{
+  let moveY = e.touches[0].clientY;
+  let diff = startY - moveY;
+  position += diff * 0.5;
+  camera.style.transform = `translateZ(${position}px)`;
+  startY = moveY;
+});
+
+/* MAGIC PARTICLES */
+setInterval(()=>{
+  let p = document.createElement("div");
+  p.className="particle";
+  p.style.left = Math.random()*window.innerWidth+"px";
+  p.style.bottom="100px";
+  document.body.appendChild(p);
+  setTimeout(()=>p.remove(),2000);
+},300);
+</script>
 
 </body>
 </html>
