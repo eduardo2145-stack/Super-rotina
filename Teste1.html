@@ -1,180 +1,161 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mundo Doce 2.5D</title>
+<title>Candy Land 2.5D</title>
 
 <style>
-body,html{
-margin:0;
-padding:0;
-height:100%;
-overflow:hidden;
-font-family:sans-serif;
-background:linear-gradient(#ffb6e6,#b3f0ff 60%,#8fffcc);
-perspective:900px;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-/* ===== CÉU ===== */
-.ceu{
-position:absolute;
-width:100%;
-height:50%;
-top:0;
-overflow:hidden;
-z-index:1;
+body{
+  overflow:hidden;
+  background:linear-gradient(to top,#87f5c6,#ffb6e6);
+  perspective:900px;
+  font-family:sans-serif;
 }
 
-.nuvem{
-position:absolute;
-background:white;
-width:120px;
-height:60px;
-border-radius:60px;
-opacity:.8;
-animation:nuvemMove 40s linear infinite;
+/* CENA */
+.scene{
+  width:100vw;
+  height:100vh;
+  transform-style:preserve-3d;
+  position:relative;
 }
 
-@keyframes nuvemMove{
-from{transform:translateX(-200px)}
-to{transform:translateX(120vw)}
+/* CÂMERA */
+.camera{
+  position:absolute;
+  width:100%;
+  height:200%;
+  transform-style:preserve-3d;
+  animation:walk 20s linear infinite;
 }
 
-/* ===== MUNDO 3D ===== */
-.mundo{
-position:absolute;
-bottom:-30%;
-width:100%;
-height:200%;
-transform:rotateX(60deg);
-transform-style:preserve-3d;
-animation:caminhar 20s linear infinite;
+@keyframes walk{
+  from{ transform:translateZ(0px); }
+  to{ transform:translateZ(800px); }
 }
 
-/* movimento do mundo simulando caminhada */
-@keyframes caminhar{
-from{transform:rotateX(60deg) translateY(0)}
-to{transform:rotateX(60deg) translateY(300px)}
+/* CAMINHO */
+.path{
+  position:absolute;
+  width:300px;
+  height:2000px;
+  background:linear-gradient(#6ec6ff,#4ab3f4);
+  left:50%;
+  transform:translateX(-50%) rotateX(60deg);
+  border-radius:100px;
+  box-shadow:0 0 40px rgba(255,255,255,0.4) inset;
 }
 
-/* ===== CHÃO ===== */
-.chao{
-position:absolute;
-width:100%;
-height:200%;
-background:linear-gradient(#8fffcc,#55d6aa);
+/* CASAS */
+.house{
+  position:absolute;
+  width:120px;
+  height:100px;
+  background:#ff8ad6;
+  border-radius:20px;
+  transform:rotateX(60deg);
+  box-shadow:0 20px 40px rgba(0,0,0,0.2);
 }
 
-/* ===== CAMINHO ===== */
-.caminho{
-position:absolute;
-left:40%;
-width:20%;
-height:200%;
-background:#9ddcff;
-border-radius:100px;
+.house::before{
+  content:"";
+  position:absolute;
+  top:-40px;
+  left:0;
+  width:100%;
+  height:60px;
+  background:#5a2c1a;
+  clip-path:polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
-/* ===== CASAS ===== */
-.casa{
-position:absolute;
-width:80px;
-height:80px;
-background:#ff9ad5;
-border-radius:10px;
-box-shadow:0 10px 20px rgba(0,0,0,.3);
+/* ÁRVORES */
+.tree{
+  position:absolute;
+  width:30px;
+  height:80px;
+  background:#c68642;
+  transform:rotateX(60deg);
 }
 
-.casa::before{
-content:'';
-position:absolute;
-top:-40px;
-left:0;
-width:0;
-height:0;
-border-left:40px solid transparent;
-border-right:40px solid transparent;
-border-bottom:40px solid #ff6ec7;
+.tree::before{
+  content:"";
+  position:absolute;
+  top:-60px;
+  left:-40px;
+  width:110px;
+  height:80px;
+  background:#ff99cc;
+  border-radius:50%;
 }
 
-/* ===== ÁRVORES ===== */
-.arvore{
-position:absolute;
-width:30px;
-height:60px;
-background:#8b5a2b;
+/* DOCE GIRANDO */
+.candy{
+  position:absolute;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:radial-gradient(circle,#fff,#ff4da6);
+  transform:rotateX(60deg);
+  animation:spin 4s linear infinite;
 }
 
-.arvore::before{
-content:'';
-position:absolute;
-bottom:30px;
-left:-35px;
-width:100px;
-height:80px;
-background:#34d399;
-border-radius:50%;
+@keyframes spin{
+  from{ transform:rotateX(60deg) rotateZ(0deg); }
+  to{ transform:rotateX(60deg) rotateZ(360deg); }
 }
 
-/* ===== PONTE ===== */
-.ponte{
-position:absolute;
-width:25%;
-height:20px;
-background:#d97706;
-left:37%;
+/* NUVENS */
+.cloud{
+  position:absolute;
+  width:200px;
+  height:80px;
+  background:white;
+  border-radius:50px;
+  top:50px;
+  animation:float 30s linear infinite;
 }
 
-/* ===== DOCES ===== */
-.doce{
-position:absolute;
-font-size:40px;
-animation:flutuar 3s ease-in-out infinite;
+@keyframes float{
+  from{ left:-200px; }
+  to{ left:110%; }
 }
-
-@keyframes flutuar{
-0%{transform:translateY(0)}
-50%{transform:translateY(-10px)}
-100%{transform:translateY(0)}
-}
-
-/* POSICIONAMENTOS */
-.casa1{top:200px;left:15%}
-.casa2{top:600px;right:15%}
-
-.arvore1{top:350px;left:20%}
-.arvore2{top:800px;right:20%}
-
-.ponte1{top:1000px}
-
-.doce1{top:450px;left:60%}
-.doce2{top:900px;left:30%}
 
 </style>
 </head>
 
 <body>
 
-<div class="ceu">
-<div class="nuvem" style="top:40px;animation-delay:0s;"></div>
-<div class="nuvem" style="top:100px;animation-delay:10s;"></div>
-</div>
+<div class="scene">
+  <div class="camera">
 
-<div class="mundo">
-<div class="chao"></div>
-<div class="caminho"></div>
+    <div class="path"></div>
 
-<div class="casa casa1"></div>
-<div class="casa casa2"></div>
+    <!-- Casas -->
+    <div class="house" style="top:400px; left:20%;"></div>
+    <div class="house" style="top:800px; left:70%;"></div>
+    <div class="house" style="top:1200px; left:25%;"></div>
 
-<div class="arvore arvore1"></div>
-<div class="arvore arvore2"></div>
+    <!-- Árvores -->
+    <div class="tree" style="top:300px; left:70%;"></div>
+    <div class="tree" style="top:900px; left:15%;"></div>
+    <div class="tree" style="top:1500px; left:75%;"></div>
 
-<div class="ponte ponte1"></div>
+    <!-- Doces -->
+    <div class="candy" style="top:500px; left:50%;"></div>
+    <div class="candy" style="top:1100px; left:45%;"></div>
 
-<div class="doce doce1">🍭</div>
-<div class="doce doce2">🧁</div>
+  </div>
+
+  <!-- Nuvens -->
+  <div class="cloud" style="top:80px;"></div>
+  <div class="cloud" style="top:150px; animation-duration:40s;"></div>
 
 </div>
 
