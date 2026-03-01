@@ -1,56 +1,131 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa Gamificado</title>
+    <title>Meu Dia Mágico</title>
     <style>
-        body { margin: 0; background: #87CEEB; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        /* =========================================
+           O MUNDO MÁGICO (Cores e Fundo)
+           ========================================= */
+        body, html {
+            margin: 0; padding: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(to bottom, #fbc2eb 0%, #a6c1ee 100%); /* Céu rosa e azul doce */
+            font-family: 'Nunito', 'Segoe UI', sans-serif;
+            overflow: hidden; /* Esconde a barra de rolagem */
+        }
+
+        .mapa-container { position: relative; width: 100%; height: 100%; }
+
+        /* =========================================
+           NUVENS ANIMADAS QUE SE MOVEM
+           ========================================= */
+        .nuvem { position: absolute; font-size: 80px; opacity: 0.6; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1)); animation: moverNuvens linear infinite; z-index: 0; user-select: none; }
+        .n1 { top: 10%; left: -20%; animation-duration: 35s; font-size: 90px; }
+        .n2 { top: 40%; left: -20%; animation-duration: 25s; font-size: 120px; animation-delay: -10s; }
+        .n3 { top: 70%; left: -20%; animation-duration: 40s; font-size: 70px; animation-delay: -20s; }
+
+        @keyframes moverNuvens {
+            0% { transform: translateX(-10vw); }
+            100% { transform: translateX(120vw); } /* Atravessa a tela toda */
+        }
+
+        /* =========================================
+           A ESTRADA EM ZIGUEZAGUE (Caminho Doce)
+           ========================================= */
+        .caminho-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .linha-estrada { fill: none; stroke: rgba(255, 255, 255, 0.8); stroke-width: 8; stroke-dasharray: 15, 15; stroke-linecap: round; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.1)); }
+
+        /* =========================================
+           AS FASES (Botões 3D estilo Candy Crush)
+           ========================================= */
+        .fase {
+            position: absolute; width: 75px; height: 75px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; cursor: pointer; transition: transform 0.2s;
+            transform: translate(-50%, -50%); /* Centraliza exatamente no ponto */
+        }
         
-        /* O MAPA (Container) */
-        .mapa-container { position: relative; width: 100vw; height: 100vh; background: linear-gradient(to bottom, #a1c4fd 0%, #c2e9fb 100%); }
+        .fase:active { transform: translate(-50%, -45%) scale(0.95); } /* Efeito de apertar o botão */
 
-        /* A LINHA DO CAMINHO (Simples linha reta para o teste) */
-        .linha-caminho { position: absolute; top: 10%; bottom: 10%; left: 50%; width: 10px; background: rgba(255,255,255,0.5); transform: translateX(-50%); border-radius: 10px; }
+        /* Estilo da Fase Feita (Dourada/Verde) */
+        .fase-feita {
+            background: radial-gradient(circle at 30% 30%, #ffd700, #f59e0b);
+            border: 4px solid #fff;
+            box-shadow: 0 8px 0 #d97706, 0 15px 20px rgba(0,0,0,0.3); /* Sombra 3D grossa */
+        }
 
-        /* A BOLINHA DA FASE */
-        .fase { position: absolute; width: 80px; height: 80px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; box-shadow: 0 10px 0 rgba(0,0,0,0.2), 0 15px 20px rgba(0,0,0,0.2); transition: 0.2s; transform: translateX(-50%); z-index: 10; }
-        .fase:active { transform: translateX(-50%) translateY(10px); box-shadow: 0 0 0 rgba(0,0,0,0.2); } /* Efeito de apertar o botão */
+        /* Estilo da Fase Atual (Pulsante) */
+        .fase-atual {
+            background: radial-gradient(circle at 30% 30%, #34d399, #059669);
+            border: 4px solid #fff;
+            box-shadow: 0 8px 0 #047857, 0 15px 20px rgba(0,0,0,0.3), 0 0 30px #34d399; /* Brilho em volta */
+            animation: pulsarFase 1.5s infinite alternate;
+        }
 
-        /* ESTADOS DAS FASES */
-        .fase-feita { background: #fcd34d; border: 4px solid #fbbf24; color: #78350f; }
-        .fase-atual { background: #34d399; border: 4px solid #10b981; color: white; animation: pulsar 2s infinite; }
-        .fase-bloqueada { background: #cbd5e1; border: 4px solid #94a3b8; color: white; filter: grayscale(1); cursor: not-allowed; }
+        /* Estilo da Fase Bloqueada (Cinza) */
+        .fase-bloqueada {
+            background: radial-gradient(circle at 30% 30%, #cbd5e1, #94a3b8);
+            border: 4px solid #fff;
+            box-shadow: 0 8px 0 #64748b, 0 15px 20px rgba(0,0,0,0.2);
+            filter: grayscale(0.5); cursor: not-allowed;
+        }
 
-        /* Texto debaixo da bolinha */
-        .fase-texto { position: absolute; bottom: -30px; font-size: 14px; color: #1e293b; background: white; padding: 2px 8px; border-radius: 10px; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        @keyframes pulsarFase {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.15); }
+        }
 
-        @keyframes pulsar { 0% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.1); } 100% { transform: translateX(-50%) scale(1); } }
+        /* Textos, Estrelas e Ícones dentro das bolinhas */
+        .fase-icone { font-size: 28px; z-index: 2; line-height: 1; margin-bottom: 2px;}
+        .fase-estrelas { font-size: 12px; letter-spacing: -2px; line-height: 1; }
+        
+        /* A plaquinha com o nome da tarefa embaixo da bolinha */
+        .plaquinha-texto {
+            position: absolute; bottom: -35px; background: white; color: #334155; font-size: 14px; font-weight: 900; padding: 4px 12px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); white-space: nowrap; border: 2px solid #f1f5f9;
+        }
+
+        /* O Avatar do Menino em cima da fase atual */
+        .avatar-jogador { position: absolute; top: -35px; width: 50px; height: 50px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3)); animation: flutuarAvatar 2s infinite ease-in-out; }
+
+        @keyframes flutuarAvatar {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
     </style>
 </head>
 <body>
 
     <div class="mapa-container">
-        <div class="linha-caminho"></div>
+        
+        <div class="nuvem n1">☁️</div>
+        <div class="nuvem n2">☁️</div>
+        <div class="nuvem n3">☁️</div>
 
-        <div class="fase fase-bloqueada" style="top: 15%; left: 30%;">
-            <span>🔒 4</span>
-            <div class="fase-texto">Jogar PC</div>
+        <svg class="caminho-svg" preserveAspectRatio="none" viewBox="0 0 100 100">
+            <path class="linha-estrada" d="M 50 100 Q 20 85 50 70 T 50 40 T 50 10" />
+        </svg>
+
+        <div class="fase fase-bloqueada" style="top: 15%; left: 35%;">
+            <div class="fase-icone">🔒</div>
+            <div class="plaquinha-texto">Jogar PC 🎮</div>
         </div>
 
-        <div class="fase fase-bloqueada" style="top: 35%; left: 70%;">
-            <span>🔒 3</span>
-            <div class="fase-texto">Lição de Casa</div>
+        <div class="fase fase-bloqueada" style="top: 38%; left: 65%;">
+            <div class="fase-icone">🔒</div>
+            <div class="plaquinha-texto">Lição de Casa 📚</div>
         </div>
 
-        <div class="fase fase-atual" style="top: 55%; left: 30%;">
-            <span style="font-size: 24px;">👦</span>
-            <div class="fase-texto">Almoçar</div>
+        <div class="fase fase-atual" style="top: 62%; left: 35%;">
+            <img src="https://cdn-icons-png.flaticon.com/512/4140/4140047.png" class="avatar-jogador" alt="Avatar">
+            <div class="fase-icone">🍽️</div>
+            <div class="plaquinha-texto">Almoçar 🍛</div>
         </div>
 
-        <div class="fase fase-feita" style="top: 75%; left: 70%;">
-            <span>⭐⭐⭐</span>
-            <div class="fase-texto">Arrumar Cama</div>
+        <div class="fase fase-feita" style="top: 85%; left: 60%;">
+            <div class="fase-icone">🛏️</div>
+            <div class="fase-estrelas">⭐⭐⭐</div>
+            <div class="plaquinha-texto">Arrumar Cama ✨</div>
         </div>
 
     </div>
